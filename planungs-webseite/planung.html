@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planung | Herr RINGOO Content-Planer</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">Herr RINGOO</span>
+      <span class="brand-tag">Content-Planer</span>
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="hauptmenue">☰ Menü</button>
+    <nav class="main-nav" id="hauptmenue">
+      <ul>
+        <li><a href="index.html">Start</a></li>
+        <li><a href="ablauf.html">Ablauf</a></li>
+        <li><a href="kategorien.html">Kategorien</a></li>
+        <li><a href="ideensammlung.html">Ideensammlung</a></li>
+        <li><a href="planung.html">Planung</a></li>
+        <li><a href="captions.html">Captions</a></li>
+        <li><a href="markenkommunikation.html">Markenkommunikation</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="page-intro">
+    <p class="eyebrow">Redaktioneller Plan</p>
+    <h1>Planung</h1>
+    <p class="lede">
+      Der Content-Kalender ist die zeitliche Übersicht: wann welcher Content, in welcher
+      Kategorie, auf welcher Plattform geplant, fertiggestellt und veröffentlicht werden soll.
+    </p>
+    <span class="source-note">Quelle: planung/README.md, planung/content-kalender.md</span>
+  </div>
+
+  <section>
+    <h2>Status-Legende</h2>
+    <div class="status-legend">
+      <div class="card"><span class="badge">💡</span><strong>Idee</strong><p>Grob eingeplant, noch nicht ausgearbeitet</p></div>
+      <div class="card"><span class="badge">✍️</span><strong>In Arbeit</strong><p>Post-Datei angelegt, in <code>posts/01-entwuerfe/</code></p></div>
+      <div class="card"><span class="badge">✅</span><strong>Bereit</strong><p>Fertig ausgearbeitet, in <code>posts/02-bereit-zur-veroeffentlichung/</code></p></div>
+      <div class="card"><span class="badge">📤</span><strong>Veröffentlicht</strong><p>Live auf der Plattform, in <code>posts/03-veroeffentlicht/</code></p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Aktueller Plan (Auszug)</h2>
+    <table>
+      <thead>
+        <tr><th>Zeitraum</th><th>Titel/Thema</th><th>Kategorie</th><th>Plattform</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>2026-KW28</td>
+          <td>Beispiel: Making-of Ehering</td>
+          <td><code>werkstatt</code></td>
+          <td>Instagram</td>
+          <td>💡 Idee</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Umgang mit dem Kalender</h2>
+    <ul>
+      <li>Ein neuer Eintrag entsteht, sobald eine Idee aus dem <a href="ideensammlung.html">Ideenpool</a> konkret genug für einen Zeitraum ist.</li>
+      <li>Der Status wird laufend aktualisiert (siehe Legende oben).</li>
+      <li>Der Eintrag verlinkt auf die zugehörige Post-Datei, sobald diese angelegt wurde.</li>
+      <li>Der Kalender ist bewusst grob (Woche/Monat statt exakte Uhrzeit) – die genaue Veröffentlichungsplanung erfolgt direkt in der jeweiligen Social-Media-App/-Tool.</li>
+    </ul>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <span>Herr RINGOO – Content-Planer · internes Team-Werkzeug, kein öffentlicher Auftritt.</span>
+    <span>Statisch aus den Markdown-Dateien des Repositories aufbereitet.</span>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

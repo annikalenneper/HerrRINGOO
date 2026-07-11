@@ -22,8 +22,9 @@ ist aber bewusst so angelegt, dass sie sich auf weitere Plattformen erweitern l�
 
 ## Struktur im Überblick
 
-| Ordner | Zweck |
+| Ordner/Datei | Zweck |
 |---|---|
+| [`markenkommunikation-guide.md`](markenkommunikation-guide.md) | Guide zu Tonalität, Slogans/Catch-Phrases und SEO-Keywords der Marke |
 | [`ideensammlung/`](ideensammlung/README.md) | Freie Sammlung von Content-Ideen, Rohgedanken, Inspiration |
 | [`kategorien/`](kategorien/README.md) | Definition der Post-Kategorien / Content-Säulen |
 | [`planung/`](planung/README.md) | Redaktions-/Social-Media-Plan mit zeitlicher Übersicht |
