@@ -5,8 +5,9 @@ Ablage bzw. Referenzpunkt für **Bild- und Videomaterial**, das in Posts (siehe
 
 ## Struktur
 
-- [`bilder/`](bilder/) – Fotos, Grafiken
-- [`videos/`](videos/) – Videomaterial, Reels-Rohschnitt o. Ä.
+- [`posts/`](posts/) – Fotos für Feed-Posts
+- [`reels/`](reels/) – Videomaterial, Reels-Rohschnitt o. Ä.
+- [`zitatkacheln/`](zitatkacheln/) – Vorgefertigte Zitat-Grafiken (z. B. für Story- oder Feed-Content)
 
 ## Hinweise
 
