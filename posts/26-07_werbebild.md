@@ -1,12 +1,12 @@
 ---
-beschreibung: "Kurze, sprechende Beschreibung des Bilds"
-kategorie: werkstatt
+titel: "Petra präsentiert Ringe vor Herr RINGOO"
+kategorie: marketing
 plattform: instagram
 status: entwurf
 datum_geplant: JJJJ-MM-TT
 datum_veroeffentlicht:
 medien:
-  - medien/bilder/beispiel.jpg
+  - medien/marketing-kit/Fotos_HerrRINGOO_1.jpg
 notizen: ""
 ---
 
@@ -20,4 +20,4 @@ Ausfüllhinweise:
 
 ## Caption
 
-Hier den vollständigen Caption-Text schreiben (Hook, Haupttext, Call-to-Action, Hashtags).
+
