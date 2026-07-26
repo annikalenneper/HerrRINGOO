@@ -61,6 +61,11 @@ Konkrete Stilmerkmale, die sich durch alle Texte ziehen:
   *"Fühlt euch zu Gast"* – Einladung statt Aufforderung.
 - **Unverbindlichkeit betonen**: "unverbindliche Anfrage", "kostenfreie Stornierung bis 14 Tage
   vorher" – nimmt Druck aus der Kontaktaufnahme.
+- **Die Trauringberatung ist immer Petra**: Wenn es um die eigentliche Beratung geht ("Petra
+  berät euch", "bei Petra", "Nicht verzagen – Petra fragen!"), wird sie namentlich und persönlich
+  genannt – nie "wir"/"unser Team". "Wir"/"das Team" ist reserviert für Hintergrundarbeiten
+  (Werkstatt, Fuhrpark/Bulli, Organisation, Social Media). Beratung ist eine persönliche
+  Beziehung zu Petra, keine anonyme Teamleistung.
 
 ## 5. Slogans & Catch-Phrases
 
@@ -186,6 +191,7 @@ Trauring-Termin buchen
 - Konkrete Fakten statt leerer Superlative (Zahlen, Generationen, Herstellernamen)
 - Emotion vor Produkt – erst das Gefühl, dann das Detail
 - Unverbindlichkeit/niedrige Hemmschwelle betonen
+- Trauringberatung immer Petra persönlich zuschreiben ("Petra berät euch", "bei Petra")
 
 **Don't:**
 - Kein "Sie", keine formelle Business-Sprache
@@ -194,6 +200,8 @@ Trauring-Termin buchen
 - Dialekt nicht übertreiben oder erzwingen, wenn er nicht natürlich passt
 - Keine leeren Marketing-Floskeln ohne Beleg ("beste Qualität" ohne Kontext)
 - Traditions- und Freiheits-Erzählung nicht gegeneinander ausspielen – beide gehören zusammen
+- Nicht "wir beraten euch"/"unser Team berät" schreiben, wenn die eigentliche Trauringberatung
+  gemeint ist – das ist immer Petra. "Wir"/"Team" nur bei Hintergrundarbeiten verwenden.
 
 ## 10. Anwendung
 

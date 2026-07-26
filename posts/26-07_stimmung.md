@@ -20,4 +20,13 @@ Ausfüllhinweise:
 
 ## Caption
 
+AUF JÜCK DURCHS SAUERLAND ☀️
 
+Wenn die Sonne so über den Hügeln hängt, wissen wir: Das ist unser Büro für heute. Kein Ladengeschäft, kein Schaufenster – nur wir, ein bisschen Gegenwind und ein Bulli voller Ringe fürs Leben.
+
+Herr RINGOO bringt eure Trauringberatung dorthin, wo ihr euch am wohlsten fühlt: ins eigene Zuhause, an euren Wunschort – oder eben hoch auf einen Hügel mit Aussicht.
+
+Wo soll euer Termin stattfinden? Schreibt's uns in die Kommentare 👇
+
+#HerrRINGOO #RollendesTrauringstudio #Trauringe #Eheringe #UnterwegsFuerEuch #TrauringeVorOrt
+#TrauringstudioSauerland #TrauringeSiegerland

@@ -20,4 +20,15 @@ Ausfüllhinweise:
 
 ## Caption
 
+GÖNNT EUCH EINE ATEMPAUSE 🥂
 
+Ein Glas Sekt, goldenes Abendlicht und die Ruhe, die man sonst nur im Urlaub findet – so fühlt sich eine Trauringberatung bei Herr RINGOO an.
+
+Denn bei uns geht es nicht nur darum, den passenden Ring zu finden. Es geht darum, den Moment zu genießen. Lehnt euch zurück, wir erledigen den Rest.
+
+Von gemütlich bis ereignisreich – ihr entscheidet, wie euer Termin aussieht.
+
+Mit nur einem Klick stehen wir für euch in den Startlöchern – Link in der Bio.
+
+#HerrRINGOO #RollendesTrauringstudio #Trauringe #Eheringe #UnterwegsFuerEuch #Verlobung
+#TrauringstudioSauerland

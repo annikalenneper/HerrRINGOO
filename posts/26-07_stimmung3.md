@@ -20,4 +20,11 @@ Ausfüllhinweise:
 
 ## Caption
 
+NÄCHSTER STOPP: MITTENDRIN IM GRÜNEN 🌳
 
+Egal ob Wiese, Weiher oder Waldrand – Herr RINGOO findet den Weg zu euch. Unser rollendes Trauringstudio hat schon einige Ecken im Sauerland und Siegerland gesehen, und jede ist ein bisschen schöner als die letzte.
+
+Wo dürfen wir als Nächstes vorfahren? 
+
+#HerrRINGOO #RollendesTrauringstudio #Trauringe #Eheringe #UnterwegsFuerEuch #TrauringeVorOrt
+#TrauringstudioSauerland #TrauringeSiegerland

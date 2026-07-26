@@ -20,4 +20,13 @@ Ausfüllhinweise:
 
 ## Caption
 
+DAT GIBBET – SO EIN LICHT! ✨
 
+Manchmal hält das Sauerland kurz die Wolken auseinander und schenkt uns genau so einen Moment.
+
+Herr RINGOO mittendrin, mit Blick übers Tal – und Petra mitten im schönsten Teil ihres Jobs.
+
+Ringe fürs Leben verdienen eine Kulisse, die man nicht vergisst.
+
+#HerrRINGOO #RollendesTrauringstudio #Trauringe #Eheringe #UnterwegsFuerEuch
+#TrauringstudioSauerland #TrauringeSiegerland

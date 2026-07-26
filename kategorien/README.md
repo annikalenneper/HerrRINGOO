@@ -20,8 +20,11 @@ Kategorien zugeordnet.
 | `wissen` | Trauring-Wissen | Ratgeber- und FAQ-Content rund um Trauringe | "5 Dinge, die man vor dem Ringkauf wissen sollte" |
 | `community` | Community & Interaktion | Umfragen, Q&A, Reaktionen auf Kommentare, Behind-the-Scenes-Fragen | Story-Umfrage zu Ringformen |
 | `termine` | Termine & Aktionen | Konkrete Termine, Aktionen, Anlässe (z. B. Valentinstag) | Ankündigung eines Pop-up-Termins |
+| `zitatkachel` | Zitatkachel | Typografische Zitat-Grafiken rund um Liebe, Hochzeit, Ringe, Road-Trips – Feed-Auflockerung ohne Produktbezug | Zitat von Hermann Hesse über die Liebe, als Kachel gestaltet |
+| `ladengeschaeft` | Ladengeschäft (stationär) | Einblicke ins stationäre Trauringstudio/Uhren- und Schmuckgeschäft als Ergänzung zum rollenden Studio | Foto der Ladenauslage oder des Geschäfts in Würdinghausen |
+| `hitlists` | Listen & Trends | Kompakt aufbereitete Listenformate ("X Dinge, die ...", Trends, Ranglisten) – auch abseits reiner Trauring-Fragen (z. B. Ausflugsziele) | "5 Trauring-Trends 2026" oder "3 Aussichtspunkte im Sauerland für euren Antrag" |
+| `warum` | Textkacheln mit Gründen für | Gründen für die Trauringberatung durch Herr RINGOO | Kleine Kinder zuhause, Wunsch nach authentischen Momenten |
+| `regionen` | Regionen & Standorte | Vorstellung einzelner Einzugsgebiete (Kreis Olpe, Hochsauerlandkreis, Siegen-Wittgenstein) mit Bezug zur Landschaft/Lokalkolorit | "Herr RINGOO ist auch bei euch im Kreis Olpe unterwegs" |
+| `pakete` | Pakete & Angebote | Vorstellung und Vergleich der buchbaren Beratungspakete (z. B. "Voll muckelich", "Mit Schmackes") | Überblick "Von gemütlich bis ereignisreich – ihr entscheidet" |
 
-## Neue Kategorie ergänzen
 
-Neue Zeile in obiger Tabelle mit eindeutigem, kurzem `Kürzel` (wird im Post-Frontmatter verwendet)
-hinzufügen und kurz beschreiben, wofür die Kategorie gedacht ist und was **nicht** hineingehört.
