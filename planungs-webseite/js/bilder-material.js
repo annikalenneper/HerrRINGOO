@@ -60,7 +60,7 @@
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Unbekannter Fehler');
+        throw new Error(data.details ? `${data.error} (${data.details})` : (data.error || 'Unbekannter Fehler'));
       }
 
       renderGallery(gridEl, data);
@@ -88,7 +88,7 @@
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Unbekannter Fehler');
+        throw new Error(data.details ? `${data.error} (${data.details})` : (data.error || 'Unbekannter Fehler'));
       }
 
       countEl.textContent = `${data.received.length} Bild${data.received.length === 1 ? '' : 'er'} übermittelt`;
