@@ -28,6 +28,8 @@ exports.handler = async (event) => {
       q: `'${folder.id}' in parents and mimeType contains 'image/' and trashed = false`,
       fields: 'files(id, name, thumbnailLink)',
       pageSize: 1000,
+      supportsAllDrives: true,
+      includeItemsFromAllDrives: true,
     });
 
     const images = (response.data.files || []).map((file) => ({

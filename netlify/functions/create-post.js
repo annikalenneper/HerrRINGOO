@@ -118,10 +118,21 @@ exports.handler = async (event) => {
 
     // Integritätsprüfung: verhindert, dass eine manipulierte Anfrage ein beliebiges (nicht
     // zum angegebenen Ordner gehörendes bzw. nicht-Bild-) Drive-Objekt einschleust.
-    const meta = await drive.files.get({ fileId: bildId, fields: 'parents,mimeType,name' });
+    const meta = await drive.files.get({
+      fileId: bildId,
+      fields: 'parents,mimeType,name',
+      supportsAllDrives: true,
+    });
     const isImage = (meta.data.mimeType || '').startsWith('image/');
     const belongsToFolder = (meta.data.parents || []).includes(folder.id);
     if (!isImage || !belongsToFolder) {
+      console.error('Bild-Integritätsprüfung fehlgeschlagen:', {
+        bildId,
+        erwarteterOrdner: folder.id,
+        tatsaechlicheParents: meta.data.parents,
+        mimeType: meta.data.mimeType,
+        name: meta.data.name,
+      });
       return errorResponse(400, 'Das angegebene Bild gehört nicht zum angegebenen Ordner oder ist kein Bild.');
     }
 
@@ -131,7 +142,7 @@ exports.handler = async (event) => {
     }
 
     const fileResponse = await drive.files.get(
-      { fileId: bildId, alt: 'media' },
+      { fileId: bildId, alt: 'media', supportsAllDrives: true },
       { responseType: 'arraybuffer' }
     );
     const imageBuffer = Buffer.from(fileResponse.data);
