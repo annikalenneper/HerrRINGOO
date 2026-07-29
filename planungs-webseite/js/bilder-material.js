@@ -60,7 +60,8 @@
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.details ? `${data.error} (${data.details})` : (data.error || 'Unbekannter Fehler'));
+        const message = data.details ? `${data.error} (${data.details})` : data.error;
+        throw new Error(message || data.errorMessage || `HTTP ${response.status}`);
       }
 
       renderGallery(gridEl, data);
@@ -88,7 +89,8 @@
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.details ? `${data.error} (${data.details})` : (data.error || 'Unbekannter Fehler'));
+        const message = data.details ? `${data.error} (${data.details})` : data.error;
+        throw new Error(message || data.errorMessage || `HTTP ${response.status}`);
       }
 
       countEl.textContent = `${data.received.length} Bild${data.received.length === 1 ? '' : 'er'} übermittelt`;

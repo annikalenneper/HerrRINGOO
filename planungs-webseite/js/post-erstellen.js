@@ -91,7 +91,8 @@
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.details ? `${data.error} (${data.details})` : (data.error || 'Unbekannter Fehler'));
+        const message = data.details ? `${data.error} (${data.details})` : data.error;
+        throw new Error(message || data.errorMessage || `HTTP ${response.status}`);
       }
 
       grid.innerHTML = '';
