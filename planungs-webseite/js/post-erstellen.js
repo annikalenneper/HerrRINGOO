@@ -87,7 +87,7 @@
     const grid = document.querySelector('[data-post-grid]');
 
     try {
-      const response = await fetch('/.netlify/functions/posts');
+      const response = await fetch('/.netlify/functions/post-data');
       const data = await response.json();
 
       if (!response.ok) {

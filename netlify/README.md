@@ -3,11 +3,14 @@
 - `images.js`/`select-images.js` binden die Google-Drive-Ordner aus
   [`../medien/README.md`](../medien/README.md) in die Galerie auf
   `planungs-webseite/bilder-material.html` ein.
-- `posts.js` liest die Post-Entwürfe aus [`../posts/`](../posts/README.md) (Frontmatter + Caption)
-  für die Instagram-Vorschau auf `planungs-webseite/post-erstellen.html`.
+- `post-data.js` liest die Post-Entwürfe aus [`../posts/`](../posts/README.md) (Frontmatter +
+  Caption) für die Instagram-Vorschau auf `planungs-webseite/post-erstellen.html`. Heißt bewusst
+  nicht `posts.js` – Netlifys Node-Laufzeit importiert Functions über ihren Dateinamen, und ein
+  gleichnamiger eingebundener Ordner `posts/` (siehe `included_files` unten) würde dabei
+  kollidieren (`ERR_UNSUPPORTED_DIR_IMPORT`).
 - `media.js` liefert die in den Post-Dateien referenzierten Bilder aus
   [`../medien/`](../medien/README.md) aus, da dieser Ordner außerhalb von `publish` liegt und
-  sonst nicht über HTTP erreichbar wäre. `posts.js` und `media.js` brauchen keine
+  sonst nicht über HTTP erreichbar wäre. `post-data.js` und `media.js` brauchen keine
   Umgebungsvariablen, nur die `included_files`-Einträge in `../netlify.toml`, damit `posts/` und
   `medien/` mit ins Function-Bundle wandern.
 

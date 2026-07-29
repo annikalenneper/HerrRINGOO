@@ -3,6 +3,6 @@
   functions = "netlify/functions"
 
 # posts/ und medien/ liegen außerhalb von "publish" und werden von den Functions
-# posts.js/media.js zur Laufzeit gelesen - müssen daher explizit ins Function-Bundle.
+# post-data.js/media.js zur Laufzeit gelesen - müssen daher explizit ins Function-Bundle.
 [functions]
   included_files = ["posts/**", "medien/**"]
