@@ -5,6 +5,11 @@
     veroeffentlicht: '🚀',
   };
 
+  const STATUS_LABELS = {
+    bereit: 'bereit',
+    veroeffentlicht: 'veröffentlicht',
+  };
+
   function formatDate(value) {
     if (!value || value === 'JJJJ-MM-TT') {
       return 'noch nicht geplant';
@@ -12,7 +17,11 @@
     return value;
   }
 
-  function buildMock(post) {
+  // Baut die Instagram-Mock-Karte aus einer fertigen Bild-URL + Caption. Wird sowohl für
+  // bestehende Posts (Bild kommt aus dem Repo über /.netlify/functions/media) als auch für
+  // die Abschluss-Vorschau im "Post erstellen"-Wizard (Bild kommt direkt von Google Drive)
+  // verwendet – daher bekommt die Funktion die fertige URL statt eines internen Repo-Pfads.
+  function buildMock({ imageUrl, imageAlt, caption }) {
     const mock = document.createElement('article');
     mock.className = 'ig-mock';
 
@@ -21,13 +30,12 @@
     header.innerHTML = '<span class="ig-mock-avatar" aria-hidden="true">HR</span><span class="ig-mock-username">herr.ringoo</span>';
     mock.appendChild(header);
 
-    const firstImage = post.medien[0];
-    if (firstImage) {
+    if (imageUrl) {
       const media = document.createElement('div');
       media.className = 'ig-mock-media';
       const img = document.createElement('img');
-      img.src = `/.netlify/functions/media?path=${encodeURIComponent(firstImage)}`;
-      img.alt = post.titel || firstImage;
+      img.src = imageUrl;
+      img.alt = imageAlt || '';
       img.loading = 'lazy';
       media.appendChild(img);
       mock.appendChild(media);
@@ -39,14 +47,14 @@
     actions.innerHTML = '<span>&#9825;</span><span>&#128172;</span><span>&#10148;</span><span class="ig-mock-save">&#128278;</span>';
     mock.appendChild(actions);
 
-    const caption = document.createElement('p');
-    caption.className = 'ig-mock-caption';
+    const captionEl = document.createElement('p');
+    captionEl.className = 'ig-mock-caption';
     const usernameSpan = document.createElement('span');
     usernameSpan.className = 'ig-mock-username';
     usernameSpan.textContent = 'herr.ringoo';
-    caption.appendChild(usernameSpan);
-    caption.appendChild(document.createTextNode(' ' + post.caption));
-    mock.appendChild(caption);
+    captionEl.appendChild(usernameSpan);
+    captionEl.appendChild(document.createTextNode(' ' + (caption || '')));
+    mock.appendChild(captionEl);
 
     return mock;
   }
@@ -85,8 +93,9 @@
 
   // Schiebt einen Post zur nächsten Workflow-Stufe (entwurf -> bereit -> veroeffentlicht).
   // Zeigt je nach Status den passenden Button + ein Datumsfeld; bei veroeffentlicht gibt es
-  // keine weitere Aktion mehr.
-  function buildActions(post) {
+  // keine weitere Aktion mehr. Vor dem eigentlichen Markieren wird die Aktion per
+  // Bestätigungsdialog abgesichert, das Team-Passwort kommt sitzungsweit aus team-auth.js.
+  function buildActions(post, onUpdated) {
     const wrapper = document.createElement('div');
     wrapper.className = 'post-preview-actions';
 
@@ -98,6 +107,7 @@
     const endpoint = isEntwurf ? 'schedule-post' : 'publish-post';
     const dateField = isEntwurf ? 'datum_geplant' : 'datum_veroeffentlicht';
     const buttonLabel = isEntwurf ? '✅ Als bereit markieren' : '🚀 Als veröffentlicht markieren';
+    const targetStatusLabel = isEntwurf ? STATUS_LABELS.bereit : STATUS_LABELS.veroeffentlicht;
 
     const dateInput = document.createElement('input');
     dateInput.type = 'date';
@@ -106,36 +116,36 @@
       : todayISO();
     wrapper.appendChild(dateInput);
 
-    let passwortInput = null;
-    const cachedPasswort = sessionStorage.getItem('teamPasswort');
-    if (!cachedPasswort) {
-      passwortInput = document.createElement('input');
-      passwortInput.type = 'password';
-      passwortInput.placeholder = 'Team-Passwort';
-      passwortInput.autocomplete = 'off';
-      wrapper.appendChild(passwortInput);
-    }
-
     const button = document.createElement('button');
     button.type = 'button';
-    button.className = 'selection-submit';
+    button.className = 'selection-submit btn-primary';
     button.textContent = buttonLabel;
     wrapper.appendChild(button);
 
     const status = document.createElement('p');
     status.className = 'gallery-status';
+    status.setAttribute('aria-live', 'polite');
     wrapper.appendChild(status);
 
     button.addEventListener('click', async () => {
-      const secret = cachedPasswort || (passwortInput ? passwortInput.value : '');
-      if (!secret) {
-        status.className = 'gallery-status error';
-        status.textContent = 'Bitte das Team-Passwort eingeben.';
-        return;
-      }
       if (!dateInput.value) {
         status.className = 'gallery-status error';
         status.textContent = 'Bitte ein Datum wählen.';
+        return;
+      }
+
+      const confirmed = await window.ConfirmDialog.confirmAction({
+        titel: 'Aktion bestätigen',
+        nachricht: `Post am ${dateInput.value} als ${targetStatusLabel} markieren?`,
+        bestaetigenLabel: 'Ja, markieren',
+        abbrechenLabel: 'Abbrechen',
+      });
+      if (!confirmed) return;
+
+      const secret = await window.TeamAuth.getOrPromptSecret();
+      if (!secret) {
+        status.className = 'gallery-status error';
+        status.textContent = 'Ohne Team-Passwort kann diese Aktion nicht ausgeführt werden.';
         return;
       }
 
@@ -152,13 +162,15 @@
         const data = await response.json();
 
         if (!response.ok) {
+          if (response.status === 401) {
+            window.TeamAuth.clearCachedSecret();
+          }
           throw new Error(data.details ? `${data.error} (${data.details})` : data.error || `HTTP ${response.status}`);
         }
 
-        sessionStorage.setItem('teamPasswort', secret);
-        status.className = 'gallery-status';
+        status.className = 'gallery-status success';
         status.textContent = 'Aktualisiert – erscheint nach dem automatischen Redeploy (ca. 1–2 Min.) in der Vorschau.';
-        setTimeout(loadPosts, 3000);
+        setTimeout(onUpdated, 3000);
       } catch (error) {
         status.className = 'gallery-status error';
         status.textContent = `Aktion fehlgeschlagen: ${error.message}`;
@@ -172,9 +184,15 @@
   function buildCard(post) {
     const card = document.createElement('div');
     card.className = 'post-preview';
-    card.appendChild(buildMock(post));
+
+    const firstImage = post.medien[0];
+    card.appendChild(buildMock({
+      imageUrl: firstImage ? `/.netlify/functions/media?path=${encodeURIComponent(firstImage)}` : null,
+      imageAlt: post.titel || firstImage,
+      caption: post.caption,
+    }));
     card.appendChild(buildMeta(post));
-    card.appendChild(buildActions(post));
+    card.appendChild(buildActions(post, loadPosts));
     return card;
   }
 
@@ -209,6 +227,10 @@
       grid.appendChild(errorEl);
     }
   }
+
+  // Von post-erstellen-wizard.js genutzt: gleiche Mock-Darstellung für die Abschluss-Vorschau,
+  // gleiche Reload-Funktion nach erfolgreichem Speichern.
+  window.PostShared = { buildMock, reloadPosts: loadPosts };
 
   loadPosts();
 })();

@@ -36,7 +36,10 @@ exports.handler = async () => {
       const { data, content } = matter(raw);
 
       return {
-        datei: path.relative(POSTS_DIR, filePath).split(path.sep).join('/'),
+        // Voller Repo-Pfad (nicht nur relativ zu posts/): schedule-post.js/publish-post.js
+        // erwarten "datei" im Format "posts/01-entwuerfe/...md", da sie damit direkt die
+        // GitHub Contents API ansprechen (siehe lib/github.js getFile/moveFile).
+        datei: path.join('posts', path.relative(POSTS_DIR, filePath)).split(path.sep).join('/'),
         titel: data.titel || data.beschreibung || '',
         kategorie: data.kategorie || '',
         plattform: data.plattform || '',

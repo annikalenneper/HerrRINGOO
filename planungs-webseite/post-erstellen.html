@@ -53,39 +53,8 @@
   <div id="ansicht-erstellen" hidden>
     <section>
       <h2>Neuen Post erstellen</h2>
-      <form data-post-form>
-        <div class="form-group">
-          <label for="bild-ordner">1. Bild auswählen – Ordner</label>
-          <select id="bild-ordner" data-bild-ordner></select>
-          <div class="image-grid" data-create-gallery></div>
-          <p class="selected-image-info" data-selected-image-info>Noch kein Bild ausgewählt.</p>
-        </div>
-
-        <div class="form-group">
-          <label for="post-kategorie">Kategorie</label>
-          <select id="post-kategorie" data-post-kategorie></select>
-        </div>
-
-        <div class="form-group">
-          <label for="post-titel">Titel / Beschreibung</label>
-          <input type="text" id="post-titel" data-post-titel maxlength="120">
-        </div>
-
-        <div class="form-group">
-          <label for="post-caption">Caption</label>
-          <textarea id="post-caption" data-post-caption maxlength="2200" rows="6"></textarea>
-          <div class="hashtag-picker" data-hashtag-picker></div>
-        </div>
-
-        <div class="form-group">
-          <label for="post-passwort">Team-Passwort</label>
-          <input type="password" id="post-passwort" data-post-passwort autocomplete="off">
-        </div>
-
-        <button type="submit" class="selection-submit" data-post-submit>Post speichern</button>
-        <button type="button" class="selection-submit" data-close-create>Abbrechen</button>
-        <p class="gallery-status" data-form-status></p>
-      </form>
+      <ol class="wizard-progress" data-wizard-progress aria-label="Fortschritt"></ol>
+      <div data-wizard-container></div>
     </section>
   </div>
 </main>
@@ -96,7 +65,10 @@
   </div>
 </footer>
 
+<script src="js/confirm-dialog.js"></script>
+<script src="js/team-auth.js"></script>
+<script src="js/wizard-engine.js"></script>
 <script src="js/post-erstellen.js"></script>
-<script src="js/post-form.js"></script>
+<script src="js/post-erstellen-wizard.js"></script>
 </body>
 </html>

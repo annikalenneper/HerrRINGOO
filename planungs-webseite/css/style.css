@@ -535,6 +535,7 @@ tbody tr:last-child td {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: var(--space-4);
+  margin-top: var(--space-3);
 }
 
 .image-card {
@@ -586,6 +587,10 @@ tbody tr:last-child td {
   color: var(--color-accent-dark);
 }
 
+.gallery-status.success {
+  color: #2f6d3d;
+}
+
 .selection-bar {
   position: sticky;
   bottom: 0;
@@ -627,6 +632,37 @@ tbody tr:last-child td {
 .selection-submit:disabled {
   opacity: 0.6;
   cursor: default;
+}
+
+/* Aktions-Hierarchie: primär (Weiter/Bestätigen) vs. sekundär (Zurück/Abbrechen) vs.
+   destruktiv (z. B. "Ja, abbrechen" im Bestätigungsdialog) müssen sich klar unterscheiden
+   (Anforderung HCI Nr. 3) statt wie zuvor optisch identisch zu sein. */
+.btn-primary {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--gray-950);
+}
+
+.btn-primary:hover {
+  background: var(--gold-dark);
+  border-color: var(--gold-dark);
+  color: var(--white);
+}
+
+.btn-secondary {
+  color: var(--color-text-muted);
+}
+
+.btn-danger {
+  background: var(--gray-900);
+  border-color: var(--gray-900);
+  color: var(--white);
+}
+
+.btn-danger:hover {
+  background: var(--gray-950);
+  border-color: var(--gray-950);
+  color: var(--white);
 }
 
 /* Instagram-Vorschau (Post erstellen) */
@@ -839,14 +875,15 @@ tbody tr:last-child td {
   resize: vertical;
 }
 
-.form-group .image-grid {
-  margin-top: var(--space-3);
-}
-
 .selected-image-info {
   margin-top: var(--space-2);
   font-size: 0.9rem;
   color: var(--color-text-muted);
+}
+
+.selected-image-info.confirmed {
+  color: var(--color-accent-dark);
+  font-weight: 700;
 }
 
 .hashtag-picker {
@@ -871,7 +908,133 @@ tbody tr:last-child td {
   color: var(--color-accent-dark);
 }
 
-[data-post-form] .selection-submit {
-  margin-right: var(--space-3);
+/* Wizard (Post erstellen) */
+
+.wizard-progress {
+  list-style: none;
+  margin: 0 0 var(--space-6);
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+}
+
+.wizard-progress span,
+.wizard-progress button {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  background: none;
+  border: none;
+  padding: var(--space-1) var(--space-2);
+}
+
+.wizard-progress span {
+  cursor: default;
+}
+
+.wizard-progress button {
+  cursor: pointer;
+  color: var(--color-accent-dark);
+  text-decoration: underline;
+}
+
+.wizard-progress button:hover {
+  color: var(--gray-950);
+}
+
+.wizard-progress li.current span {
+  color: var(--gray-950);
+  font-weight: 700;
+}
+
+.wizard-progress li.done span,
+.wizard-progress li.done button {
+  color: var(--color-text-muted);
+}
+
+.wizard-progress li.done span::before,
+.wizard-progress li.done button::before {
+  content: "\2713 ";
+  color: var(--color-accent-dark);
+}
+
+.wizard-step-body h3 {
+  font-size: 1.15rem;
+}
+
+.wizard-step-hint {
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-4);
+}
+
+.wizard-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+}
+
+.field-error {
+  color: #b3261e;
+  font-size: 0.85rem;
+  margin-top: var(--space-1);
+}
+
+/* Natives <dialog> für Team-Passwort und Bestätigungen (confirm-dialog.js, team-auth.js) */
+
+.app-dialog {
+  border: none;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-hover);
+  padding: var(--space-6);
+  max-width: 420px;
+  width: calc(100% - var(--space-6));
+  font-family: var(--font-body);
+  color: var(--color-text);
+  background: var(--color-surface);
+}
+
+.app-dialog::backdrop {
+  background: rgba(23, 24, 26, 0.5);
+}
+
+.app-dialog h3 {
+  margin-top: 0;
+}
+
+.app-dialog-input {
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.app-dialog-input:focus {
+  outline: none;
+  border-color: var(--color-accent-dark);
+}
+
+.app-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
+@media (max-width: 560px) {
+  .wizard-nav {
+    flex-direction: column;
+  }
+
+  .wizard-nav .selection-submit {
+    width: 100%;
+  }
+
+  .app-dialog {
+    padding: var(--space-4);
+  }
 }
 
