@@ -29,23 +29,65 @@
       zur späteren Darstellung auf Instagram. Zeigt nur echte Bilder und Captions, keine echten
       Gefällt-mir-Zahlen oder Kommentare.
     </p>
+    <button type="button" class="selection-submit" data-open-create>+ Neuen Post erstellen</button>
   </div>
 
-  <section>
-    <h2>Status-Legende</h2>
-    <div class="status-legend">
-      <div class="card"><span class="badge">📝</span>Entwurf – noch in Arbeit</div>
-      <div class="card"><span class="badge">✅</span>Bereit zur Veröffentlichung</div>
-      <div class="card"><span class="badge">🚀</span>Veröffentlicht</div>
-    </div>
-  </section>
+  <div id="ansicht-vorschau">
+    <section>
+      <h2>Status-Legende</h2>
+      <div class="status-legend">
+        <div class="card"><span class="badge">📝</span>Entwurf – noch in Arbeit</div>
+        <div class="card"><span class="badge">✅</span>Bereit zur Veröffentlichung</div>
+        <div class="card"><span class="badge">🚀</span>Veröffentlicht</div>
+      </div>
+    </section>
 
-  <section>
-    <h2>Vorschau</h2>
-    <div class="post-preview-grid" data-post-grid>
-      <p class="gallery-status">Posts werden geladen …</p>
-    </div>
-  </section>
+    <section>
+      <h2>Vorschau</h2>
+      <div class="post-preview-grid" data-post-grid>
+        <p class="gallery-status">Posts werden geladen …</p>
+      </div>
+    </section>
+  </div>
+
+  <div id="ansicht-erstellen" hidden>
+    <section>
+      <h2>Neuen Post erstellen</h2>
+      <form data-post-form>
+        <div class="form-group">
+          <label for="bild-ordner">1. Bild auswählen – Ordner</label>
+          <select id="bild-ordner" data-bild-ordner></select>
+          <div class="image-grid" data-create-gallery></div>
+          <p class="selected-image-info" data-selected-image-info>Noch kein Bild ausgewählt.</p>
+        </div>
+
+        <div class="form-group">
+          <label for="post-kategorie">Kategorie</label>
+          <select id="post-kategorie" data-post-kategorie></select>
+        </div>
+
+        <div class="form-group">
+          <label for="post-titel">Titel / Beschreibung</label>
+          <input type="text" id="post-titel" data-post-titel maxlength="120">
+        </div>
+
+        <div class="form-group">
+          <label for="post-caption">Caption</label>
+          <textarea id="post-caption" data-post-caption maxlength="2200" rows="6"></textarea>
+          <div class="hashtag-picker" data-hashtag-picker></div>
+        </div>
+
+        <div class="form-group">
+          <label for="post-passwort">Team-Passwort</label>
+          <input type="password" id="post-passwort" data-post-passwort autocomplete="off">
+        </div>
+
+        <button type="submit" class="selection-submit" data-post-submit>Post speichern</button>
+        <button type="button" class="selection-submit" data-close-create>Abbrechen</button>
+        <p class="gallery-status" data-form-status></p>
+      </form>
+    </section>
+  </div>
 </main>
 
 <footer class="site-footer">
@@ -55,5 +97,6 @@
 </footer>
 
 <script src="js/post-erstellen.js"></script>
+<script src="js/post-form.js"></script>
 </body>
 </html>

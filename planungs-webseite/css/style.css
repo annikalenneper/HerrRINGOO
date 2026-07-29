@@ -207,6 +207,10 @@ main {
   margin: 0 0 var(--space-2);
 }
 
+.page-intro .selection-submit {
+  margin-top: var(--space-3);
+}
+
 .lede {
   color: var(--color-text-muted);
   font-size: 1.2rem;
@@ -763,5 +767,83 @@ tbody tr:last-child td {
   flex-wrap: wrap;
   gap: var(--space-2) var(--space-6);
   justify-content: space-between;
+}
+
+/* Formular (Post erstellen/einplanen) */
+
+.form-group {
+  margin-bottom: var(--space-5);
+}
+
+.form-group label {
+  display: block;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--color-heading);
+  margin-bottom: var(--space-2);
+}
+
+.form-group select,
+.form-group input[type="text"],
+.form-group input[type="date"],
+.form-group input[type="password"],
+.form-group textarea {
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+}
+
+.form-group select:focus,
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--color-accent-dark);
+}
+
+.form-group textarea {
+  font-family: inherit;
+  resize: vertical;
+}
+
+.form-group .image-grid {
+  margin-top: var(--space-3);
+}
+
+.selected-image-info {
+  margin-top: var(--space-2);
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.hashtag-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.hashtag-pill {
+  cursor: pointer;
+  background: var(--color-bg-muted);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  padding: var(--space-1) var(--space-3);
+  font-size: 0.88rem;
+  color: var(--color-text);
+}
+
+.hashtag-pill.selected {
+  border-color: var(--gold);
+  color: var(--color-accent-dark);
+}
+
+[data-post-form] .selection-submit {
+  margin-right: var(--space-3);
 }
 

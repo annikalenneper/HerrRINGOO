@@ -1,18 +1,5 @@
 const { google } = require('googleapis');
-
-// Ordner-Zuordnung: Schlüssel (vom Frontend als ?folder=... übergeben) -> Drive-Ordner-ID.
-// Übersicht/Quelle der Ordner-Links: ../../medien/README.md
-// Setup außerhalb des Codes: jeder dieser Ordner muss in Google Drive für die
-// E-Mail-Adresse des Service Accounts (client_email im JSON-Key) freigegeben werden
-// (Betrachter-Rechte reichen).
-const FOLDERS = {
-  'presse-mappe': { id: '1wzsyXw45STnDdLvQDelglKD_8c8bDcdV', label: 'Presse-Mappe' },
-  'bilder-daniel': { id: '1D6cqdA07n0lmV9l6ECLi6KZvKWWKpqw4', label: 'Bilder Daniel' },
-  'bilder-deik': { id: '1WQ_EhlZkT3L8-6oMFSLOkj2MuvpEIcr7', label: 'Bilder Deik' },
-  'behind-the-scenes': { id: '15xhOUBX0cWsXq31SekyS7atQqf0z7Kg4', label: 'Fotos Videodreh "Behind the Scenes"' },
-  'bilder-geschaeft': { id: '1HBYGEtiMaNhXHEleVlr9gIdJLqtWrK97', label: 'Bilder Geschäft' },
-  anzeigen: { id: '1IIPdG9wdxSfUoPTQobKLYS1YXzUji0Uu', label: 'Anzeigen (Magazine, Zeitschriften etc.)' },
-};
+const { FOLDERS } = require('./lib/drive-folders');
 
 exports.handler = async (event) => {
   const folderKey = event.queryStringParameters && event.queryStringParameters.folder;
