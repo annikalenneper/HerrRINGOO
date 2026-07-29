@@ -16,6 +16,17 @@
   committet es nach `medien/aus-drive/` und die neue `.md`-Datei nach `posts/01-entwuerfe/` –
   **erste schreibende Function** dieses Projekts, daher zusätzlich per Team-Passwort geschützt
   (siehe unten).
+- `schedule-post.js` markiert einen Entwurf als bereit: setzt `status: bereit` und
+  `datum_geplant` im Frontmatter und verschiebt die Datei von `posts/01-entwuerfe/` nach
+  `posts/02-bereit-zur-veroeffentlichung/`.
+- `publish-post.js` markiert einen Post als veröffentlicht: setzt `status: veroeffentlicht` und
+  `datum_veroeffentlicht` im Frontmatter und verschiebt die Datei von
+  `posts/02-bereit-zur-veroeffentlichung/` nach `posts/03-veroeffentlicht/`. Postet nichts
+  automatisch auf Instagram – das Team veröffentlicht manuell und markiert den Post danach hier
+  nur als erledigt.
+
+`schedule-post.js` und `publish-post.js` sind wie `create-post.js` schreibende Functions und
+daher ebenfalls per `CREATE_POST_SECRET` geschützt.
 
 `post-data.js`, `media.js` und `caption-blocks.js` brauchen keine Umgebungsvariablen, nur die
 `included_files`-Einträge in `../netlify.toml`, damit `posts/`, `medien/` und `captions/` mit ins
@@ -27,7 +38,7 @@ Function-Bundle wandern.
 |---|---|
 | `GOOGLE_SERVICE_ACCOUNT_JSON` | Vollständiger JSON-Key eines Google Service Accounts (als eine Zeile) mit Zugriff auf die Drive-API |
 | `GITHUB_TOKEN` | Fine-grained GitHub PAT, nur für dieses Repo, Permission "Contents: Read and write" – sonst nichts. Wird von `create-post.js` genutzt, um neue Dateien zu committen |
-| `CREATE_POST_SECRET` | Frei wählbares Team-Passwort. Schützt `create-post.js` (und später `schedule-post.js`/`publish-post.js`), da die Seite kein Nutzer-Login hat |
+| `CREATE_POST_SECRET` | Frei wählbares Team-Passwort. Schützt die schreibenden Functions `create-post.js`, `schedule-post.js` und `publish-post.js`, da die Seite kein Nutzer-Login hat |
 
 Lokal in einer `.env`-Datei im Projekt-Root ablegen (siehe [`../.env.example`](../.env.example)),
 `.env` ist in `.gitignore` und wird nie eingecheckt.
@@ -55,7 +66,8 @@ netlify dev
 
 Die Functions sind danach unter `/.netlify/functions/images?folder=<schlüssel>`,
 `/.netlify/functions/select-images`, `/.netlify/functions/post-data`,
-`/.netlify/functions/media?path=...`, `/.netlify/functions/caption-blocks` und
-`/.netlify/functions/create-post` erreichbar. Gültige `folder`-Schlüssel stehen in
+`/.netlify/functions/media?path=...`, `/.netlify/functions/caption-blocks`,
+`/.netlify/functions/create-post`, `/.netlify/functions/schedule-post` und
+`/.netlify/functions/publish-post` erreichbar. Gültige `folder`-Schlüssel stehen in
 [`functions/lib/drive-folders.js`](functions/lib/drive-folders.js), gültige `kategorie`-Werte in
 [`functions/lib/categories.js`](functions/lib/categories.js).

@@ -75,11 +75,106 @@
     return meta;
   }
 
+  function todayISO() {
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  }
+
+  // Schiebt einen Post zur nächsten Workflow-Stufe (entwurf -> bereit -> veroeffentlicht).
+  // Zeigt je nach Status den passenden Button + ein Datumsfeld; bei veroeffentlicht gibt es
+  // keine weitere Aktion mehr.
+  function buildActions(post) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'post-preview-actions';
+
+    if (post.status !== 'entwurf' && post.status !== 'bereit') {
+      return wrapper;
+    }
+
+    const isEntwurf = post.status === 'entwurf';
+    const endpoint = isEntwurf ? 'schedule-post' : 'publish-post';
+    const dateField = isEntwurf ? 'datum_geplant' : 'datum_veroeffentlicht';
+    const buttonLabel = isEntwurf ? '✅ Als bereit markieren' : '🚀 Als veröffentlicht markieren';
+
+    const dateInput = document.createElement('input');
+    dateInput.type = 'date';
+    dateInput.value = isEntwurf
+      ? (post.datum_geplant && post.datum_geplant !== 'JJJJ-MM-TT' ? post.datum_geplant : '')
+      : todayISO();
+    wrapper.appendChild(dateInput);
+
+    let passwortInput = null;
+    const cachedPasswort = sessionStorage.getItem('teamPasswort');
+    if (!cachedPasswort) {
+      passwortInput = document.createElement('input');
+      passwortInput.type = 'password';
+      passwortInput.placeholder = 'Team-Passwort';
+      passwortInput.autocomplete = 'off';
+      wrapper.appendChild(passwortInput);
+    }
+
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'selection-submit';
+    button.textContent = buttonLabel;
+    wrapper.appendChild(button);
+
+    const status = document.createElement('p');
+    status.className = 'gallery-status';
+    wrapper.appendChild(status);
+
+    button.addEventListener('click', async () => {
+      const secret = cachedPasswort || (passwortInput ? passwortInput.value : '');
+      if (!secret) {
+        status.className = 'gallery-status error';
+        status.textContent = 'Bitte das Team-Passwort eingeben.';
+        return;
+      }
+      if (!dateInput.value) {
+        status.className = 'gallery-status error';
+        status.textContent = 'Bitte ein Datum wählen.';
+        return;
+      }
+
+      button.disabled = true;
+      status.className = 'gallery-status';
+      status.textContent = 'Wird aktualisiert …';
+
+      try {
+        const response = await fetch(`/.netlify/functions/${endpoint}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ secret, datei: post.datei, [dateField]: dateInput.value }),
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.details ? `${data.error} (${data.details})` : data.error || `HTTP ${response.status}`);
+        }
+
+        sessionStorage.setItem('teamPasswort', secret);
+        status.className = 'gallery-status';
+        status.textContent = 'Aktualisiert – erscheint nach dem automatischen Redeploy (ca. 1–2 Min.) in der Vorschau.';
+        setTimeout(loadPosts, 3000);
+      } catch (error) {
+        status.className = 'gallery-status error';
+        status.textContent = `Aktion fehlgeschlagen: ${error.message}`;
+        button.disabled = false;
+      }
+    });
+
+    return wrapper;
+  }
+
   function buildCard(post) {
     const card = document.createElement('div');
     card.className = 'post-preview';
     card.appendChild(buildMock(post));
     card.appendChild(buildMeta(post));
+    card.appendChild(buildActions(post));
     return card;
   }
 
