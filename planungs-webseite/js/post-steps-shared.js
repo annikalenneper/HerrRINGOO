@@ -1,8 +1,8 @@
 (function () {
-  // Wiederverwendbare Wizard-Schritte (Kategorie, Titel, Caption+Hashtags), gemeinsam genutzt
-  // von post-erstellen-wizard.js (Einzelbild) und bilder-material-wizard.js (Mehrbild) – beide
-  // Flows unterscheiden sich nur im Bild-Schritt bzw. der Abschluss-Vorschau, nicht in diesen
-  // Content-Schritten.
+  // Wiederverwendbare Wizard-Schritte (Kategorie, Titel, Caption+Hashtags) für den "Post
+  // erstellen"-Wizard (post-erstellen-wizard.js) – als eigenes Modul, damit der Bild-Schritt
+  // und die Abschluss-Vorschau (die feature-spezifischen Teile) nicht mit diesen generischen
+  // Content-Schritten vermischt werden.
 
   // Muss mit netlify/functions/lib/categories.js synchron gehalten werden.
   const CATEGORIES = [

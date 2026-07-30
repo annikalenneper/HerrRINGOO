@@ -15,9 +15,9 @@ exports.handler = async (event) => {
     };
   }
 
-  // pageSize/pageToken sind optional (Default 1000 = 1 Seite für Aufrufer ohne eigenes
-  // Paging-UI, z. B. den Einzelbild-Wizard). bilder-material.js fragt bewusst kleinere
-  // Seiten an und nutzt nextPageToken für den "Mehr laden"-Button.
+  // pageSize/pageToken sind optional (Default 1000 = 1 Seite, falls nicht angegeben). Der
+  // Bild-Schritt des "Post erstellen"-Wizards fragt bewusst kleinere Seiten an und nutzt
+  // nextPageToken für den "Mehr laden"-Button.
   const pageSize = Math.min(parseInt(params.pageSize, 10) || 1000, 1000);
   const pageToken = params.pageToken || undefined;
 

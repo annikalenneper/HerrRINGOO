@@ -1,8 +1,7 @@
 (function () {
-  // Feature-Datei für den Einzelbild-"Post erstellen"-Flow. Kategorie/Titel/Caption-Schritte
-  // kommen aus post-steps-shared.js (window.PostSteps) – gemeinsam mit dem Mehrbild-Flow in
-  // bilder-material-wizard.js genutzt. Nur der Bild-Schritt und die Abschluss-Vorschau sind
-  // hier feature-spezifisch, weil sie sich zwischen Einzel- und Mehrbild-Flow unterscheiden.
+  // Feature-Datei für den "Post erstellen"-Flow. Kategorie/Titel/Caption-Schritte kommen aus
+  // post-steps-shared.js (window.PostSteps). Nur der Bild-Schritt (Mehrfachauswahl mit
+  // Dropdown + Paging) und die Abschluss-Vorschau sind hier feature-spezifisch.
 
   // Muss mit netlify/functions/lib/drive-folders.js synchron gehalten werden.
   const FOLDERS = [
@@ -13,19 +12,30 @@
     { key: 'bilder-geschaeft', label: 'Bilder Geschäft' },
     { key: 'anzeigen', label: 'Anzeigen (Magazine, Zeitschriften etc.)' },
   ];
+  const PAGE_SIZE = 60;
 
   const { appendNav, buildFinalCaption, mountKategorieStep, validateKategorie, mountTitelStep, validateTitel, mountCaptionStep, validateCaption, CATEGORIES } = window.PostSteps;
 
-  // --- Schritt 1: Bild ---
+  // --- Schritt 1: Bild(er) ---
+  //
+  // Mehrfachauswahl statt Einzelbild: state.bilder (Array von { id, name, folderKey,
+  // thumbnailLink }) ist die alleinige Quelle der Wahrheit und bleibt ordnerübergreifend
+  // erhalten. Beim (Wieder-)Mounten des Schritts wird daraus eine Map zum schnellen Lookup
+  // rekonstruiert; jede Änderung fließt sofort zurück in state.bilder.
 
   function validateBild(state) {
-    if (!state.bildId) {
-      return { valid: false, errors: { bild: 'Bitte zuerst ein Bild auswählen.' } };
+    if (!state.bilder || state.bilder.length === 0) {
+      return { valid: false, errors: { bild: 'Bitte mindestens ein Bild auswählen.' } };
     }
     return { valid: true };
   }
 
   function mountBildStep(container, state, helpers) {
+    if (!state.bilder) state.bilder = [];
+    const selected = new Map(state.bilder.map((b) => [b.id, b]));
+    let currentFolderKey = state.bilder[0] ? state.bilder[0].folderKey : FOLDERS[0].key;
+    let nextPageToken = null;
+
     const group = document.createElement('div');
     group.className = 'form-group';
     group.setAttribute('data-field', 'bild');
@@ -43,20 +53,31 @@
       option.textContent = folderLabel;
       select.appendChild(option);
     });
+    select.value = currentFolderKey;
     group.appendChild(select);
 
     const gallery = document.createElement('div');
     gallery.className = 'image-grid';
     group.appendChild(gallery);
 
+    const loadMoreBtn = document.createElement('button');
+    loadMoreBtn.type = 'button';
+    loadMoreBtn.className = 'selection-submit btn-secondary';
+    loadMoreBtn.setAttribute('data-load-more', '');
+    loadMoreBtn.textContent = 'Mehr laden';
+    loadMoreBtn.hidden = true;
+    group.appendChild(loadMoreBtn);
+
     const info = document.createElement('p');
     info.className = 'selected-image-info';
     group.appendChild(info);
     container.appendChild(group);
 
+    const nav = appendNav(container, helpers, { showBack: false, validate: validateBild, state });
+
     function updateInfo() {
-      if (state.bildId) {
-        info.textContent = `Ausgewählt: ${state.bildName}`;
+      if (state.bilder.length > 0) {
+        info.textContent = `${state.bilder.length} Bild${state.bilder.length === 1 ? '' : 'er'} ausgewählt`;
         info.classList.add('confirmed');
       } else {
         info.textContent = 'Noch kein Bild ausgewählt.';
@@ -65,71 +86,100 @@
     }
     updateInfo();
 
-    const nav = appendNav(container, helpers, { showBack: false, validate: validateBild, state });
+    function syncState() {
+      state.bilder = Array.from(selected.values());
+      updateInfo();
+      nav.refresh();
+    }
 
-    async function loadGallery(folderKey) {
-      gallery.innerHTML = '<p class="gallery-status" aria-live="polite">Bilder werden geladen …</p>';
+    function appendImages(images, folderKey, folderLabel) {
+      images.forEach((image) => {
+        const card = document.createElement('div');
+        card.className = 'image-card';
+        if (selected.has(image.id)) card.classList.add('selected');
+
+        const img = document.createElement('img');
+        img.src = image.thumbnailLink;
+        img.alt = image.name;
+        img.loading = 'lazy';
+
+        const tag = document.createElement('div');
+        tag.className = 'image-tag';
+        tag.textContent = image.name;
+
+        card.appendChild(img);
+        card.appendChild(tag);
+        card.addEventListener('click', () => {
+          if (selected.has(image.id)) {
+            selected.delete(image.id);
+            card.classList.remove('selected');
+          } else {
+            selected.set(image.id, { id: image.id, name: image.name, folderKey, folderLabel, thumbnailLink: image.thumbnailLink });
+            card.classList.add('selected');
+          }
+          syncState();
+        });
+
+        gallery.appendChild(card);
+      });
+    }
+
+    async function loadPage(folderKey, pageToken) {
+      const folderLabel = (FOLDERS.find((f) => f.key === folderKey) || {}).label || folderKey;
+      const params = new URLSearchParams({ folder: folderKey, pageSize: String(PAGE_SIZE) });
+      if (pageToken) params.set('pageToken', pageToken);
+
+      loadMoreBtn.hidden = true;
+      if (!pageToken) {
+        gallery.innerHTML = '<p class="gallery-status" aria-live="polite">Bilder werden geladen …</p>';
+      } else {
+        loadMoreBtn.disabled = true;
+        loadMoreBtn.textContent = 'Lädt …';
+      }
+
       try {
-        const response = await fetch(`/.netlify/functions/images?folder=${encodeURIComponent(folderKey)}`);
+        const response = await fetch(`/.netlify/functions/images?${params.toString()}`);
         const data = await response.json();
         if (!response.ok) {
           throw new Error(data.details ? `${data.error} (${data.details})` : data.error || `HTTP ${response.status}`);
         }
 
-        gallery.innerHTML = '';
-        if (data.images.length === 0) {
-          gallery.innerHTML = '<p class="gallery-status">Keine Bilder in diesem Ordner gefunden.</p>';
-          return;
+        if (!pageToken) gallery.innerHTML = '';
+
+        if (!pageToken && data.images.length === 0) {
+          const empty = document.createElement('p');
+          empty.className = 'gallery-status';
+          empty.textContent = 'Keine Bilder in diesem Ordner gefunden.';
+          gallery.appendChild(empty);
+        } else {
+          appendImages(data.images, folderKey, folderLabel);
         }
 
-        data.images.forEach((image) => {
-          const card = document.createElement('div');
-          card.className = 'image-card';
-          if (state.bildId === image.id) card.classList.add('selected');
-
-          const img = document.createElement('img');
-          img.src = image.thumbnailLink;
-          img.alt = image.name;
-          img.loading = 'lazy';
-
-          const tag = document.createElement('div');
-          tag.className = 'image-tag';
-          tag.textContent = image.name;
-
-          card.appendChild(img);
-          card.appendChild(tag);
-          card.addEventListener('click', () => {
-            gallery.querySelectorAll('.image-card.selected').forEach((el) => el.classList.remove('selected'));
-            card.classList.add('selected');
-            state.bildFolder = folderKey;
-            state.bildId = image.id;
-            state.bildName = image.name;
-            state.bildThumbnail = image.thumbnailLink;
-            updateInfo();
-            nav.refresh();
-          });
-
-          gallery.appendChild(card);
-        });
+        nextPageToken = data.nextPageToken;
+        loadMoreBtn.hidden = !nextPageToken;
+        loadMoreBtn.disabled = false;
+        loadMoreBtn.textContent = 'Mehr laden';
       } catch (error) {
-        gallery.innerHTML = `<p class="gallery-status error">Bilder konnten nicht geladen werden: ${error.message}</p>`;
+        if (!pageToken) gallery.innerHTML = '';
+        const errorEl = document.createElement('p');
+        errorEl.className = 'gallery-status error';
+        errorEl.textContent = `Bilder konnten nicht geladen werden: ${error.message}`;
+        gallery.appendChild(errorEl);
+        loadMoreBtn.hidden = true;
       }
     }
 
     select.addEventListener('change', () => {
-      state.bildFolder = select.value;
-      state.bildId = null;
-      state.bildName = null;
-      state.bildThumbnail = null;
-      updateInfo();
-      nav.refresh();
-      loadGallery(select.value);
+      currentFolderKey = select.value;
+      nextPageToken = null;
+      loadPage(currentFolderKey, null);
     });
 
-    const startFolder = state.bildFolder || FOLDERS[0].key;
-    select.value = startFolder;
-    state.bildFolder = startFolder;
-    loadGallery(startFolder);
+    loadMoreBtn.addEventListener('click', () => {
+      if (nextPageToken) loadPage(currentFolderKey, nextPageToken);
+    });
+
+    loadPage(currentFolderKey, null);
   }
 
   // --- Schritt 5: Abschluss-Vorschau ---
@@ -137,14 +187,27 @@
   function mountVorschauStep(container, state, helpers) {
     const hint = document.createElement('p');
     hint.className = 'wizard-step-hint';
-    hint.textContent = 'So sieht dein Post aus. Prüfe alles noch einmal, bevor du speicherst.';
+    hint.textContent = `So sieht dein Post aus (${state.bilder.length} Bild${state.bilder.length === 1 ? '' : 'er'}). Prüfe alles noch einmal, bevor du speicherst.`;
     container.appendChild(hint);
 
     container.appendChild(window.PostShared.buildMock({
-      imageUrl: state.bildThumbnail || null,
-      imageAlt: state.titel || state.bildName,
+      imageUrl: state.bilder[0].thumbnailLink,
+      imageAlt: state.titel || state.bilder[0].name,
       caption: buildFinalCaption(state),
     }));
+
+    if (state.bilder.length > 1) {
+      const thumbs = document.createElement('div');
+      thumbs.className = 'wizard-selected-thumbs';
+      state.bilder.forEach((bild) => {
+        const img = document.createElement('img');
+        img.src = bild.thumbnailLink;
+        img.alt = bild.name;
+        img.loading = 'lazy';
+        thumbs.appendChild(img);
+      });
+      container.appendChild(thumbs);
+    }
 
     const meta = document.createElement('div');
     meta.className = 'post-preview-meta';
@@ -190,7 +253,7 @@
           secret,
           titel: (state.titel || '').trim(),
           kategorie: state.kategorie,
-          bilder: [{ bildFolder: state.bildFolder, bildId: state.bildId }],
+          bilder: state.bilder.map((b) => ({ bildFolder: b.folderKey, bildId: b.id })),
           caption: buildFinalCaption(state),
         }),
       });
@@ -251,7 +314,7 @@
   // --- Wizard zusammensetzen + View-Umschaltung ---
 
   const STEPS = [
-    { id: 'bild', titel: 'Bild', mount: mountBildStep, validate: validateBild },
+    { id: 'bild', titel: 'Bild(er)', mount: mountBildStep, validate: validateBild },
     { id: 'kategorie', titel: 'Kategorie', mount: mountKategorieStep, validate: validateKategorie },
     { id: 'titel', titel: 'Titel', mount: mountTitelStep, validate: validateTitel },
     { id: 'caption', titel: 'Caption & Hashtags', mount: mountCaptionStep, validate: validateCaption },

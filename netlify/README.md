@@ -1,10 +1,9 @@
 # Netlify Functions – lokales Setup
 
 - `images.js` bindet die Google-Drive-Ordner aus [`../medien/README.md`](../medien/README.md)
-  in die Galerie auf `planungs-webseite/bilder-material.html` sowie in den Bild-Schritt des
-  "Post erstellen"-Wizards ein. Unterstützt optionales Paging über die Query-Parameter
-  `pageToken`/`pageSize` (Antwortform: `{ images, nextPageToken }`); ohne diese Parameter
-  bleibt das Verhalten wie zuvor (eine Seite mit bis zu 1000 Bildern).
+  in den Bild-Schritt des "Post erstellen"-Wizards (`planungs-webseite/post-erstellen.html`)
+  ein. Unterstützt Paging über die Query-Parameter `pageToken`/`pageSize` (Antwortform:
+  `{ images, nextPageToken }`) für den dortigen "Mehr laden"-Button.
 - `post-data.js` liest die Post-Entwürfe aus [`../posts/`](../posts/README.md) (Frontmatter +
   Caption) für die Instagram-Vorschau auf `planungs-webseite/post-erstellen.html`. Heißt bewusst
   nicht `posts.js` – Netlifys Node-Laufzeit importiert Functions über ihren Dateinamen, und ein
