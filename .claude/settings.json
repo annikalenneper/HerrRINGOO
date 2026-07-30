@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cp \"./planungs-webseite/medien/logos/Kopie von Logo_HerrRINGOO_weißGold.png\" \"./planungs-webseite/medien/logos/logo-weiss-gold.png\" && ls \"./planungs-webseite/medien/logos/\")",
+      "Bash(command -v msedge)",
+      "Bash(command -v \"C:/Program Files \\(x86\\)/Microsoft/Edge/Application/msedge.exe\")",
+      "Read(//c/Program Files \\\\\\(x86\\\\\\)/Microsoft/Edge/Application//**)",
+      "Read(//c/Program Files/Microsoft/Edge/**)",
+      "Bash('/c/Program Files \\(x86\\)/Microsoft/Edge/Application/msedge.exe' --headless --disable-gpu --window-size=1280,900 '--screenshot=C:\\\\Users\\\\Huawei/AppData/Local/Temp/claude/c--dev-git-HerrRINGOO/5018afa9-a901-4aaf-aa12-0983ce62900d/scratchpad/header-check.png' file:///c:/dev/git/HerrRINGOO/planungs-webseite/index.html)",
+      "Bash(\"/c/Program Files \\(x86\\)/Microsoft/Edge/Application/msedge.exe\" --headless --disable-gpu --window-size=500,700 --screenshot=\"C:/Users/Huawei/AppData/Local/Temp/claude/c--dev-git-HerrRINGOO/5018afa9-a901-4aaf-aa12-0983ce62900d/scratchpad/avatar-check.png\" \"file:///c:/dev/git/HerrRINGOO/planungs-webseite/_tmp-avatar-test.html\")",
+      "PowerShell(Add-Type -AssemblyName System.Drawing; $img = [System.Drawing.Image]::FromFile\\(\"c:\\\\dev\\\\git\\\\HerrRINGOO\\\\planungs-webseite\\\\medien\\\\logos\\\\logo-weiss-gold.png\"\\); \"$\\($img.Width\\) x $\\($img.Height\\)\"; $img.Dispose\\(\\))",
+      "PowerShell(Copy-Item \"C:\\\\Users\\\\Huawei\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--dev-git-HerrRINGOO\\\\5018afa9-a901-4aaf-aa12-0983ce62900d\\\\scratchpad\\\\crop-test.png\" \"c:\\\\dev\\\\git\\\\HerrRINGOO\\\\planungs-webseite\\\\medien\\\\logos\\\\logo-icon-ringe-gold.png\")",
+      "Bash(\"/c/Program Files \\(x86\\)/Microsoft/Edge/Application/msedge.exe\" --headless --disable-gpu --window-size=500,700 --screenshot=\"C:/Users/Huawei/AppData/Local/Temp/claude/c--dev-git-HerrRINGOO/5018afa9-a901-4aaf-aa12-0983ce62900d/scratchpad/avatar-check2.png\" \"file:///c:/dev/git/HerrRINGOO/planungs-webseite/_tmp-avatar-test.html\")"
+    ],
+    "additionalDirectories": [
+      "C:\\dev\\git\\HerrRINGOO\\planungs-webseite\\medien\\logos"
+    ]
+  }
+}
