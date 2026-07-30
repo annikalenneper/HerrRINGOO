@@ -17,48 +17,6 @@
     return value;
   }
 
-  // Baut die Instagram-Mock-Karte aus einer fertigen Bild-URL + Caption. Wird sowohl für
-  // bestehende Posts (Bild kommt aus dem Repo über /.netlify/functions/media) als auch für
-  // die Abschluss-Vorschau im "Post erstellen"-Wizard (Bild kommt direkt von Google Drive)
-  // verwendet – daher bekommt die Funktion die fertige URL statt eines internen Repo-Pfads.
-  function buildMock({ imageUrl, imageAlt, caption }) {
-    const mock = document.createElement('article');
-    mock.className = 'ig-mock';
-
-    const header = document.createElement('div');
-    header.className = 'ig-mock-header';
-    header.innerHTML = '<span class="ig-mock-avatar" aria-hidden="true">HR</span><span class="ig-mock-username">herr.ringoo</span>';
-    mock.appendChild(header);
-
-    if (imageUrl) {
-      const media = document.createElement('div');
-      media.className = 'ig-mock-media';
-      const img = document.createElement('img');
-      img.src = imageUrl;
-      img.alt = imageAlt || '';
-      img.loading = 'lazy';
-      media.appendChild(img);
-      mock.appendChild(media);
-    }
-
-    const actions = document.createElement('div');
-    actions.className = 'ig-mock-actions';
-    actions.setAttribute('aria-hidden', 'true');
-    actions.innerHTML = '<span>&#9825;</span><span>&#128172;</span><span>&#10148;</span><span class="ig-mock-save">&#128278;</span>';
-    mock.appendChild(actions);
-
-    const captionEl = document.createElement('p');
-    captionEl.className = 'ig-mock-caption';
-    const usernameSpan = document.createElement('span');
-    usernameSpan.className = 'ig-mock-username';
-    usernameSpan.textContent = 'herr.ringoo';
-    captionEl.appendChild(usernameSpan);
-    captionEl.appendChild(document.createTextNode(' ' + (caption || '')));
-    mock.appendChild(captionEl);
-
-    return mock;
-  }
-
   function buildMeta(post) {
     const meta = document.createElement('div');
     meta.className = 'post-preview-meta';
@@ -186,7 +144,7 @@
     card.className = 'post-preview';
 
     const firstImage = post.medien[0];
-    card.appendChild(buildMock({
+    card.appendChild(window.PostShared.buildMock({
       imageUrl: firstImage ? `/.netlify/functions/media?path=${encodeURIComponent(firstImage)}` : null,
       imageAlt: post.titel || firstImage,
       caption: post.caption,
@@ -228,9 +186,10 @@
     }
   }
 
-  // Von post-erstellen-wizard.js genutzt: gleiche Mock-Darstellung für die Abschluss-Vorschau,
-  // gleiche Reload-Funktion nach erfolgreichem Speichern.
-  window.PostShared = { buildMock, reloadPosts: loadPosts };
+  // buildMock kommt aus post-mock.js (window.PostShared), das vor dieser Datei geladen wird.
+  // reloadPosts wird von post-erstellen-wizard.js genutzt, um die Übersicht nach erfolgreichem
+  // Speichern zu aktualisieren.
+  window.PostShared.reloadPosts = loadPosts;
 
   loadPosts();
 })();

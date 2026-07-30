@@ -9,6 +9,7 @@ const CATEGORY_KEYS = new Set(CATEGORIES.map((c) => c.key));
 const BILD_ID_PATTERN = /^[\w-]+$/;
 const MAX_TITEL_LENGTH = 120;
 const MAX_CAPTION_LENGTH = 2200; // Instagram-Limit
+const MAX_BILDER = 10; // Instagram-Karussell-Limit
 
 const EXTENSION_BY_MIME = {
   'image/jpeg': 'jpg',
@@ -54,7 +55,8 @@ function escapeYamlString(value) {
   return value.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
 }
 
-function buildPostContent({ titel, kategorie, mediaPath, caption }) {
+function buildPostContent({ titel, kategorie, mediaPaths, caption }) {
+  const medienBlock = mediaPaths.map((mediaPath) => `  - ${mediaPath}`).join('\n');
   return `---
 titel: "${escapeYamlString(titel)}"
 kategorie: ${kategorie}
@@ -63,7 +65,7 @@ status: entwurf
 datum_geplant: ""
 datum_veroeffentlicht:
 medien:
-  - ${mediaPath}
+${medienBlock}
 notizen: ""
 ---
 
@@ -85,7 +87,7 @@ exports.handler = async (event) => {
     return errorResponse(400, 'Ungültiges JSON im Request-Body.');
   }
 
-  const { secret, titel, kategorie, bildFolder, bildId, caption } = payload;
+  const { secret, titel, kategorie, bilder, caption } = payload;
 
   if (!checkSecret(secret)) {
     return errorResponse(401, 'Ungültiges oder fehlendes Team-Passwort.');
@@ -100,12 +102,17 @@ exports.handler = async (event) => {
   if (typeof caption !== 'string' || !caption.trim() || caption.length > MAX_CAPTION_LENGTH) {
     return errorResponse(400, `"caption" ist erforderlich (max. ${MAX_CAPTION_LENGTH} Zeichen).`);
   }
-  const folder = FOLDERS[bildFolder];
-  if (!folder) {
-    return errorResponse(400, `"bildFolder" muss einer von: ${Object.keys(FOLDERS).join(', ')} sein.`);
+  if (!Array.isArray(bilder) || bilder.length === 0 || bilder.length > MAX_BILDER) {
+    return errorResponse(400, `"bilder" muss ein Array mit 1 bis ${MAX_BILDER} Bildern sein.`);
   }
-  if (typeof bildId !== 'string' || !BILD_ID_PATTERN.test(bildId)) {
-    return errorResponse(400, '"bildId" hat ein ungültiges Format.');
+  for (const eintrag of bilder) {
+    const folder = eintrag && FOLDERS[eintrag.bildFolder];
+    if (!folder) {
+      return errorResponse(400, `"bildFolder" muss einer von: ${Object.keys(FOLDERS).join(', ')} sein.`);
+    }
+    if (typeof eintrag.bildId !== 'string' || !BILD_ID_PATTERN.test(eintrag.bildId)) {
+      return errorResponse(400, '"bildId" hat ein ungültiges Format.');
+    }
   }
 
   try {
@@ -115,37 +122,6 @@ exports.handler = async (event) => {
       scopes: ['https://www.googleapis.com/auth/drive.readonly'],
     });
     const drive = google.drive({ version: 'v3', auth });
-
-    // Integritätsprüfung: verhindert, dass eine manipulierte Anfrage ein beliebiges (nicht
-    // zum angegebenen Ordner gehörendes bzw. nicht-Bild-) Drive-Objekt einschleust.
-    const meta = await drive.files.get({
-      fileId: bildId,
-      fields: 'parents,mimeType,name',
-      supportsAllDrives: true,
-    });
-    const isImage = (meta.data.mimeType || '').startsWith('image/');
-    const belongsToFolder = (meta.data.parents || []).includes(folder.id);
-    if (!isImage || !belongsToFolder) {
-      console.error('Bild-Integritätsprüfung fehlgeschlagen:', {
-        bildId,
-        erwarteterOrdner: folder.id,
-        tatsaechlicheParents: meta.data.parents,
-        mimeType: meta.data.mimeType,
-        name: meta.data.name,
-      });
-      return errorResponse(400, 'Das angegebene Bild gehört nicht zum angegebenen Ordner oder ist kein Bild.');
-    }
-
-    const extension = resolveExtension(meta.data.name, meta.data.mimeType);
-    if (!extension) {
-      return errorResponse(400, 'Nicht unterstütztes Bildformat.');
-    }
-
-    const fileResponse = await drive.files.get(
-      { fileId: bildId, alt: 'media', supportsAllDrives: true },
-      { responseType: 'arraybuffer' }
-    );
-    const imageBuffer = Buffer.from(fileResponse.data);
 
     const slug = `${datePrefix()}-${slugify(titel)}`;
     let filename = `${slug}.md`;
@@ -158,11 +134,57 @@ exports.handler = async (event) => {
       filename = `${slug}-${attempt}.md`;
     }
     const slugWithSuffix = filename.replace(/\.md$/, '');
-    const mediaPath = `medien/aus-drive/${slugWithSuffix}.${extension}`;
 
-    await putFile(mediaPath, imageBuffer, `Add Drive image for new post ${slugWithSuffix}`);
+    const mediaPaths = [];
+    for (let index = 0; index < bilder.length; index += 1) {
+      const { bildFolder, bildId } = bilder[index];
+      const folder = FOLDERS[bildFolder];
 
-    const content = buildPostContent({ titel: titel.trim(), kategorie, mediaPath, caption: caption.trim() });
+      // Integritätsprüfung: verhindert, dass eine manipulierte Anfrage ein beliebiges (nicht
+      // zum angegebenen Ordner gehörendes bzw. nicht-Bild-) Drive-Objekt einschleust.
+      const meta = await drive.files.get({
+        fileId: bildId,
+        fields: 'parents,mimeType,name',
+        supportsAllDrives: true,
+      });
+      const isImage = (meta.data.mimeType || '').startsWith('image/');
+      const belongsToFolder = (meta.data.parents || []).includes(folder.id);
+      if (!isImage || !belongsToFolder) {
+        console.error('Bild-Integritätsprüfung fehlgeschlagen:', {
+          bildId,
+          erwarteterOrdner: folder.id,
+          tatsaechlicheParents: meta.data.parents,
+          mimeType: meta.data.mimeType,
+          name: meta.data.name,
+        });
+        return errorResponse(400, `Bild ${index + 1}: gehört nicht zum angegebenen Ordner oder ist kein Bild.`);
+      }
+
+      const extension = resolveExtension(meta.data.name, meta.data.mimeType);
+      if (!extension) {
+        return errorResponse(400, `Bild ${index + 1}: nicht unterstütztes Bildformat.`);
+      }
+
+      const fileResponse = await drive.files.get(
+        { fileId: bildId, alt: 'media', supportsAllDrives: true },
+        { responseType: 'arraybuffer' }
+      );
+      const imageBuffer = Buffer.from(fileResponse.data);
+      const mediaPath = `medien/aus-drive/${slugWithSuffix}-${index + 1}.${extension}`;
+
+      try {
+        await putFile(mediaPath, imageBuffer, `Add Drive image ${index + 1} for new post ${slugWithSuffix}`);
+      } catch (error) {
+        return errorResponse(
+          500,
+          'Bild konnte nicht gespeichert werden.',
+          `${error.message} (bereits hochgeladen: ${mediaPaths.join(', ') || 'keine'})`
+        );
+      }
+      mediaPaths.push(mediaPath);
+    }
+
+    const content = buildPostContent({ titel: titel.trim(), kategorie, mediaPaths, caption: caption.trim() });
     const postPath = `posts/01-entwuerfe/${filename}`;
 
     try {
@@ -170,8 +192,8 @@ exports.handler = async (event) => {
     } catch (error) {
       return errorResponse(
         500,
-        'Bild wurde gespeichert, Post-Datei konnte aber nicht angelegt werden.',
-        `${error.message} (verwaistes Bild: ${mediaPath})`
+        'Bild(er) gespeichert, Post-Datei konnte aber nicht angelegt werden.',
+        `${error.message} (verwaiste Bilder: ${mediaPaths.join(', ')})`
       );
     }
 

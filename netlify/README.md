@@ -1,8 +1,10 @@
 # Netlify Functions – lokales Setup
 
-- `images.js`/`select-images.js` binden die Google-Drive-Ordner aus
-  [`../medien/README.md`](../medien/README.md) in die Galerie auf
-  `planungs-webseite/bilder-material.html` ein.
+- `images.js` bindet die Google-Drive-Ordner aus [`../medien/README.md`](../medien/README.md)
+  in die Galerie auf `planungs-webseite/bilder-material.html` sowie in den Bild-Schritt des
+  "Post erstellen"-Wizards ein. Unterstützt optionales Paging über die Query-Parameter
+  `pageToken`/`pageSize` (Antwortform: `{ images, nextPageToken }`); ohne diese Parameter
+  bleibt das Verhalten wie zuvor (eine Seite mit bis zu 1000 Bildern).
 - `post-data.js` liest die Post-Entwürfe aus [`../posts/`](../posts/README.md) (Frontmatter +
   Caption) für die Instagram-Vorschau auf `planungs-webseite/post-erstellen.html`. Heißt bewusst
   nicht `posts.js` – Netlifys Node-Laufzeit importiert Functions über ihren Dateinamen, und ein
@@ -65,9 +67,11 @@ netlify dev
 ```
 
 Die Functions sind danach unter `/.netlify/functions/images?folder=<schlüssel>`,
-`/.netlify/functions/select-images`, `/.netlify/functions/post-data`,
-`/.netlify/functions/media?path=...`, `/.netlify/functions/caption-blocks`,
-`/.netlify/functions/create-post`, `/.netlify/functions/schedule-post` und
-`/.netlify/functions/publish-post` erreichbar. Gültige `folder`-Schlüssel stehen in
+`/.netlify/functions/post-data`, `/.netlify/functions/media?path=...`,
+`/.netlify/functions/caption-blocks`, `/.netlify/functions/create-post`,
+`/.netlify/functions/schedule-post` und `/.netlify/functions/publish-post` erreichbar.
+`create-post.js` nimmt seit der Mehrbild-Unterstützung ein `bilder`-Array
+(`[{ bildFolder, bildId }, ...]`, max. 10 Einträge) statt einzelner `bildFolder`/`bildId`-Felder
+entgegen. Gültige `folder`-Schlüssel stehen in
 [`functions/lib/drive-folders.js`](functions/lib/drive-folders.js), gültige `kategorie`-Werte in
 [`functions/lib/categories.js`](functions/lib/categories.js).

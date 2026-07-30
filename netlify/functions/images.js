@@ -2,7 +2,8 @@ const { google } = require('googleapis');
 const { FOLDERS } = require('./lib/drive-folders');
 
 exports.handler = async (event) => {
-  const folderKey = event.queryStringParameters && event.queryStringParameters.folder;
+  const params = event.queryStringParameters || {};
+  const folderKey = params.folder;
   const folder = FOLDERS[folderKey];
 
   if (!folder) {
@@ -13,6 +14,12 @@ exports.handler = async (event) => {
       }),
     };
   }
+
+  // pageSize/pageToken sind optional (Default 1000 = 1 Seite für Aufrufer ohne eigenes
+  // Paging-UI, z. B. den Einzelbild-Wizard). bilder-material.js fragt bewusst kleinere
+  // Seiten an und nutzt nextPageToken für den "Mehr laden"-Button.
+  const pageSize = Math.min(parseInt(params.pageSize, 10) || 1000, 1000);
+  const pageToken = params.pageToken || undefined;
 
   try {
     // Setup außerhalb des Codes: GOOGLE_SERVICE_ACCOUNT_JSON muss als Netlify-Umgebungsvariable
@@ -26,8 +33,9 @@ exports.handler = async (event) => {
 
     const response = await drive.files.list({
       q: `'${folder.id}' in parents and mimeType contains 'image/' and trashed = false`,
-      fields: 'files(id, name, thumbnailLink)',
-      pageSize: 1000,
+      fields: 'nextPageToken, files(id, name, thumbnailLink)',
+      pageSize,
+      pageToken,
       supportsAllDrives: true,
       includeItemsFromAllDrives: true,
     });
@@ -41,7 +49,7 @@ exports.handler = async (event) => {
     return {
       statusCode: 200,
       headers: { 'Cache-Control': 'public, max-age=600' },
-      body: JSON.stringify(images),
+      body: JSON.stringify({ images, nextPageToken: response.data.nextPageToken || null }),
     };
   } catch (error) {
     return {
