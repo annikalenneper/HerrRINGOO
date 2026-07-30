@@ -707,13 +707,14 @@ tbody tr:last-child td {
   width: 2rem;
   height: 2rem;
   border-radius: 50%;
-  background: var(--gray-950);
-  color: var(--white);
+  background: var(--white);
+  color: var(--gray-950);
   font-family: var(--font-body);
   font-weight: 700;
   font-size: 0.7rem;
   overflow: hidden;
   padding: 0.3rem;
+  border: 1px solid var(--gray-950);
 }
 
 .ig-mock-avatar img {
