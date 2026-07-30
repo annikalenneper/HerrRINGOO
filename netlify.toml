@@ -2,8 +2,10 @@
   publish = "planungs-webseite"
   functions = "netlify/functions"
 
-# posts/, medien/ und captions/ liegen außerhalb von "publish" und werden von den Functions
-# post-data.js/media.js/caption-blocks.js zur Laufzeit gelesen - müssen daher explizit ins
-# Function-Bundle.
+# posts/ und captions/ liegen außerhalb von "publish" und werden von den Functions
+# post-data.js/caption-blocks.js zur Laufzeit gelesen - müssen daher explizit ins
+# Function-Bundle. medien/ liegt dagegen innerhalb von "publish" (planungs-webseite/medien/)
+# und wird direkt als statische Datei über die CDN ausgeliefert - keine Function, kein
+# Response-Size-Limit mehr für große Bilder.
 [functions]
-  included_files = ["posts/**", "medien/**", "captions/**"]
+  included_files = ["posts/**", "captions/**"]

@@ -1,22 +1,25 @@
 # Netlify Functions – lokales Setup
 
-- `images.js` bindet die Google-Drive-Ordner aus [`../medien/README.md`](../medien/README.md)
-  in den Bild-Schritt des "Post erstellen"-Wizards (`planungs-webseite/post-erstellen.html`)
-  ein. Unterstützt Paging über die Query-Parameter `pageToken`/`pageSize` (Antwortform:
+- `images.js` bindet die Google-Drive-Ordner aus
+  [`../planungs-webseite/medien/README.md`](../planungs-webseite/medien/README.md) in den
+  Bild-Schritt des "Post erstellen"-Wizards (`planungs-webseite/post-erstellen.html`) ein.
+  Unterstützt Paging über die Query-Parameter `pageToken`/`pageSize` (Antwortform:
   `{ images, nextPageToken }`) für den dortigen "Mehr laden"-Button.
 - `post-data.js` liest die Post-Entwürfe aus [`../posts/`](../posts/README.md) (Frontmatter +
   Caption) für die Instagram-Vorschau auf `planungs-webseite/post-erstellen.html`. Heißt bewusst
   nicht `posts.js` – Netlifys Node-Laufzeit importiert Functions über ihren Dateinamen, und ein
   gleichnamiger eingebundener Ordner `posts/` (siehe `included_files` unten) würde dabei
   kollidieren (`ERR_UNSUPPORTED_DIR_IMPORT`).
-- `media.js` liefert die in den Post-Dateien referenzierten Bilder aus
-  [`../medien/`](../medien/README.md) aus, da dieser Ordner außerhalb von `publish` liegt und
-  sonst nicht über HTTP erreichbar wäre.
 - `caption-blocks.js` liest die Hashtag-Sets aus [`../captions/hashtag-sets.md`](../captions/hashtag-sets.md).
 - `create-post.js` legt einen neuen Post an: lädt das ausgewählte Bild aus Drive herunter,
-  committet es nach `medien/aus-drive/` und die neue `.md`-Datei nach `posts/01-entwuerfe/` –
-  **erste schreibende Function** dieses Projekts, daher zusätzlich per Team-Passwort geschützt
-  (siehe unten).
+  committet es nach `planungs-webseite/medien/aus-drive/` und die neue `.md`-Datei nach
+  `posts/01-entwuerfe/` – **erste schreibende Function** dieses Projekts, daher zusätzlich per
+  Team-Passwort geschützt (siehe unten). Es gab früher eine eigene `media.js`-Function, die
+  Bilder aus `medien/` über die Function-Laufzeit auslieferte; das führte bei größeren Bildern
+  (> ~6 MB) zu `502`-Fehlern, da Netlify Functions ein hartes Response-Size-Limit haben.
+  `medien/` liegt seitdem innerhalb von `planungs-webseite/` (dem Netlify-Publish-Verzeichnis)
+  und wird direkt als statische Datei über die CDN ausgeliefert – kein Limit, keine Function
+  mehr nötig.
 - `schedule-post.js` markiert einen Entwurf als bereit: setzt `status: bereit` und
   `datum_geplant` im Frontmatter und verschiebt die Datei von `posts/01-entwuerfe/` nach
   `posts/02-bereit-zur-veroeffentlichung/`.
@@ -29,8 +32,8 @@
 `schedule-post.js` und `publish-post.js` sind wie `create-post.js` schreibende Functions und
 daher ebenfalls per `CREATE_POST_SECRET` geschützt.
 
-`post-data.js`, `media.js` und `caption-blocks.js` brauchen keine Umgebungsvariablen, nur die
-`included_files`-Einträge in `../netlify.toml`, damit `posts/`, `medien/` und `captions/` mit ins
+`post-data.js` und `caption-blocks.js` brauchen keine Umgebungsvariablen, nur die
+`included_files`-Einträge in `../netlify.toml`, damit `posts/` und `captions/` mit ins
 Function-Bundle wandern.
 
 ## Benötigte Umgebungsvariablen
@@ -47,8 +50,9 @@ Lokal in einer `.env`-Datei im Projekt-Root ablegen (siehe [`../.env.example`](.
 ## Einmaliges Setup außerhalb des Codes
 
 1. Google-Cloud-Projekt + Service Account anlegen, JSON-Key herunterladen.
-2. Jeden der Ordner aus [`../medien/README.md`](../medien/README.md) in Google Drive für die
-   `client_email`-Adresse aus dem JSON-Key freigeben (Betrachter-Rechte reichen).
+2. Jeden der Ordner aus
+   [`../planungs-webseite/medien/README.md`](../planungs-webseite/medien/README.md) in Google
+   Drive für die `client_email`-Adresse aus dem JSON-Key freigeben (Betrachter-Rechte reichen).
 3. Auf [github.com/settings/personal-access-tokens](https://github.com/settings/personal-access-tokens)
    einen **fine-grained Token** erstellen: "Only select repositories" → dieses Repo auswählen,
    unter "Repository permissions" nur **Contents: Read and write** setzen – sonst keine weiteren
@@ -66,9 +70,10 @@ netlify dev
 ```
 
 Die Functions sind danach unter `/.netlify/functions/images?folder=<schlüssel>`,
-`/.netlify/functions/post-data`, `/.netlify/functions/media?path=...`,
-`/.netlify/functions/caption-blocks`, `/.netlify/functions/create-post`,
-`/.netlify/functions/schedule-post` und `/.netlify/functions/publish-post` erreichbar.
+`/.netlify/functions/post-data`, `/.netlify/functions/caption-blocks`,
+`/.netlify/functions/create-post`, `/.netlify/functions/schedule-post` und
+`/.netlify/functions/publish-post` erreichbar. Bilder aus `medien/` sind direkt unter
+`/medien/...` erreichbar (statische Datei, keine Function).
 `create-post.js` nimmt seit der Mehrbild-Unterstützung ein `bilder`-Array
 (`[{ bildFolder, bildId }, ...]`, max. 10 Einträge) statt einzelner `bildFolder`/`bildId`-Felder
 entgegen. Gültige `folder`-Schlüssel stehen in

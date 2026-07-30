@@ -145,7 +145,7 @@
 
     const firstImage = post.medien[0];
     card.appendChild(window.PostShared.buildMock({
-      imageUrl: firstImage ? `/.netlify/functions/media?path=${encodeURIComponent(firstImage)}` : null,
+      imageUrl: firstImage ? `/${firstImage}` : null,
       imageAlt: post.titel || firstImage,
       caption: post.caption,
     }));

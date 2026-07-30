@@ -1,5 +1,5 @@
 // Ordner-Zuordnung: Schlüssel (vom Frontend als ?folder=... übergeben) -> Drive-Ordner-ID.
-// Übersicht/Quelle der Ordner-Links: ../../../medien/README.md
+// Übersicht/Quelle der Ordner-Links: ../../../planungs-webseite/medien/README.md
 // Setup außerhalb des Codes: jeder dieser Ordner muss in Google Drive für die
 // E-Mail-Adresse des Service Accounts (client_email im JSON-Key) freigegeben werden
 // (Betrachter-Rechte reichen).

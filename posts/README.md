@@ -22,7 +22,8 @@ wird dabei jeweils mit aktualisiert.
 3. Frontmatter ausfüllen (Titel, Kategorie, geplantes Datum, Plattform, Status, Medien).
 4. Caption im Hauptteil der Datei ausformulieren – ggf. mit Bausteinen aus
    [`../captions/`](../captions/README.md) starten.
-5. Referenzierte Bilder/Videos in [`../medien/`](../medien/README.md) ablegen bzw. dort verlinken.
+5. Referenzierte Bilder/Videos in [`../planungs-webseite/medien/`](../planungs-webseite/medien/README.md)
+   ablegen bzw. dort verlinken.
 
 ## Warum eine Datei pro Post?
 

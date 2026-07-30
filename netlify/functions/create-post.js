@@ -170,10 +170,15 @@ exports.handler = async (event) => {
         { responseType: 'arraybuffer' }
       );
       const imageBuffer = Buffer.from(fileResponse.data);
+      // mediaPath ist site-relativ (landet so im Frontmatter und wird vom Frontend 1:1 als
+      // Bild-URL genutzt, siehe post-mock.js), mediaRepoPath ist der tatsächliche Commit-Pfad
+      // im Repo - medien/ liegt innerhalb von planungs-webseite/ (Netlify-Publish-Verzeichnis),
+      // damit Bilder direkt statisch über die CDN ausgeliefert werden.
       const mediaPath = `medien/aus-drive/${slugWithSuffix}-${index + 1}.${extension}`;
+      const mediaRepoPath = `planungs-webseite/${mediaPath}`;
 
       try {
-        await putFile(mediaPath, imageBuffer, `Add Drive image ${index + 1} for new post ${slugWithSuffix}`);
+        await putFile(mediaRepoPath, imageBuffer, `Add Drive image ${index + 1} for new post ${slugWithSuffix}`);
       } catch (error) {
         return errorResponse(
           500,

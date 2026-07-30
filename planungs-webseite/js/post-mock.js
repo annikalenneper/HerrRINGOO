@@ -1,9 +1,9 @@
 (function () {
   // Baut die Instagram-Mock-Karte aus einer fertigen Bild-URL + Caption. Wird für bestehende
-  // Posts (Bild kommt aus dem Repo über /.netlify/functions/media, siehe post-erstellen.js)
-  // und die Abschluss-Vorschau im "Post erstellen"-Wizard (Bild kommt direkt von Google
-  // Drive, siehe post-erstellen-wizard.js) gleichermaßen verwendet – daher bekommt die
-  // Funktion die fertige URL statt eines internen Repo-Pfads.
+  // Posts (Bild liegt statisch unter planungs-webseite/medien/, siehe post-erstellen.js) und
+  // die Abschluss-Vorschau im "Post erstellen"-Wizard (Bild kommt direkt von Google Drive,
+  // siehe post-erstellen-wizard.js) gleichermaßen verwendet – daher bekommt die Funktion die
+  // fertige URL statt eines internen Repo-Pfads.
   function buildMock({ imageUrl, imageAlt, caption }) {
     const mock = document.createElement('article');
     mock.className = 'ig-mock';
