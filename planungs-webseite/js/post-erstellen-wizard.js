@@ -191,22 +191,15 @@
     container.appendChild(hint);
 
     container.appendChild(window.PostShared.buildMock({
-      imageUrl: state.bilder[0].thumbnailLink,
-      imageAlt: state.titel || state.bilder[0].name,
+      images: state.bilder.map((bild) => ({ url: bild.thumbnailLink, alt: bild.name })),
       caption: buildFinalCaption(state),
     }));
 
     if (state.bilder.length > 1) {
-      const thumbs = document.createElement('div');
-      thumbs.className = 'wizard-selected-thumbs';
-      state.bilder.forEach((bild) => {
-        const img = document.createElement('img');
-        img.src = bild.thumbnailLink;
-        img.alt = bild.name;
-        img.loading = 'lazy';
-        thumbs.appendChild(img);
-      });
-      container.appendChild(thumbs);
+      const hintSwipe = document.createElement('p');
+      hintSwipe.className = 'wizard-step-hint';
+      hintSwipe.textContent = 'Durch die Bilder oben lässt sich wie bei Instagram wischen (oder die Pfeile nutzen).';
+      container.appendChild(hintSwipe);
     }
 
     const meta = document.createElement('div');

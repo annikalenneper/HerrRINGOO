@@ -143,10 +143,9 @@
     const card = document.createElement('div');
     card.className = 'post-preview';
 
-    const firstImage = post.medien[0];
+    const images = (post.medien || []).map((pfad) => ({ url: `/${pfad}`, alt: post.titel || pfad }));
     card.appendChild(window.PostShared.buildMock({
-      imageUrl: firstImage ? `/${firstImage}` : null,
-      imageAlt: post.titel || firstImage,
+      images,
       caption: post.caption,
     }));
     card.appendChild(buildMeta(post));
