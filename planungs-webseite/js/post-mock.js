@@ -10,7 +10,7 @@
 
     const header = document.createElement('div');
     header.className = 'ig-mock-header';
-    header.innerHTML = '<span class="ig-mock-avatar" aria-hidden="true"><img src="medien/logos/logo-icon-ringe-gold.png" alt=""></span><span class="ig-mock-username">herr.ringoo</span>';
+    header.innerHTML = '<span class="ig-mock-avatar" aria-hidden="true"><img src="medien/logos/logo-weiss-gold.png" alt=""></span><span class="ig-mock-username">herr.ringoo</span>';
     mock.appendChild(header);
 
     if (imageUrl) {

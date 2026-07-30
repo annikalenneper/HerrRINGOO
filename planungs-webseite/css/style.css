@@ -713,12 +713,13 @@ tbody tr:last-child td {
   font-weight: 700;
   font-size: 0.7rem;
   overflow: hidden;
+  padding: 0.3rem;
 }
 
 .ig-mock-avatar img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .ig-mock-username {
