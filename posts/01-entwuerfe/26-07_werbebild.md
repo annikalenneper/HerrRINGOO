@@ -1,6 +1,6 @@
 ---
 titel: "Petra präsentiert Ringe vor Herr RINGOO"
-kategorie: marketing
+kategorie: team
 plattform: instagram
 status: entwurf
 datum_geplant: JJJJ-MM-TT
