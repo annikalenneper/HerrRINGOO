@@ -32,15 +32,6 @@
     wrapper.className = 'post-preview-actions';
 
     if (post.status === 'entwurf') {
-      const editButton = document.createElement('button');
-      editButton.type = 'button';
-      editButton.className = 'selection-submit btn-secondary';
-      editButton.textContent = '✏️ Bearbeiten';
-      editButton.addEventListener('click', () => {
-        window.EditWizard.open(post, onUpdated);
-      });
-      wrapper.appendChild(editButton);
-
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'selection-submit btn-primary';
@@ -50,10 +41,16 @@
       });
       wrapper.appendChild(button);
 
-      const status = document.createElement('p');
-      status.className = 'gallery-status';
-      status.setAttribute('aria-live', 'polite');
-      wrapper.appendChild(status);
+      const editButton = document.createElement('button');
+      editButton.type = 'button';
+      editButton.className = 'icon-button';
+      editButton.setAttribute('aria-label', 'Entwurf bearbeiten');
+      editButton.title = 'Entwurf bearbeiten';
+      editButton.textContent = '✏️';
+      editButton.addEventListener('click', () => {
+        window.EditWizard.open(post, onUpdated);
+      });
+      wrapper.appendChild(editButton);
 
       const deleteButton = document.createElement('button');
       deleteButton.type = 'button';
@@ -107,6 +104,11 @@
         }
       });
       wrapper.appendChild(deleteButton);
+
+      const status = document.createElement('p');
+      status.className = 'gallery-status';
+      status.setAttribute('aria-live', 'polite');
+      wrapper.appendChild(status);
 
       return wrapper;
     }
