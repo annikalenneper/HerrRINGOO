@@ -3,9 +3,9 @@ const { google } = require('googleapis');
 const { checkSecret } = require('./lib/auth');
 const { getFile, putFile } = require('./lib/github');
 const { FOLDERS } = require('./lib/drive-folders');
-const { CATEGORIES } = require('./lib/categories');
+const { readKategorienFile } = require('./lib/kategorien');
+const { slugify } = require('./lib/slug');
 
-const CATEGORY_KEYS = new Set(CATEGORIES.map((c) => c.key));
 const BILD_ID_PATTERN = /^[\w-]+$/;
 const MAX_TITEL_LENGTH = 120;
 const MAX_CAPTION_LENGTH = 2200; // Instagram-Limit
@@ -20,19 +20,6 @@ const JPEG_QUALITAET = 82;
 
 function errorResponse(statusCode, error, details) {
   return { statusCode, body: JSON.stringify(details ? { error, details } : { error }) };
-}
-
-function slugify(input) {
-  const base = input
-    .toLowerCase()
-    .replace(/ä/g, 'ae')
-    .replace(/ö/g, 'oe')
-    .replace(/ü/g, 'ue')
-    .replace(/ß/g, 'ss')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 60);
-  return base || 'post';
 }
 
 function datePrefix() {
@@ -87,8 +74,8 @@ exports.handler = async (event) => {
   if (typeof titel !== 'string' || !titel.trim() || titel.length > MAX_TITEL_LENGTH) {
     return errorResponse(400, `"titel" ist erforderlich (max. ${MAX_TITEL_LENGTH} Zeichen).`);
   }
-  if (typeof kategorie !== 'string' || !CATEGORY_KEYS.has(kategorie)) {
-    return errorResponse(400, `"kategorie" muss einer von: ${[...CATEGORY_KEYS].join(', ')} sein.`);
+  if (typeof kategorie !== 'string' || !kategorie) {
+    return errorResponse(400, '"kategorie" ist erforderlich.');
   }
   if (typeof caption !== 'string' || !caption.trim() || caption.length > MAX_CAPTION_LENGTH) {
     return errorResponse(400, `"caption" ist erforderlich (max. ${MAX_CAPTION_LENGTH} Zeichen).`);
@@ -107,6 +94,14 @@ exports.handler = async (event) => {
   }
 
   try {
+    // Live geprüft statt gegen ein statisches Array - eine gerade erst über die Ideensammlung
+    // angelegte Kategorie ist damit sofort gültig, ohne Redeploy.
+    const { kategorien } = await readKategorienFile();
+    const categoryKeys = new Set(kategorien.map((c) => c.key));
+    if (!categoryKeys.has(kategorie)) {
+      return errorResponse(400, `"kategorie" muss einer von: ${[...categoryKeys].join(', ')} sein.`);
+    }
+
     const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
     const auth = new google.auth.GoogleAuth({
       credentials,

@@ -32,12 +32,25 @@
   [`instagram-publish-plan.md`](instagram-publish-plan.md), zurückgestellt bis die
   Meta-App/Entwicklerkonto-Einrichtung ansteht.
 
-`schedule-post.js` und `publish-post.js` sind wie `create-post.js` schreibende Functions und
-daher ebenfalls per `CREATE_POST_SECRET` geschützt.
+- `categories-data.js` liest [`../kategorien/kategorien.json`](../kategorien/kategorien.json)
+  live (kein Auth) - die gemeinsame, dynamische Kategorie-Liste für Posts UND die
+  Ideensammlung. `create-kategorie.js` legt eine neue Kategorie an (Team-Passwort geschützt),
+  Kürzel wird automatisch aus dem Label generiert (`lib/slug.js`). Ersetzt das frühere
+  hart codierte `lib/categories.js`.
+- `idea-data.js` liest [`../ideensammlung/ideen.json`](../ideensammlung/README.md) live (kein
+  Auth) für die "Ideensammlung"-Seite. `create-idea.js`/`update-idea.js`/`delete-idea.js`
+  legen Ideen an, bearbeiten sie (inkl. Status-Änderung) bzw. löschen sie - alle drei Team-
+  Passwort geschützt, alle drei prüfen `kategorie` gegen die live aus `kategorien.json`
+  gelesene Liste.
 
-`post-data.js` und `caption-blocks.js` brauchen keine Umgebungsvariablen, nur die
-`included_files`-Einträge in `../netlify.toml`, damit `posts/` und `captions/` mit ins
-Function-Bundle wandern.
+`schedule-post.js`, `publish-post.js`, `create-kategorie.js` und die drei
+`*-idea.js`-Functions sind wie `create-post.js` schreibende Functions und daher ebenfalls per
+`CREATE_POST_SECRET` geschützt.
+
+`post-data.js`, `caption-blocks.js`, `categories-data.js` und `idea-data.js` brauchen keine
+Umgebungsvariablen. `caption-blocks.js` braucht zusätzlich den `included_files`-Eintrag für
+`captions/` in `../netlify.toml`; `categories-data.js`/`idea-data.js` lesen live über die
+GitHub-API (wie `post-data.js`), brauchen also kein `included_files`.
 
 ## Benötigte Umgebungsvariablen
 

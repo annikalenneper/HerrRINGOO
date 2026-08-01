@@ -4,24 +4,15 @@
   // und die Abschluss-Vorschau (die feature-spezifischen Teile) nicht mit diesen generischen
   // Content-Schritten vermischt werden.
 
-  // Muss mit netlify/functions/lib/categories.js synchron gehalten werden.
-  const CATEGORIES = [
-    { key: 'werkstatt', label: 'Werkstatt & Prozess' },
-    { key: 'unterwegs', label: 'Unterwegs / Standorte' },
-    { key: 'kundengeschichten', label: 'Kundengeschichten' },
-    { key: 'produkt', label: 'Ring im Detail' },
-    { key: 'team', label: 'Team & Menschen dahinter' },
-    { key: 'wissen', label: 'Trauring-Wissen' },
-    { key: 'community', label: 'Community & Interaktion' },
-    { key: 'termine', label: 'Termine & Aktionen' },
-    { key: 'zitatkachel', label: 'Zitatkachel' },
-    { key: 'ladengeschaeft', label: 'Ladengeschäft (stationär)' },
-    { key: 'hitlists', label: 'Listen & Trends' },
-    { key: 'warum', label: 'Textkacheln mit Gründen für' },
-    { key: 'regionen', label: 'Regionen & Standorte' },
-    { key: 'pakete', label: 'Pakete & Angebote' },
-  ];
-  const CATEGORY_KEYS = new Set(CATEGORIES.map((c) => c.key));
+  // Kommt live von categories-store.js (fetcht /.netlify/functions/categories-data) statt aus
+  // einem hart codierten Array - dieselbe Array-Referenz wird von categories-store.js befüllt,
+  // sobald der Fetch durch ist (siehe dortiger Kommentar zu "nie neu zuweisen, nur mutieren").
+  const CATEGORIES = window.CategoriesStore.CATEGORIES;
+  // Kein einmalig vorab gebautes Set mehr, da CATEGORIES zum Ladezeitpunkt dieses Skripts noch
+  // leer sein kann - stattdessen bei jeder Validierung frisch aus dem aktuellen Inhalt bauen.
+  function categoryKeys() {
+    return new Set(CATEGORIES.map((c) => c.key));
+  }
   const MAX_TITEL_LENGTH = 120;
   const MAX_CAPTION_LENGTH = 2200;
 
@@ -81,7 +72,7 @@
   // --- Kategorie ---
 
   function validateKategorie(state) {
-    if (!state.kategorie || !CATEGORY_KEYS.has(state.kategorie)) {
+    if (!state.kategorie || !categoryKeys().has(state.kategorie)) {
       return { valid: false, errors: { kategorie: 'Bitte eine Kategorie auswählen.' } };
     }
     return { valid: true };

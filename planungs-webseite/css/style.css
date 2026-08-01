@@ -931,6 +931,50 @@ button.category-chip:hover {
   margin: 0;
 }
 
+/* Ideensammlung: Karten wiederverwenden .card, ergänzt um ein paar eigene Regeln für
+   Status-Badges, Bebilderungs-Hinweis und die Icon-Aktionsreihe. */
+.idea-card h3 {
+  margin-bottom: var(--space-2);
+}
+
+.status-badge-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: var(--space-3) 0;
+}
+
+.idea-bebilderung {
+  font-style: italic;
+}
+
+.idea-card-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: auto;
+  padding-top: var(--space-3);
+}
+
+.idea-card-actions .gallery-status {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+/* :not([hidden]) statt display auf dem nackten Klassen-Selektor - sonst würde diese Regel das
+   hidden-Attribut überschreiben (Autor-Stylesheets gewinnen immer gegen die UA-Regel
+   [hidden]{display:none}, unabhängig von Spezifität). */
+.new-kategorie-inline:not([hidden]) {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.new-kategorie-inline input {
+  flex: 1;
+}
+
 /* Icon-Button (z. B. Entwurf bearbeiten/löschen) - bewusst zurückhaltend, ohne Umrandung,
    Größe (Padding/Schriftgröße) an den benachbarten Status-Ändern-Button in
    .post-preview-actions angeglichen. Färbt sich erst bei Hover/Focus in die "Danger"-Farbe
@@ -1323,6 +1367,12 @@ button.category-chip:hover {
 /* Etwas breiter als der Standard-.app-dialog, da hier ein ganzer Wizard-Schritt (inkl.
    Instagram-Mock in der Vorschau) hineinpassen muss, nicht nur ein Passwortfeld. */
 .wizard-dialog {
+  max-width: 480px;
+}
+
+/* Etwas breiter als der Standard-.app-dialog, da Beschreibung/Bebilderung-Textareas sonst zu
+   beengt wirken. */
+.idea-dialog {
   max-width: 480px;
 }
 

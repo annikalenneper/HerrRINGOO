@@ -344,7 +344,9 @@
     vorschauView.hidden = false;
   }
 
-  openBtn.addEventListener('click', () => {
+  openBtn.addEventListener('click', async () => {
+    if (!(await window.CategoriesStore.ensureReady(openBtn))) return;
+
     const wizard = window.WizardEngine.createWizard({
       steps: STEPS,
       container: wizardContainer,

@@ -1,0 +1,56 @@
+[
+  {
+    "id": "idea-seed-01",
+    "titel": "Wo rollt Herr RINGOO?",
+    "kategorie": "unterwegs",
+    "status": "neu",
+    "beschreibung": "Format-Idee rund um die aktuellen bzw. nächsten Standorte des rollenden Studios.",
+    "bebilderung": "",
+    "erstellt_am": "2026-08-01T00:00:00.000Z"
+  },
+  {
+    "id": "idea-seed-02",
+    "titel": "Pakete vorstellen einzeln",
+    "kategorie": "pakete",
+    "status": "neu",
+    "beschreibung": "Jedes Beratungspaket (z. B. \"Voll muckelich\", \"Mit Schmackes\") in einem eigenen Post statt nur im Überblick vorstellen.",
+    "bebilderung": "",
+    "erstellt_am": "2026-08-01T00:00:01.000Z"
+  },
+  {
+    "id": "idea-seed-03",
+    "titel": "Wie buchen?",
+    "kategorie": "wissen",
+    "status": "neu",
+    "beschreibung": "Erklär-Content: wie läuft die Buchung eines Termins/Pakets konkret ab.",
+    "bebilderung": "",
+    "erstellt_am": "2026-08-01T00:00:02.000Z"
+  },
+  {
+    "id": "idea-seed-04",
+    "titel": "Team vorstellen",
+    "kategorie": "team",
+    "status": "neu",
+    "beschreibung": "Kurzvorstellung der Personen hinter Herr RINGOO.",
+    "bebilderung": "",
+    "erstellt_am": "2026-08-01T00:00:03.000Z"
+  },
+  {
+    "id": "idea-seed-05",
+    "titel": "Homestories",
+    "kategorie": "homestories",
+    "status": "neu",
+    "beschreibung": "Neues Content-Format: Zuhause-Geschichten der Paare/des Teams abseits des rollenden Studios.",
+    "bebilderung": "",
+    "erstellt_am": "2026-08-01T00:00:04.000Z"
+  },
+  {
+    "id": "idea-seed-06",
+    "titel": "Ringe reinigen/säubern",
+    "kategorie": "wissen",
+    "status": "neu",
+    "beschreibung": "Ratgeber-Content: Pflege-Tipps für Trauringe.",
+    "bebilderung": "",
+    "erstellt_am": "2026-08-01T00:00:05.000Z"
+  }
+]

@@ -11,7 +11,7 @@ veröffentlicht werden soll.
 
 ## Umgang mit dem Kalender
 
-- Ein neuer Eintrag entsteht, sobald eine Idee aus dem [`../ideensammlung/ideenpool.md`](../ideensammlung/ideenpool.md)
+- Ein neuer Eintrag entsteht, sobald eine Idee aus der [`../ideensammlung/`](../ideensammlung/README.md)
   konkret genug für einen Zeitraum ist.
 - Der **Status** wird laufend aktualisiert (siehe Legende in der Kalender-Datei).
 - Der Eintrag verlinkt auf die zugehörige Datei in [`../posts/`](../posts/README.md), sobald diese

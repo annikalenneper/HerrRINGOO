@@ -1,0 +1,17 @@
+[
+  { "key": "werkstatt", "label": "Werkstatt & Prozess", "beschreibung": "Einblicke in die Entstehung der Ringe, Handwerk, Materialien", "beispiel": "Making-of-Video eines Rings" },
+  { "key": "unterwegs", "label": "Unterwegs / Standorte", "beschreibung": "Das \"rollende\" Studio selbst – Touren, Standorte, Ankunft/Abfahrt", "beispiel": "\"Nächster Stopp: ...\"" },
+  { "key": "kundengeschichten", "label": "Kundengeschichten", "beschreibung": "Geschichten und (mit Einverständnis) Bilder von Paaren und ihren Ringen", "beispiel": "Paar erzählt, wie sie sich für ihre Ringe entschieden haben" },
+  { "key": "produkt", "label": "Ring im Detail", "beschreibung": "Einzelne Ringe/Modelle im Fokus, Design- und Materialdetails", "beispiel": "Nahaufnahme eines Rings mit Beschreibung" },
+  { "key": "team", "label": "Team & Menschen dahinter", "beschreibung": "Die Personen hinter Herr RINGOO, Persönliches, Werkstattalltag", "beispiel": "Kurzvorstellung eines Teammitglieds" },
+  { "key": "wissen", "label": "Trauring-Wissen", "beschreibung": "Ratgeber- und FAQ-Content rund um Trauringe", "beispiel": "\"5 Dinge, die man vor dem Ringkauf wissen sollte\"" },
+  { "key": "community", "label": "Community & Interaktion", "beschreibung": "Umfragen, Q&A, Reaktionen auf Kommentare, Behind-the-Scenes-Fragen", "beispiel": "Story-Umfrage zu Ringformen" },
+  { "key": "termine", "label": "Termine & Aktionen", "beschreibung": "Konkrete Termine, Aktionen, Anlässe (z. B. Valentinstag)", "beispiel": "Ankündigung eines Pop-up-Termins" },
+  { "key": "zitatkachel", "label": "Zitatkachel", "beschreibung": "Typografische Zitat-Grafiken rund um Liebe, Hochzeit, Ringe, Road-Trips – Feed-Auflockerung ohne Produktbezug", "beispiel": "Zitat von Hermann Hesse über die Liebe, als Kachel gestaltet" },
+  { "key": "ladengeschaeft", "label": "Ladengeschäft (stationär)", "beschreibung": "Einblicke ins stationäre Trauringstudio/Uhren- und Schmuckgeschäft als Ergänzung zum rollenden Studio", "beispiel": "Foto der Ladenauslage oder des Geschäfts in Würdinghausen" },
+  { "key": "hitlists", "label": "Listen & Trends", "beschreibung": "Kompakt aufbereitete Listenformate (\"X Dinge, die ...\", Trends, Ranglisten) – auch abseits reiner Trauring-Fragen (z. B. Ausflugsziele)", "beispiel": "\"5 Trauring-Trends 2026\" oder \"3 Aussichtspunkte im Sauerland für euren Antrag\"" },
+  { "key": "warum", "label": "Textkacheln mit Gründen für", "beschreibung": "Gründen für die Trauringberatung durch Herr RINGOO", "beispiel": "Kleine Kinder zuhause, Wunsch nach authentischen Momenten" },
+  { "key": "regionen", "label": "Regionen & Standorte", "beschreibung": "Vorstellung einzelner Einzugsgebiete (Kreis Olpe, Hochsauerlandkreis, Siegen-Wittgenstein) mit Bezug zur Landschaft/Lokalkolorit", "beispiel": "\"Herr RINGOO ist auch bei euch im Kreis Olpe unterwegs\"" },
+  { "key": "pakete", "label": "Pakete & Angebote", "beschreibung": "Vorstellung und Vergleich der buchbaren Beratungspakete (z. B. \"Voll muckelich\", \"Mit Schmackes\")", "beispiel": "Überblick \"Von gemütlich bis ereignisreich – ihr entscheidet\"" },
+  { "key": "homestories", "label": "Homestories", "beschreibung": "Zuhause-Geschichten der Paare/des Teams abseits des rollenden Studios", "beispiel": "Ein Paar erzählt zuhause von ihrer Ringauswahl" }
+]

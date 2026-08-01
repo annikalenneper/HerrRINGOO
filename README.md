@@ -28,7 +28,7 @@ Veröffentlichungs-Status pflegen kann. Details dazu in [`netlify/README.md`](ne
 | Ordner/Datei | Zweck |
 |---|---|
 | [`markenkommunikation-guide.md`](markenkommunikation-guide.md) | Guide zu Tonalität, Slogans/Catch-Phrases und SEO-Keywords der Marke (auch als Unterseite im Tool) |
-| [`ideensammlung/`](ideensammlung/README.md) | Freie Sammlung von Content-Ideen, Rohgedanken, Inspiration |
+| [`ideensammlung/`](ideensammlung/README.md) | Strukturierte Sammlung von Content-Ideen (Titel, Kategorie, Status, Beschreibung, Bebilderungs-Vorschlag), gepflegt über die "Ideensammlung"-Seite im internen Tool |
 | [`kategorien/`](kategorien/README.md) | Definition der Post-Kategorien / Content-Säulen |
 | [`planung/`](planung/README.md) | Redaktions-/Social-Media-Plan mit zeitlicher Übersicht |
 | [`captions/`](captions/README.md) | Wiederverwendbare Textbausteine für Captions (Intros, CTAs, Hashtag-Sets) |
@@ -38,7 +38,8 @@ Veröffentlichungs-Status pflegen kann. Details dazu in [`netlify/README.md`](ne
 
 ## Typischer Ablauf eines Posts
 
-1. **Idee sammeln** – ein Gedanke landet in [`ideensammlung/ideenpool.md`](ideensammlung/ideenpool.md).
+1. **Idee sammeln** – ein Gedanke landet über die "Ideensammlung"-Seite im internen Tool in
+   [`ideensammlung/ideen.json`](ideensammlung/README.md).
 2. **Einordnen** – die Idee wird einer Kategorie aus [`kategorien/`](kategorien/README.md) zugeordnet.
 3. **Einplanen** – ein Termin/Zeitraum wird im [`planung/content-kalender.md`](planung/content-kalender.md) eingetragen.
 4. **Ausarbeiten** – entweder über das interne Tool ("Post erstellen": Bild(er) auswählen,

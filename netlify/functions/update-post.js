@@ -1,9 +1,8 @@
 const { checkSecret } = require('./lib/auth');
 const { getFile, putFile } = require('./lib/github');
 const { replaceCaptionAndFrontmatter } = require('./lib/posts');
-const { CATEGORIES } = require('./lib/categories');
+const { readKategorienFile } = require('./lib/kategorien');
 
-const CATEGORY_KEYS = new Set(CATEGORIES.map((c) => c.key));
 const MAX_TITEL_LENGTH = 120;
 const MAX_CAPTION_LENGTH = 2200; // Instagram-Limit
 
@@ -40,14 +39,21 @@ exports.handler = async (event) => {
   if (typeof titel !== 'string' || !titel.trim() || titel.length > MAX_TITEL_LENGTH) {
     return errorResponse(400, `"titel" ist erforderlich (max. ${MAX_TITEL_LENGTH} Zeichen).`);
   }
-  if (typeof kategorie !== 'string' || !CATEGORY_KEYS.has(kategorie)) {
-    return errorResponse(400, `"kategorie" muss einer von: ${[...CATEGORY_KEYS].join(', ')} sein.`);
+  if (typeof kategorie !== 'string' || !kategorie) {
+    return errorResponse(400, '"kategorie" ist erforderlich.');
   }
   if (typeof caption !== 'string' || !caption.trim() || caption.length > MAX_CAPTION_LENGTH) {
     return errorResponse(400, `"caption" ist erforderlich (max. ${MAX_CAPTION_LENGTH} Zeichen).`);
   }
 
   try {
+    // Live geprüft statt gegen ein statisches Array - siehe create-post.js.
+    const { kategorien } = await readKategorienFile();
+    const categoryKeys = new Set(kategorien.map((c) => c.key));
+    if (!categoryKeys.has(kategorie)) {
+      return errorResponse(400, `"kategorie" muss einer von: ${[...categoryKeys].join(', ')} sein.`);
+    }
+
     const existing = await getFile(datei);
     if (!existing) {
       return errorResponse(404, `Datei "${datei}" nicht gefunden.`);

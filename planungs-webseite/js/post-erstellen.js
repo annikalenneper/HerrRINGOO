@@ -47,7 +47,8 @@
       editButton.setAttribute('aria-label', 'Entwurf bearbeiten');
       editButton.title = 'Entwurf bearbeiten';
       editButton.textContent = '✏️';
-      editButton.addEventListener('click', () => {
+      editButton.addEventListener('click', async () => {
+        if (!(await window.CategoriesStore.ensureReady(editButton))) return;
         window.EditWizard.open(post, onUpdated);
       });
       wrapper.appendChild(editButton);
@@ -281,6 +282,9 @@
     const grid = document.querySelector('[data-post-grid]');
 
     try {
+      // Explizit statt zufälliger Skript-Reihenfolge: renderKategorieFilters() braucht die
+      // Kategorienamen, sobald der Post-Fetch durch ist.
+      await window.CategoriesStore.loadCategories();
       const response = await fetch('/.netlify/functions/post-data');
       const data = await response.json();
 

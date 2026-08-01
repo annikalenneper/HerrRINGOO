@@ -1,5 +1,11 @@
 # Post-Kategorien
 
+Die tatsächlich genutzten Kategorien liegen in [`kategorien.json`](kategorien.json) und werden
+über die Tool-Seiten ("Post erstellen", Ideensammlung) gepflegt, inkl. Anlegen neuer
+Kategorien direkt aus der Oberfläche heraus. Diese Datei bleibt die ausführliche, für Menschen
+geschriebene Erklärung zu jeder Kategorie - bei neu über das Tool angelegten Kategorien lohnt
+sich ein gelegentlicher Blick, ob sich hier auch ein erklärender Absatz ergänzen lässt.
+
 Kategorien (auch "Content-Säulen" genannt) sorgen dafür, dass der Instagram-Auftritt von
 Herr RINGOO **abwechslungsreich** bleibt und nicht nur aus einer Art von Post besteht. Jede
 Kategorie beantwortet eine andere Frage für die Follower und spricht ggf. eine andere Zielgruppe

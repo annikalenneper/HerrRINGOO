@@ -25,23 +25,45 @@
     <p class="eyebrow">Ideensammlung</p>
     <h1>Ideensammlung</h1>
     <p class="lede">
-      Diese Seite ist noch leer und wird als Nächstes befüllt.
+      Freie Sammlung von Content-Ideen: anlegen, durchsuchen, im Status verfolgen (neu →
+      verfeinert → umgesetzt) und einer Post-Kategorie zuordnen. Neue Kategorien lassen sich
+      direkt beim Anlegen einer Idee ergänzen.
     </p>
+    <button type="button" class="selection-submit" data-open-create-idee>+ Neue Idee</button>
   </div>
+
+  <section>
+    <h2>Filter</h2>
+    <div class="form-group">
+      <label for="idee-suche">Suche</label>
+      <input type="text" id="idee-suche" data-idee-suche placeholder="Titel oder Beschreibung durchsuchen …">
+    </div>
+    <div class="filter-chips" data-status-filters>
+      <button type="button" class="card filter-chip" data-status="neu"><span class="badge">💡</span>Neu</button>
+      <button type="button" class="card filter-chip" data-status="verfeinert"><span class="badge">🔧</span>Verfeinert</button>
+      <button type="button" class="card filter-chip" data-status="umgesetzt"><span class="badge">✅</span>Umgesetzt</button>
+    </div>
+    <div class="filter-chips" data-kategorie-filters></div>
+  </section>
+
+  <section>
+    <h2>Ideen</h2>
+    <div class="card-grid" data-idee-grid>
+      <p class="gallery-status">Ideen werden geladen …</p>
+    </div>
+  </section>
 </main>
 
 <footer class="site-footer">
   <div class="footer-inner">
     <span>Herr RINGOO – Content-Planer · gemeinsames Arbeitswerkzeug für Team &amp; Marke.</span>
-    <p>Wo rollt Herr RINGOO?; 
-      Pakete vorstellen einzeln; 
-      Wie buchen?; 
-      Team vorstellen; 
-      "Homestories" (= neue Kategori); 
-      Ringe reinigen/säubern;</p>
-  
   </div>
 </footer>
 
+<script src="js/confirm-dialog.js"></script>
+<script src="js/team-auth.js"></script>
+<script src="js/categories-store.js"></script>
+<script src="js/idea-dialog.js"></script>
+<script src="js/ideensammlung.js"></script>
 </body>
 </html>
