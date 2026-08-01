@@ -1,16 +1,8 @@
 const matter = require('gray-matter');
 const { listMarkdownFiles, getFile } = require('./lib/github');
+const { extractCaption } = require('./lib/posts');
 
 const POSTS_PREFIX = 'posts/';
-
-// Entfernt die Ausfüllhinweise (HTML-Kommentar) und die "## Caption"-Überschrift
-// aus dem Markdown-Body, sodass nur der eigentliche Caption-Text übrig bleibt.
-function extractCaption(content) {
-  return content
-    .replace(/<!--[\s\S]*?-->/g, '')
-    .replace(/^#+\s*caption\s*$/im, '')
-    .trim();
-}
 
 exports.handler = async () => {
   try {

@@ -27,7 +27,10 @@
   `datum_veroeffentlicht` im Frontmatter und verschiebt die Datei von
   `posts/02-bereit-zur-veroeffentlichung/` nach `posts/03-veroeffentlicht/`. Postet nichts
   automatisch auf Instagram – das Team veröffentlicht manuell und markiert den Post danach hier
-  nur als erledigt.
+  nur als erledigt. Ein Plan für echtes automatisches Veröffentlichen (Instagram Content
+  Publishing API + zeitgesteuertes Auto-Publish) liegt bereit unter
+  [`instagram-publish-plan.md`](instagram-publish-plan.md), zurückgestellt bis die
+  Meta-App/Entwicklerkonto-Einrichtung ansteht.
 
 `schedule-post.js` und `publish-post.js` sind wie `create-post.js` schreibende Functions und
 daher ebenfalls per `CREATE_POST_SECRET` geschützt.

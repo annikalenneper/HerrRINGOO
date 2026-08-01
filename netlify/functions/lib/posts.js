@@ -19,4 +19,14 @@ function replaceCaptionAndFrontmatter(content, { frontmatterUpdates, caption }) 
   return matter.stringify(newBody, parsed.data);
 }
 
-module.exports = { updateFrontmatter, replaceCaptionAndFrontmatter };
+// Entfernt die Ausfüllhinweise (HTML-Kommentar) und die "## Caption"-Überschrift aus dem
+// Markdown-Body, sodass nur der eigentliche Caption-Text übrig bleibt. Genutzt von
+// post-data.js (Vorschau) und lib/instagram-publish.js (tatsächlicher Instagram-Post).
+function extractCaption(content) {
+  return content
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/^#+\s*caption\s*$/im, '')
+    .trim();
+}
+
+module.exports = { updateFrontmatter, replaceCaptionAndFrontmatter, extractCaption };

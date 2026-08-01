@@ -197,20 +197,22 @@
       caption: post.caption,
     }));
     card.appendChild(buildMeta(post));
-    card.appendChild(buildActions(post, loadPosts));
+    card.appendChild(buildActions(post, () => window.location.reload()));
     return card;
   }
 
   // Filter: Status-Chips sind statisch im HTML, Kategorie-Chips werden aus den tatsächlich
-  // geladenen Posts generiert (nur Kategorien, die gerade vorkommen). Mehrfachauswahl je
-  // Gruppe (ODER-verknüpft), zwischen den beiden Gruppen UND-verknüpft. Leere Gruppe = kein
-  // Filter in dieser Dimension.
+  // geladenen Posts generiert (nur Kategorien, die gerade vorkommen). Status ist exklusiv
+  // (immer nur ein Status gleichzeitig aktiv, wie eine Radio-Gruppe - ein Post hat ohnehin nie
+  // mehr als einen Status). Kategorie ist additiv (Mehrfachauswahl, ODER-verknüpft, da mehrere
+  // gewählte Kategorien den Ergebnis-Umfang erweitern sollen). Leere Auswahl = kein Filter in
+  // dieser Dimension.
   let allPosts = [];
-  const activeStatuses = new Set();
+  let activeStatus = null;
   const activeKategorien = new Set();
 
   function matchesFilters(post) {
-    const statusOk = activeStatuses.size === 0 || activeStatuses.has(post.status);
+    const statusOk = !activeStatus || post.status === activeStatus;
     const kategorieOk = activeKategorien.size === 0 || activeKategorien.has(post.kategorie);
     return statusOk && kategorieOk;
   }
@@ -265,15 +267,12 @@
     });
   }
 
-  document.querySelectorAll('[data-status-filters] [data-status]').forEach((chip) => {
+  const statusChips = document.querySelectorAll('[data-status-filters] [data-status]');
+  statusChips.forEach((chip) => {
     chip.addEventListener('click', () => {
       const status = chip.dataset.status;
-      if (activeStatuses.has(status)) {
-        activeStatuses.delete(status);
-      } else {
-        activeStatuses.add(status);
-      }
-      chip.classList.toggle('active');
+      activeStatus = activeStatus === status ? null : status;
+      statusChips.forEach((c) => c.classList.toggle('active', c.dataset.status === activeStatus));
       renderGrid();
     });
   });

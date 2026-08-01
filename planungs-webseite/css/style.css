@@ -931,28 +931,26 @@ button.category-chip:hover {
   margin: 0;
 }
 
-/* Icon-Button (z. B. Entwurf löschen) - bewusst zurückhaltend, kein Text/Fill, färbt sich
-   erst bei Hover/Focus in die "Danger"-Farbe (gleicher Rotton wie .field-error). */
+/* Icon-Button (z. B. Entwurf bearbeiten/löschen) - bewusst zurückhaltend, ohne Umrandung,
+   Größe (Padding/Schriftgröße) an den benachbarten Status-Ändern-Button in
+   .post-preview-actions angeglichen. Färbt sich erst bei Hover/Focus in die "Danger"-Farbe
+   (gleicher Rotton wie .field-error). */
 .icon-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  padding: 0;
-  font-size: 1.1rem;
-  line-height: 1;
+  padding: var(--space-1) var(--space-3);
+  font-size: 0.8rem;
   background: none;
-  border: 1px solid var(--color-border-strong);
+  border: none;
   border-radius: var(--radius-sm);
   color: var(--color-text-muted);
   cursor: pointer;
-  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+  transition: color 0.15s ease, background 0.15s ease;
 }
 
 .icon-button:hover,
 .icon-button:focus-visible {
-  border-color: #b3261e;
   color: #b3261e;
   background: var(--color-bg-muted);
 }
@@ -993,22 +991,63 @@ button.category-chip:hover {
    Markenkommunikations-Guide). .checklist bleibt daneben unverändert im Einsatz. */
 
 .lead-statement {
-  font-size: 1.3rem;
+  position: relative;
+  margin: var(--space-5) 0 var(--space-7);
+  padding-left: var(--space-8);
+  font-size: 1.7rem;
   font-weight: 700;
   color: var(--color-heading);
-  line-height: 1.5;
+  line-height: 1.45;
+}
+
+.lead-statement::before {
+  content: "\201E";
+  position: absolute;
+  left: 0;
+  top: -0.6rem;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 4rem;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.accent {
+  color: var(--color-accent-dark);
+}
+
+/* Markenkommunikations-Guide: als Handout/Infoblatt gestaltet - großzügiger Abstand zwischen
+   Sections plus eine dezente Trennlinie (statt Cards/Boxen), damit sich die Abschnitte klar
+   voneinander lösen, ohne wie eigene UI-Widgets zu wirken. Nur auf dieser Seite (Klasse auf
+   <main>), damit andere Seiten ihren Section-Rhythmus behalten. */
+.guide-page .page-intro {
+  margin-bottom: var(--space-10);
+}
+
+.guide-page section {
+  margin-bottom: var(--space-10);
+}
+
+.guide-page section + section {
+  padding-top: var(--space-7);
+  border-top: 1px solid var(--color-border);
+}
+
+.guide-page section > h2 {
+  letter-spacing: 0.03em;
 }
 
 .definition-list {
-  margin: 0;
+  margin: 0 0 var(--space-6);
   display: grid;
-  gap: var(--space-3);
+  gap: var(--space-4);
 }
 
 .definition-list dt {
   font-family: var(--font-body);
   font-style: italic;
-  color: var(--color-heading);
+  font-size: 1.05rem;
+  color: var(--color-accent-dark);
 }
 
 .definition-list dd {
