@@ -130,6 +130,31 @@
     nav = appendNav(container, helpers, { validate: validateKategorie, state });
   }
 
+  // --- Kategorie & Titel kombiniert (ein Schritt, zwei Felder) ---
+  //
+  // Wird von post-erstellen-wizard.js (Post erstellen) und edit-wizard.js (Entwurf
+  // bearbeiten) gleichermaßen als erster Schritt genutzt.
+
+  function validateKategorieTitel(state) {
+    const kategorieResult = validateKategorie(state);
+    const titelResult = validateTitel(state);
+    if (kategorieResult.valid && titelResult.valid) {
+      return { valid: true };
+    }
+    return {
+      valid: false,
+      errors: { ...(kategorieResult.errors || {}), ...(titelResult.errors || {}) },
+    };
+  }
+
+  function mountKategorieTitelStep(container, state, helpers) {
+    let nav;
+    const onChange = () => nav.refresh();
+    renderKategorieField(container, state, onChange);
+    renderTitelField(container, state, onChange);
+    nav = appendNav(container, helpers, { showBack: false, validate: validateKategorieTitel, state });
+  }
+
   // --- Titel ---
 
   function validateTitel(state) {
@@ -257,6 +282,8 @@
     renderTitelField,
     mountTitelStep,
     validateTitel,
+    validateKategorieTitel,
+    mountKategorieTitelStep,
     mountCaptionStep,
     validateCaption,
   };

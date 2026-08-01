@@ -9,4 +9,14 @@ function updateFrontmatter(content, updates) {
   return matter.stringify(parsed.content, parsed.data);
 }
 
-module.exports = { updateFrontmatter };
+// Wie updateFrontmatter, ersetzt zusätzlich den Caption-Body - genutzt von update-post.js,
+// um einen bestehenden Entwurf zu bearbeiten (Kategorie/Titel/Caption), ohne medien/status/
+// notizen anzufassen (die bleiben, da nicht Teil von frontmatterUpdates, unverändert).
+function replaceCaptionAndFrontmatter(content, { frontmatterUpdates, caption }) {
+  const parsed = matter(content);
+  Object.assign(parsed.data, frontmatterUpdates);
+  const newBody = `\n## Caption\n\n${caption}\n`;
+  return matter.stringify(newBody, parsed.data);
+}
+
+module.exports = { updateFrontmatter, replaceCaptionAndFrontmatter };

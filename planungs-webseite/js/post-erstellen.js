@@ -32,6 +32,15 @@
     wrapper.className = 'post-preview-actions';
 
     if (post.status === 'entwurf') {
+      const editButton = document.createElement('button');
+      editButton.type = 'button';
+      editButton.className = 'selection-submit btn-secondary';
+      editButton.textContent = '✏️ Bearbeiten';
+      editButton.addEventListener('click', () => {
+        window.EditWizard.open(post, onUpdated);
+      });
+      wrapper.appendChild(editButton);
+
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'selection-submit btn-primary';
@@ -105,7 +114,7 @@
         }
 
         status.className = 'gallery-status success';
-        status.textContent = 'Aktualisiert – erscheint nach dem automatischen Redeploy (ca. 1–2 Min.) in der Vorschau.';
+        status.textContent = 'Aktualisiert.';
         setTimeout(onUpdated, 3000);
       } catch (error) {
         status.className = 'gallery-status error';

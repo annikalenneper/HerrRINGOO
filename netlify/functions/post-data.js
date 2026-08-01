@@ -1,22 +1,7 @@
-const fs = require('fs');
-const path = require('path');
 const matter = require('gray-matter');
+const { listMarkdownFiles, getFile } = require('./lib/github');
 
-const POSTS_DIR = path.join(__dirname, '../../posts');
-
-function collectMarkdownFiles(dir) {
-  let results = [];
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    if (entry.name.startsWith('_') || entry.name.startsWith('.')) continue;
-    const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      results = results.concat(collectMarkdownFiles(fullPath));
-    } else if (entry.isFile() && entry.name.toLowerCase().endsWith('.md') && entry.name.toLowerCase() !== 'readme.md') {
-      results.push(fullPath);
-    }
-  }
-  return results;
-}
+const POSTS_PREFIX = 'posts/';
 
 // Entfernt die Ausfüllhinweise (HTML-Kommentar) und die "## Caption"-Überschrift
 // aus dem Markdown-Body, sodass nur der eigentliche Caption-Text übrig bleibt.
@@ -29,17 +14,21 @@ function extractCaption(content) {
 
 exports.handler = async () => {
   try {
-    const files = collectMarkdownFiles(POSTS_DIR);
+    const allPaths = await listMarkdownFiles(POSTS_PREFIX);
+    const paths = allPaths.filter((filePath) => {
+      const basename = filePath.slice(filePath.lastIndexOf('/') + 1).toLowerCase();
+      return !basename.startsWith('_') && !basename.startsWith('.') && basename !== 'readme.md';
+    });
 
-    const posts = files.map((filePath) => {
-      const raw = fs.readFileSync(filePath, 'utf8');
-      const { data, content } = matter(raw);
+    // Live über die GitHub-API statt aus einem beim Deploy gebündelten Snapshot - ein neuer
+    // oder geänderter Post ist dadurch sofort sichtbar, ganz ohne auf den nächsten
+    // automatischen Redeploy warten zu müssen.
+    const posts = await Promise.all(paths.map(async (filePath) => {
+      const file = await getFile(filePath);
+      const { data, content } = matter(file.content.toString('utf8'));
 
       return {
-        // Voller Repo-Pfad (nicht nur relativ zu posts/): schedule-post.js/publish-post.js
-        // erwarten "datei" im Format "posts/01-entwuerfe/...md", da sie damit direkt die
-        // GitHub Contents API ansprechen (siehe lib/github.js getFile/moveFile).
-        datei: path.join('posts', path.relative(POSTS_DIR, filePath)).split(path.sep).join('/'),
+        datei: filePath,
         titel: data.titel || data.beschreibung || '',
         kategorie: data.kategorie || '',
         plattform: data.plattform || '',
@@ -48,7 +37,7 @@ exports.handler = async () => {
         medien: Array.isArray(data.medien) ? data.medien : [],
         caption: extractCaption(content),
       };
-    });
+    }));
 
     posts.sort((a, b) => a.datei.localeCompare(b.datei));
 

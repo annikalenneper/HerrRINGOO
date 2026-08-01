@@ -1,4 +1,4 @@
-const path = require('path');
+const sharp = require('sharp');
 const { google } = require('googleapis');
 const { checkSecret } = require('./lib/auth');
 const { getFile, putFile } = require('./lib/github');
@@ -11,24 +11,15 @@ const MAX_TITEL_LENGTH = 120;
 const MAX_CAPTION_LENGTH = 2200; // Instagram-Limit
 const MAX_BILDER = 10; // Instagram-Karussell-Limit
 
-const EXTENSION_BY_MIME = {
-  'image/jpeg': 'jpg',
-  'image/png': 'png',
-  'image/gif': 'gif',
-  'image/webp': 'webp',
-};
-const KNOWN_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+// Instagram skaliert Feed-Bilder ohnehin auf max. 1080px herunter - ein größeres Original
+// bringt keine sichtbare Qualität, nur unnötige Upload-Zeit (Base64 zu GitHub ist der
+// langsame Teil, siehe Netlify-Function-Zeitlimit). Qualität 82 ist fürs Auge praktisch
+// verlustfrei, aber deutlich kleiner als ein unkomprimiertes Kamera-Original.
+const MAX_BILD_KANTE = 1080;
+const JPEG_QUALITAET = 82;
 
 function errorResponse(statusCode, error, details) {
   return { statusCode, body: JSON.stringify(details ? { error, details } : { error }) };
-}
-
-function resolveExtension(name, mimeType) {
-  const nameExt = path.extname(name || '').replace('.', '').toLowerCase();
-  if (KNOWN_EXTENSIONS.includes(nameExt)) {
-    return nameExt === 'jpeg' ? 'jpg' : nameExt;
-  }
-  return EXTENSION_BY_MIME[mimeType] || null;
 }
 
 function slugify(input) {
@@ -160,25 +151,37 @@ exports.handler = async (event) => {
         return errorResponse(400, `Bild ${index + 1}: gehört nicht zum angegebenen Ordner oder ist kein Bild.`);
       }
 
-      const extension = resolveExtension(meta.data.name, meta.data.mimeType);
-      if (!extension) {
-        return errorResponse(400, `Bild ${index + 1}: nicht unterstütztes Bildformat.`);
-      }
-
       const fileResponse = await drive.files.get(
         { fileId: bildId, alt: 'media', supportsAllDrives: true },
         { responseType: 'arraybuffer' }
       );
-      const imageBuffer = Buffer.from(fileResponse.data);
+      const originalBuffer = Buffer.from(fileResponse.data);
+
+      let compressedBuffer;
+      try {
+        compressedBuffer = await sharp(originalBuffer)
+          .resize({
+            width: MAX_BILD_KANTE,
+            height: MAX_BILD_KANTE,
+            fit: 'inside',
+            withoutEnlargement: true,
+          })
+          .jpeg({ quality: JPEG_QUALITAET })
+          .toBuffer();
+      } catch (error) {
+        return errorResponse(400, `Bild ${index + 1}: konnte nicht verarbeitet werden.`, error.message);
+      }
+
       // mediaPath ist site-relativ (landet so im Frontmatter und wird vom Frontend 1:1 als
       // Bild-URL genutzt, siehe post-mock.js), mediaRepoPath ist der tatsächliche Commit-Pfad
       // im Repo - medien/ liegt innerhalb von planungs-webseite/ (Netlify-Publish-Verzeichnis),
-      // damit Bilder direkt statisch über die CDN ausgeliefert werden.
-      const mediaPath = `medien/aus-drive/${slugWithSuffix}-${index + 1}.${extension}`;
+      // damit Bilder direkt statisch über die CDN ausgeliefert werden. Immer .jpg, da jedes
+      // Bild oben nach JPEG neu kodiert wird, unabhängig vom Drive-Originalformat.
+      const mediaPath = `medien/aus-drive/${slugWithSuffix}-${index + 1}.jpg`;
       const mediaRepoPath = `planungs-webseite/${mediaPath}`;
 
       try {
-        await putFile(mediaRepoPath, imageBuffer, `Add Drive image ${index + 1} for new post ${slugWithSuffix}`);
+        await putFile(mediaRepoPath, compressedBuffer, `Add Drive image ${index + 1} for new post ${slugWithSuffix}`);
       } catch (error) {
         return errorResponse(
           500,

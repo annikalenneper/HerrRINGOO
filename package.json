@@ -5,6 +5,7 @@
   "description": "Netlify Functions für den Herr RINGOO Content-Planer (u. a. Google-Drive-Bildergalerie im \"Post erstellen\"-Wizard)",
   "dependencies": {
     "googleapis": "^173.0.0",
-    "gray-matter": "^4.0.3"
+    "gray-matter": "^4.0.3",
+    "sharp": "^0.35.3"
   }
 }

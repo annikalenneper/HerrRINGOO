@@ -14,29 +14,7 @@
   ];
   const PAGE_SIZE = 60;
 
-  const { appendNav, buildFinalCaption, renderKategorieField, validateKategorie, renderTitelField, validateTitel, mountCaptionStep, validateCaption, CATEGORIES } = window.PostSteps;
-
-  // --- Schritt 1: Kategorie & Titel (ein gemeinsamer Schritt) ---
-
-  function validateKategorieTitel(state) {
-    const kategorieResult = validateKategorie(state);
-    const titelResult = validateTitel(state);
-    if (kategorieResult.valid && titelResult.valid) {
-      return { valid: true };
-    }
-    return {
-      valid: false,
-      errors: { ...(kategorieResult.errors || {}), ...(titelResult.errors || {}) },
-    };
-  }
-
-  function mountKategorieTitelStep(container, state, helpers) {
-    let nav;
-    const onChange = () => nav.refresh();
-    renderKategorieField(container, state, onChange);
-    renderTitelField(container, state, onChange);
-    nav = appendNav(container, helpers, { showBack: false, validate: validateKategorieTitel, state });
-  }
+  const { appendNav, buildFinalCaption, validateKategorieTitel, mountKategorieTitelStep, mountCaptionStep, validateCaption, CATEGORIES } = window.PostSteps;
 
   // --- Schritt 2: Bild(er) ---
   //
@@ -260,20 +238,30 @@
     nav.appendChild(confirmBtn);
     container.appendChild(nav);
 
+    // Bild-Download+Kompression+GitHub-Upload läuft serverseitig innerhalb des
+    // Netlify-Function-Zeitlimits ab; ein Client-Timeout stellt sicher, dass die
+    // Oberfläche nie ohne Rückmeldung hängen bleibt, falls das doch mal überschritten wird.
     async function submitPost(secret) {
-      const response = await fetch('/.netlify/functions/create-post', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          secret,
-          titel: (state.titel || '').trim(),
-          kategorie: state.kategorie,
-          bilder: state.bilder.map((b) => ({ bildFolder: b.folderKey, bildId: b.id })),
-          caption: buildFinalCaption(state),
-        }),
-      });
-      const data = await response.json();
-      return { response, data };
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 25000);
+      try {
+        const response = await fetch('/.netlify/functions/create-post', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          signal: controller.signal,
+          body: JSON.stringify({
+            secret,
+            titel: (state.titel || '').trim(),
+            kategorie: state.kategorie,
+            bilder: state.bilder.map((b) => ({ bildFolder: b.folderKey, bildId: b.id })),
+            caption: buildFinalCaption(state),
+          }),
+        });
+        const data = await response.json();
+        return { response, data };
+      } finally {
+        clearTimeout(timeoutId);
+      }
     }
 
     confirmBtn.addEventListener('click', async () => {
@@ -314,13 +302,18 @@
         }
 
         status.className = 'gallery-status success';
-        status.textContent = `Post gespeichert (${data.datei}) – erscheint nach dem automatischen Redeploy (ca. 1–2 Min.) in der Vorschau.`;
+        status.textContent = `Post gespeichert (${data.datei}).`;
         confirmBtn.disabled = true;
         backBtn.disabled = true;
-        setTimeout(helpers.finish, 2000);
+        setTimeout(helpers.finish, 1200);
       } catch (error) {
-        status.className = 'gallery-status error';
-        status.textContent = `Post konnte nicht gespeichert werden: ${error.message}`;
+        if (error.name === 'AbortError') {
+          status.className = 'gallery-status error';
+          status.textContent = 'Das dauert ungewöhnlich lange – der Post wurde möglicherweise trotzdem gespeichert. Bitte in ein paar Minuten die Übersicht prüfen, bevor du es erneut versuchst.';
+        } else {
+          status.className = 'gallery-status error';
+          status.textContent = `Post konnte nicht gespeichert werden: ${error.message}`;
+        }
         helpers.setBusy(false);
       }
     });

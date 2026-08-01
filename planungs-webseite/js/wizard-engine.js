@@ -2,7 +2,7 @@
   // Generische Step-Engine: kennt keine post-spezifischen Begriffe, nur Ablaufsteuerung
   // (aktueller Schritt, Fortschritt, Validierung, Busy-State). Die fachliche Logik lebt
   // ausschließlich in den übergebenen `steps`.
-  function createWizard({ steps, container, progressContainer, onCancel, onComplete }) {
+  function createWizard({ steps, container, progressContainer, onCancel, onComplete, initialState }) {
     if (!steps || !steps.length) {
       throw new Error('Wizard braucht mindestens einen Schritt.');
     }
@@ -140,6 +140,7 @@
       currentIndex = 0;
       visitedSteps.clear();
       Object.keys(state).forEach((key) => delete state[key]);
+      Object.assign(state, initialState || {});
       renderCurrentStep();
     }
 

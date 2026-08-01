@@ -2,10 +2,12 @@
   publish = "planungs-webseite"
   functions = "netlify/functions"
 
-# posts/ und captions/ liegen außerhalb von "publish" und werden von den Functions
-# post-data.js/caption-blocks.js zur Laufzeit gelesen - müssen daher explizit ins
-# Function-Bundle. medien/ liegt dagegen innerhalb von "publish" (planungs-webseite/medien/)
-# und wird direkt als statische Datei über die CDN ausgeliefert - keine Function, kein
-# Response-Size-Limit mehr für große Bilder.
+# captions/ liegt außerhalb von "publish" und wird von caption-blocks.js zur Laufzeit
+# gelesen - muss daher explizit ins Function-Bundle. posts/ dagegen NICHT mehr bündeln:
+# post-data.js liest live über die GitHub-API (siehe lib/github.js listMarkdownFiles), damit
+# neue/geänderte Posts sofort sichtbar sind statt erst nach dem nächsten Redeploy. medien/
+# liegt innerhalb von "publish" (planungs-webseite/medien/) und wird direkt als statische
+# Datei über die CDN ausgeliefert - keine Function, kein Response-Size-Limit mehr für große
+# Bilder.
 [functions]
-  included_files = ["posts/**", "captions/**"]
+  included_files = ["captions/**"]

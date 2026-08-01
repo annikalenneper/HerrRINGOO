@@ -2,7 +2,9 @@
 // Entscheidung, Dependencies minimal zu halten). Wird von allen schreibenden Functions
 // (create-post.js, schedule-post.js, publish-post.js) genutzt.
 const REPO = 'annikalenneper/HerrRINGOO';
+const BRANCH = 'main';
 const API_BASE = `https://api.github.com/repos/${REPO}/contents`;
+const API_BASE_TREES = `https://api.github.com/repos/${REPO}/git/trees`;
 
 function authHeaders() {
   if (!process.env.GITHUB_TOKEN) {
@@ -96,4 +98,25 @@ async function moveFile(oldPath, newPath, message, newContent) {
   await deleteFile(oldPath, existing.sha, message);
 }
 
-module.exports = { getFile, putFile, deleteFile, moveFile, REPO };
+// Listet alle Datei-Pfade unterhalb von `prefix` (z. B. "posts/"), die auf `.md` enden -
+// ein einziger API-Call für die komplette Verzeichnisstruktur (rekursiv), unabhängig von der
+// Anzahl Unterordner. Genutzt von post-data.js, um Posts live aus GitHub zu lesen statt aus
+// dem beim Deploy gebündelten Function-Snapshot (der sonst erst nach einem Redeploy den
+// aktuellen Stand zeigen würde).
+async function listMarkdownFiles(prefix) {
+  const response = await fetch(`${API_BASE_TREES}/${BRANCH}?recursive=1`, { headers: authHeaders() });
+  if (!response.ok) {
+    throw new Error(`GitHub-Verzeichnisabruf fehlgeschlagen: ${await readErrorDetails(response)}`);
+  }
+
+  const data = await response.json();
+  if (data.truncated) {
+    throw new Error('GitHub-Verzeichnisbaum ist zu groß für eine einzelne Anfrage (truncated).');
+  }
+
+  return (data.tree || [])
+    .filter((entry) => entry.type === 'blob' && entry.path.startsWith(prefix) && entry.path.toLowerCase().endsWith('.md'))
+    .map((entry) => entry.path);
+}
+
+module.exports = { getFile, putFile, deleteFile, moveFile, listMarkdownFiles, REPO };
