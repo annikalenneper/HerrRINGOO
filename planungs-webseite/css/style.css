@@ -547,6 +547,37 @@ tbody tr:last-child td {
   font-size: 1.2rem;
 }
 
+/* Kategorie-Chips sind bewusst kleiner und optisch anders (Pill statt Card) als die
+   Status-Chips, damit die beiden Filter-Dimensionen auf den ersten Blick unterscheidbar
+   bleiben. Gleiche Klasse wird auch als reine Anzeige (nicht klickbar) unter den
+   Post-Mocks wiederverwendet, siehe .post-preview-meta weiter unten. */
+.category-chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.85rem;
+  color: var(--color-text);
+  background: var(--color-bg-muted);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  padding: var(--space-1) var(--space-3);
+}
+
+button.category-chip {
+  cursor: pointer;
+  font: inherit;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+button.category-chip:hover {
+  border-color: var(--color-accent-dark);
+}
+
+.category-chip.active {
+  border-color: var(--gold);
+  background: var(--gold-tint);
+  color: var(--color-accent-dark);
+}
+
 /* Image gallery (Bildauswahl) */
 
 .image-grid {
@@ -866,6 +897,7 @@ tbody tr:last-child td {
 .post-preview-meta {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: var(--space-2) var(--space-4);
   font-size: 0.85rem;
   color: var(--color-text-muted);

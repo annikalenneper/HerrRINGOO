@@ -1,10 +1,4 @@
 (function () {
-  const STATUS_BADGES = {
-    entwurf: '📝',
-    bereit: '✅',
-    veroeffentlicht: '🚀',
-  };
-
   const STATUS_LABELS = {
     bereit: 'bereit',
     veroeffentlicht: 'veröffentlicht',
@@ -17,26 +11,23 @@
     return value;
   }
 
+  function kategorieLabel(key) {
+    const match = (window.PostSteps.CATEGORIES || []).find((c) => c.key === key);
+    return match ? match.label : (key || '–');
+  }
+
   function buildMeta(post) {
     const meta = document.createElement('div');
     meta.className = 'post-preview-meta';
 
-    const statusEl = document.createElement('span');
-    statusEl.className = 'source-note';
-    statusEl.textContent = `${STATUS_BADGES[post.status] || '❔'} ${post.status || 'unbekannt'}`;
-    meta.appendChild(statusEl);
-
-    const kategorieEl = document.createElement('span');
-    kategorieEl.textContent = `Kategorie: ${post.kategorie || '–'}`;
-    meta.appendChild(kategorieEl);
+    const kategorieChip = document.createElement('span');
+    kategorieChip.className = 'category-chip';
+    kategorieChip.textContent = kategorieLabel(post.kategorie);
+    meta.appendChild(kategorieChip);
 
     const datumEl = document.createElement('span');
     datumEl.textContent = `Geplant: ${formatDate(post.datum_geplant)}`;
     meta.appendChild(datumEl);
-
-    const dateiEl = document.createElement('span');
-    dateiEl.textContent = `Datei: ${post.datei}`;
-    meta.appendChild(dateiEl);
 
     return meta;
   }
@@ -201,7 +192,7 @@
     categories.forEach(({ key, label }) => {
       const chip = document.createElement('button');
       chip.type = 'button';
-      chip.className = 'card filter-chip';
+      chip.className = 'category-chip';
       if (activeKategorien.has(key)) chip.classList.add('active');
       chip.textContent = label;
       chip.addEventListener('click', () => {
