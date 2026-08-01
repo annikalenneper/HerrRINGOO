@@ -5,7 +5,8 @@ const { updateFrontmatter } = require('./lib/posts');
 const SOURCE_DIR = 'posts/01-entwuerfe';
 const TARGET_DIR = 'posts/02-bereit-zur-veroeffentlichung';
 const DATEI_PATTERN = new RegExp(`^${SOURCE_DIR}/[\\w-]+\\.md$`);
-const DATUM_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+// Format des HTML5 <input type="datetime-local">-Werts (Datum + Uhrzeit, kein Sekunden-Teil).
+const DATUM_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
 
 function errorResponse(statusCode, error, details) {
   return { statusCode, body: JSON.stringify(details ? { error, details } : { error }) };
@@ -32,7 +33,7 @@ exports.handler = async (event) => {
     return errorResponse(400, `"datei" muss ein Post in "${SOURCE_DIR}/" sein.`);
   }
   if (typeof datumGeplant !== 'string' || !DATUM_PATTERN.test(datumGeplant)) {
-    return errorResponse(400, '"datum_geplant" muss im Format JJJJ-MM-TT angegeben werden.');
+    return errorResponse(400, '"datum_geplant" muss im Format JJJJ-MM-TTThh:mm angegeben werden.');
   }
 
   try {

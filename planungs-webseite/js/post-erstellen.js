@@ -1,16 +1,4 @@
 (function () {
-  const STATUS_LABELS = {
-    bereit: 'bereit',
-    veroeffentlicht: 'veröffentlicht',
-  };
-
-  function formatDate(value) {
-    if (!value || value === 'JJJJ-MM-TT') {
-      return 'noch nicht geplant';
-    }
-    return value;
-  }
-
   function kategorieLabel(key) {
     const match = (window.PostSteps.CATEGORIES || []).find((c) => c.key === key);
     return match ? match.label : (key || '–');
@@ -25,10 +13,6 @@
     kategorieChip.textContent = kategorieLabel(post.kategorie);
     meta.appendChild(kategorieChip);
 
-    const datumEl = document.createElement('span');
-    datumEl.textContent = `Geplant: ${formatDate(post.datum_geplant)}`;
-    meta.appendChild(datumEl);
-
     return meta;
   }
 
@@ -40,35 +24,38 @@
     return `${yyyy}-${mm}-${dd}`;
   }
 
-  // Schiebt einen Post zur nächsten Workflow-Stufe (entwurf -> bereit -> veroeffentlicht).
-  // Zeigt je nach Status den passenden Button + ein Datumsfeld; bei veroeffentlicht gibt es
-  // keine weitere Aktion mehr. Vor dem eigentlichen Markieren wird die Aktion per
-  // Bestätigungsdialog abgesichert, das Team-Passwort kommt sitzungsweit aus team-auth.js.
+  // Entwurf -> bereit läuft über einen eigenen Mini-Wizard (Datum & Uhrzeit + Vorschau,
+  // siehe schedule-wizard.js), da hier jetzt auch eine Uhrzeit festgelegt werden muss.
+  // Bereit -> veroeffentlicht bleibt die einfache Inline-Aktion (nur Datum, kein Wizard).
   function buildActions(post, onUpdated) {
     const wrapper = document.createElement('div');
     wrapper.className = 'post-preview-actions';
 
-    if (post.status !== 'entwurf' && post.status !== 'bereit') {
+    if (post.status === 'entwurf') {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'selection-submit btn-primary';
+      button.textContent = '🗓️ Post einplanen';
+      button.addEventListener('click', () => {
+        window.ScheduleWizard.open(post, onUpdated);
+      });
+      wrapper.appendChild(button);
       return wrapper;
     }
 
-    const isEntwurf = post.status === 'entwurf';
-    const endpoint = isEntwurf ? 'schedule-post' : 'publish-post';
-    const dateField = isEntwurf ? 'datum_geplant' : 'datum_veroeffentlicht';
-    const buttonLabel = isEntwurf ? '✅ Als bereit markieren' : '🚀 Als veröffentlicht markieren';
-    const targetStatusLabel = isEntwurf ? STATUS_LABELS.bereit : STATUS_LABELS.veroeffentlicht;
+    if (post.status !== 'bereit') {
+      return wrapper;
+    }
 
     const dateInput = document.createElement('input');
     dateInput.type = 'date';
-    dateInput.value = isEntwurf
-      ? (post.datum_geplant && post.datum_geplant !== 'JJJJ-MM-TT' ? post.datum_geplant : '')
-      : todayISO();
+    dateInput.value = todayISO();
     wrapper.appendChild(dateInput);
 
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'selection-submit btn-primary';
-    button.textContent = buttonLabel;
+    button.textContent = '🚀 Als veröffentlicht markieren';
     wrapper.appendChild(button);
 
     const status = document.createElement('p');
@@ -85,7 +72,7 @@
 
       const confirmed = await window.ConfirmDialog.confirmAction({
         titel: 'Aktion bestätigen',
-        nachricht: `Post am ${dateInput.value} als ${targetStatusLabel} markieren?`,
+        nachricht: `Post am ${dateInput.value} als veröffentlicht markieren?`,
         bestaetigenLabel: 'Ja, markieren',
         abbrechenLabel: 'Abbrechen',
       });
@@ -103,10 +90,10 @@
       status.textContent = 'Wird aktualisiert …';
 
       try {
-        const response = await fetch(`/.netlify/functions/${endpoint}`, {
+        const response = await fetch('/.netlify/functions/publish-post', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ secret, datei: post.datei, [dateField]: dateInput.value }),
+          body: JSON.stringify({ secret, datei: post.datei, datum_veroeffentlicht: dateInput.value }),
         });
         const data = await response.json();
 
