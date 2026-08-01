@@ -87,7 +87,10 @@
     return { valid: true };
   }
 
-  function mountKategorieStep(container, state, helpers) {
+  // Nur das Feld, ohne eigene Navigation – damit sich Kategorie und Titel bei Bedarf zu einem
+  // gemeinsamen Schritt kombinieren lassen (siehe post-erstellen-wizard.js), statt zwei
+  // getrennte Weiter-Buttons zu erzwingen.
+  function renderKategorieField(container, state, onChange) {
     const group = document.createElement('div');
     group.className = 'form-group';
     group.setAttribute('data-field', 'kategorie');
@@ -115,12 +118,16 @@
     group.appendChild(select);
     container.appendChild(group);
 
-    const nav = appendNav(container, helpers, { validate: validateKategorie, state });
-
     select.addEventListener('change', () => {
       state.kategorie = select.value;
-      nav.refresh();
+      if (onChange) onChange();
     });
+  }
+
+  function mountKategorieStep(container, state, helpers) {
+    let nav;
+    renderKategorieField(container, state, () => nav.refresh());
+    nav = appendNav(container, helpers, { validate: validateKategorie, state });
   }
 
   // --- Titel ---
@@ -133,7 +140,7 @@
     return { valid: true };
   }
 
-  function mountTitelStep(container, state, helpers) {
+  function renderTitelField(container, state, onChange) {
     const group = document.createElement('div');
     group.className = 'form-group';
     group.setAttribute('data-field', 'titel');
@@ -151,12 +158,16 @@
     group.appendChild(input);
     container.appendChild(group);
 
-    const nav = appendNav(container, helpers, { validate: validateTitel, state });
-
     input.addEventListener('input', () => {
       state.titel = input.value;
-      nav.refresh();
+      if (onChange) onChange();
     });
+  }
+
+  function mountTitelStep(container, state, helpers) {
+    let nav;
+    renderTitelField(container, state, () => nav.refresh());
+    nav = appendNav(container, helpers, { validate: validateTitel, state });
   }
 
   // --- Caption + Hashtags ---
@@ -240,8 +251,10 @@
     MAX_CAPTION_LENGTH,
     appendNav,
     buildFinalCaption,
+    renderKategorieField,
     mountKategorieStep,
     validateKategorie,
+    renderTitelField,
     mountTitelStep,
     validateTitel,
     mountCaptionStep,

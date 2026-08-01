@@ -14,9 +14,31 @@
   ];
   const PAGE_SIZE = 60;
 
-  const { appendNav, buildFinalCaption, mountKategorieStep, validateKategorie, mountTitelStep, validateTitel, mountCaptionStep, validateCaption, CATEGORIES } = window.PostSteps;
+  const { appendNav, buildFinalCaption, renderKategorieField, validateKategorie, renderTitelField, validateTitel, mountCaptionStep, validateCaption, CATEGORIES } = window.PostSteps;
 
-  // --- Schritt 1: Bild(er) ---
+  // --- Schritt 1: Kategorie & Titel (ein gemeinsamer Schritt) ---
+
+  function validateKategorieTitel(state) {
+    const kategorieResult = validateKategorie(state);
+    const titelResult = validateTitel(state);
+    if (kategorieResult.valid && titelResult.valid) {
+      return { valid: true };
+    }
+    return {
+      valid: false,
+      errors: { ...(kategorieResult.errors || {}), ...(titelResult.errors || {}) },
+    };
+  }
+
+  function mountKategorieTitelStep(container, state, helpers) {
+    let nav;
+    const onChange = () => nav.refresh();
+    renderKategorieField(container, state, onChange);
+    renderTitelField(container, state, onChange);
+    nav = appendNav(container, helpers, { showBack: false, validate: validateKategorieTitel, state });
+  }
+
+  // --- Schritt 2: Bild(er) ---
   //
   // Mehrfachauswahl statt Einzelbild: state.bilder (Array von { id, name, folderKey,
   // thumbnailLink }) ist die alleinige Quelle der Wahrheit und bleibt ordnerübergreifend
@@ -73,7 +95,7 @@
     group.appendChild(info);
     container.appendChild(group);
 
-    const nav = appendNav(container, helpers, { showBack: false, validate: validateBild, state });
+    const nav = appendNav(container, helpers, { validate: validateBild, state });
 
     function updateInfo() {
       if (state.bilder.length > 0) {
@@ -307,9 +329,8 @@
   // --- Wizard zusammensetzen + View-Umschaltung ---
 
   const STEPS = [
+    { id: 'kategorie-titel', titel: 'Kategorie & Titel', mount: mountKategorieTitelStep, validate: validateKategorieTitel },
     { id: 'bild', titel: 'Bild(er)', mount: mountBildStep, validate: validateBild },
-    { id: 'kategorie', titel: 'Kategorie', mount: mountKategorieStep, validate: validateKategorie },
-    { id: 'titel', titel: 'Titel', mount: mountTitelStep, validate: validateTitel },
     { id: 'caption', titel: 'Caption & Hashtags', mount: mountCaptionStep, validate: validateCaption },
     { id: 'vorschau', titel: 'Vorschau & Bestätigen', mount: mountVorschauStep },
   ];
