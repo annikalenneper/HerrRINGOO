@@ -153,6 +153,83 @@
     return card;
   }
 
+  // Filter: Status-Chips sind statisch im HTML, Kategorie-Chips werden aus den tatsächlich
+  // geladenen Posts generiert (nur Kategorien, die gerade vorkommen). Mehrfachauswahl je
+  // Gruppe (ODER-verknüpft), zwischen den beiden Gruppen UND-verknüpft. Leere Gruppe = kein
+  // Filter in dieser Dimension.
+  let allPosts = [];
+  const activeStatuses = new Set();
+  const activeKategorien = new Set();
+
+  function matchesFilters(post) {
+    const statusOk = activeStatuses.size === 0 || activeStatuses.has(post.status);
+    const kategorieOk = activeKategorien.size === 0 || activeKategorien.has(post.kategorie);
+    return statusOk && kategorieOk;
+  }
+
+  function renderGrid() {
+    const grid = document.querySelector('[data-post-grid]');
+    grid.innerHTML = '';
+
+    if (allPosts.length === 0) {
+      const empty = document.createElement('p');
+      empty.className = 'gallery-status';
+      empty.textContent = 'Noch keine Post-Entwürfe gefunden.';
+      grid.appendChild(empty);
+      return;
+    }
+
+    const filtered = allPosts.filter(matchesFilters);
+    if (filtered.length === 0) {
+      const empty = document.createElement('p');
+      empty.className = 'gallery-status';
+      empty.textContent = 'Keine Posts für die gewählten Filter gefunden.';
+      grid.appendChild(empty);
+      return;
+    }
+
+    filtered.forEach((post) => grid.appendChild(buildCard(post)));
+  }
+
+  function renderKategorieFilters() {
+    const container = document.querySelector('[data-kategorie-filters]');
+    container.innerHTML = '';
+
+    const present = new Set(allPosts.map((post) => post.kategorie).filter(Boolean));
+    const categories = (window.PostSteps.CATEGORIES || []).filter((c) => present.has(c.key));
+
+    categories.forEach(({ key, label }) => {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'card filter-chip';
+      if (activeKategorien.has(key)) chip.classList.add('active');
+      chip.textContent = label;
+      chip.addEventListener('click', () => {
+        if (activeKategorien.has(key)) {
+          activeKategorien.delete(key);
+        } else {
+          activeKategorien.add(key);
+        }
+        chip.classList.toggle('active');
+        renderGrid();
+      });
+      container.appendChild(chip);
+    });
+  }
+
+  document.querySelectorAll('[data-status-filters] [data-status]').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      const status = chip.dataset.status;
+      if (activeStatuses.has(status)) {
+        activeStatuses.delete(status);
+      } else {
+        activeStatuses.add(status);
+      }
+      chip.classList.toggle('active');
+      renderGrid();
+    });
+  });
+
   async function loadPosts() {
     const grid = document.querySelector('[data-post-grid]');
 
@@ -165,17 +242,9 @@
         throw new Error(message || data.errorMessage || `HTTP ${response.status}`);
       }
 
-      grid.innerHTML = '';
-
-      if (data.length === 0) {
-        const empty = document.createElement('p');
-        empty.className = 'gallery-status';
-        empty.textContent = 'Noch keine Post-Entwürfe gefunden.';
-        grid.appendChild(empty);
-        return;
-      }
-
-      data.forEach((post) => grid.appendChild(buildCard(post)));
+      allPosts = data;
+      renderKategorieFilters();
+      renderGrid();
     } catch (error) {
       grid.innerHTML = '';
       const errorEl = document.createElement('p');

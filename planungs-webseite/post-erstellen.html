@@ -34,12 +34,13 @@
 
   <div id="ansicht-vorschau">
     <section>
-      <h2>Status-Legende</h2>
-      <div class="status-legend">
-        <div class="card"><span class="badge">📝</span>Entwurf – noch in Arbeit</div>
-        <div class="card"><span class="badge">✅</span>Bereit zur Veröffentlichung</div>
-        <div class="card"><span class="badge">🚀</span>Veröffentlicht</div>
+      <h2>Filter</h2>
+      <div class="filter-chips" data-status-filters>
+        <button type="button" class="card filter-chip" data-status="entwurf"><span class="badge">📝</span>Entwurf – noch in Arbeit</button>
+        <button type="button" class="card filter-chip" data-status="bereit"><span class="badge">✅</span>Bereit zur Veröffentlichung</button>
+        <button type="button" class="card filter-chip" data-status="veroeffentlicht"><span class="badge">🚀</span>Veröffentlicht</button>
       </div>
+      <div class="filter-chips" data-kategorie-filters></div>
     </section>
 
     <section>

@@ -513,20 +513,38 @@ tbody tr:last-child td {
   gap: var(--space-2);
 }
 
-.status-legend {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
   gap: var(--space-2);
   margin-bottom: var(--space-5);
 }
 
-.status-legend .card {
-  padding: var(--space-3) var(--space-4);
+/* .card ist standardmäßig eine Flex-Spalte (siehe oben) – für Chips brauchen wir Icon und
+   Text nebeneinander auf einer Zeile statt gestapelt, daher flex-direction hier explizit
+   überschrieben. */
+.filter-chip {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  text-align: left;
 }
 
-.status-legend .badge {
+.filter-chip:hover {
+  border-color: var(--color-accent-dark);
+}
+
+.filter-chip.active {
+  border-color: var(--gold);
+  background: var(--gold-tint);
+}
+
+.filter-chip .badge {
   font-size: 1.2rem;
-  margin-right: var(--space-2);
 }
 
 /* Image gallery (Bildauswahl) */
