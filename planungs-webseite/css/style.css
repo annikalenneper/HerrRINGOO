@@ -931,6 +931,38 @@ button.category-chip:hover {
   margin: 0;
 }
 
+/* Icon-Button (z. B. Entwurf löschen) - bewusst zurückhaltend, kein Text/Fill, färbt sich
+   erst bei Hover/Focus in die "Danger"-Farbe (gleicher Rotton wie .field-error). */
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  margin-left: auto;
+  font-size: 1.1rem;
+  line-height: 1;
+  background: none;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.icon-button:hover,
+.icon-button:focus-visible {
+  border-color: #b3261e;
+  color: #b3261e;
+  background: var(--color-bg-muted);
+}
+
+.icon-button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 /* Checklist (Prüfen & Vorschlagen) */
 
 .checklist {
@@ -954,6 +986,88 @@ button.category-chip:hover {
   position: absolute;
   left: var(--space-3);
   color: var(--color-accent-dark);
+  font-weight: 700;
+}
+
+/* Textbasierte Alternativen zu Callout/Phrase-List/Steps/Keyword-Tags/Do-Dont, für Seiten,
+   die überwiegend mit Typografie statt mit umrandeten Boxen gliedern sollen (siehe
+   Markenkommunikations-Guide). .checklist bleibt daneben unverändert im Einsatz. */
+
+.lead-statement {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--color-heading);
+  line-height: 1.5;
+}
+
+.definition-list {
+  margin: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.definition-list dt {
+  font-family: var(--font-body);
+  font-style: italic;
+  color: var(--color-heading);
+}
+
+.definition-list dd {
+  margin: var(--space-1) 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.plain-numbered-list {
+  margin: 0;
+  padding-left: var(--space-6);
+  display: grid;
+  gap: var(--space-3);
+}
+
+.plain-numbered-list li::marker {
+  color: var(--gold-dark);
+  font-weight: 700;
+}
+
+.wordlist {
+  font-style: italic;
+  color: var(--color-text);
+}
+
+.text-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-6);
+}
+
+.text-columns h3 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.crosslist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.crosslist li {
+  position: relative;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3) var(--space-2) var(--step-marker-size);
+}
+
+.crosslist li::before {
+  content: "\2715";
+  position: absolute;
+  left: var(--space-3);
+  color: #b3261e;
   font-weight: 700;
 }
 

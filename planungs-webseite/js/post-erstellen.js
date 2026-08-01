@@ -49,6 +49,65 @@
         window.ScheduleWizard.open(post, onUpdated);
       });
       wrapper.appendChild(button);
+
+      const status = document.createElement('p');
+      status.className = 'gallery-status';
+      status.setAttribute('aria-live', 'polite');
+      wrapper.appendChild(status);
+
+      const deleteButton = document.createElement('button');
+      deleteButton.type = 'button';
+      deleteButton.className = 'icon-button';
+      deleteButton.setAttribute('aria-label', 'Entwurf löschen');
+      deleteButton.title = 'Entwurf löschen';
+      deleteButton.textContent = '🗑️';
+      deleteButton.addEventListener('click', async () => {
+        const confirmed = await window.ConfirmDialog.confirmAction({
+          titel: 'Entwurf löschen?',
+          nachricht: `„${post.titel || post.datei}" wird unwiderruflich gelöscht, inklusive der zugehörigen Bilder.`,
+          bestaetigenLabel: 'Ja, löschen',
+          abbrechenLabel: 'Abbrechen',
+          destructive: true,
+        });
+        if (!confirmed) return;
+
+        const secret = await window.TeamAuth.getOrPromptSecret();
+        if (!secret) {
+          status.className = 'gallery-status error';
+          status.textContent = 'Ohne Team-Passwort kann diese Aktion nicht ausgeführt werden.';
+          return;
+        }
+
+        deleteButton.disabled = true;
+        status.className = 'gallery-status';
+        status.textContent = 'Wird gelöscht …';
+
+        try {
+          const response = await fetch('/.netlify/functions/delete-post', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ secret, datei: post.datei }),
+          });
+          const data = await response.json();
+
+          if (!response.ok) {
+            if (response.status === 401) {
+              window.TeamAuth.clearCachedSecret();
+            }
+            throw new Error(data.details ? `${data.error} (${data.details})` : data.error || `HTTP ${response.status}`);
+          }
+
+          status.className = 'gallery-status success';
+          status.textContent = 'Gelöscht.';
+          setTimeout(onUpdated, 800);
+        } catch (error) {
+          status.className = 'gallery-status error';
+          status.textContent = `Löschen fehlgeschlagen: ${error.message}`;
+          deleteButton.disabled = false;
+        }
+      });
+      wrapper.appendChild(deleteButton);
+
       return wrapper;
     }
 
