@@ -32,5 +32,9 @@ Kategorien zugeordnet.
 | `warum` | Textkacheln mit Gründen für | Gründen für die Trauringberatung durch Herr RINGOO | Kleine Kinder zuhause, Wunsch nach authentischen Momenten |
 | `regionen` | Regionen & Standorte | Vorstellung einzelner Einzugsgebiete (Kreis Olpe, Hochsauerlandkreis, Siegen-Wittgenstein) mit Bezug zur Landschaft/Lokalkolorit | "Herr RINGOO ist auch bei euch im Kreis Olpe unterwegs" |
 | `pakete` | Pakete & Angebote | Vorstellung und Vergleich der buchbaren Beratungspakete (z. B. "Voll muckelich", "Mit Schmackes") | Überblick "Von gemütlich bis ereignisreich – ihr entscheidet" |
+| `homestories` | Homestories | Zuhause-Geschichten der Paare/des Teams abseits des rollenden Studios | Ein Paar erzählt zuhause von ihrer Ringauswahl |
+| `materialkunde` | Materialkunde | Erklär-Content rund um Edelmetalle, Legierungen und Steine | Slide-Reihe zum Unterschied zwischen Platin und Weißgold |
+| `historie` | Historie & Hintergrundwissen | Geschichte und Herkunft von Materialien und Trauring-Traditionen | Woher das Gold im Ring stammt |
+| `mythencheck` | Mythen-Check | Verbreitete Trauring-Mythen im Faktencheck | "Muss ein Trauring identisch mit dem Partnerring sein?" |
 
 

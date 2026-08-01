@@ -13,5 +13,8 @@
   { "key": "warum", "label": "Textkacheln mit Gründen für", "beschreibung": "Gründen für die Trauringberatung durch Herr RINGOO", "beispiel": "Kleine Kinder zuhause, Wunsch nach authentischen Momenten" },
   { "key": "regionen", "label": "Regionen & Standorte", "beschreibung": "Vorstellung einzelner Einzugsgebiete (Kreis Olpe, Hochsauerlandkreis, Siegen-Wittgenstein) mit Bezug zur Landschaft/Lokalkolorit", "beispiel": "\"Herr RINGOO ist auch bei euch im Kreis Olpe unterwegs\"" },
   { "key": "pakete", "label": "Pakete & Angebote", "beschreibung": "Vorstellung und Vergleich der buchbaren Beratungspakete (z. B. \"Voll muckelich\", \"Mit Schmackes\")", "beispiel": "Überblick \"Von gemütlich bis ereignisreich – ihr entscheidet\"" },
-  { "key": "homestories", "label": "Homestories", "beschreibung": "Zuhause-Geschichten der Paare/des Teams abseits des rollenden Studios", "beispiel": "Ein Paar erzählt zuhause von ihrer Ringauswahl" }
+  { "key": "homestories", "label": "Homestories", "beschreibung": "Zuhause-Geschichten der Paare/des Teams abseits des rollenden Studios", "beispiel": "Ein Paar erzählt zuhause von ihrer Ringauswahl" },
+  { "key": "materialkunde", "label": "Materialkunde", "beschreibung": "Erklär-Content rund um Edelmetalle, Legierungen und Steine", "beispiel": "Slide-Reihe zum Unterschied zwischen Platin und Weißgold" },
+  { "key": "historie", "label": "Historie & Hintergrundwissen", "beschreibung": "Geschichte und Herkunft von Materialien und Trauring-Traditionen", "beispiel": "Woher das Gold im Ring stammt" },
+  { "key": "mythencheck", "label": "Mythen-Check", "beschreibung": "Verbreitete Trauring-Mythen im Faktencheck", "beispiel": "\"Muss ein Trauring identisch mit dem Partnerring sein?\"" }
 ]
