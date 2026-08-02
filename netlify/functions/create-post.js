@@ -1,23 +1,22 @@
-const sharp = require('sharp');
 const { google } = require('googleapis');
 const { checkSecret } = require('./lib/auth');
 const { getFile, putFile } = require('./lib/github');
 const { FOLDERS } = require('./lib/drive-folders');
 const { readKategorienFile } = require('./lib/kategorien');
 const { slugify } = require('./lib/slug');
+const { TEAM_MEMBERS } = require('./lib/team-members');
+const { compressImage } = require('./lib/compress-image');
 
 const BILD_ID_PATTERN = /^[\w-]+$/;
 const MAX_TITEL_LENGTH = 120;
 const MAX_CAPTION_LENGTH = 2200; // Instagram-Limit
 const MAX_BILDER = 10; // Instagram-Karussell-Limit
-const MAX_AUTOR_LENGTH = 60;
-
-// Instagram skaliert Feed-Bilder ohnehin auf max. 1080px herunter - ein größeres Original
-// bringt keine sichtbare Qualität, nur unnötige Upload-Zeit (Base64 zu GitHub ist der
-// langsame Teil, siehe Netlify-Function-Zeitlimit). Qualität 82 ist fürs Auge praktisch
-// verlustfrei, aber deutlich kleiner als ein unkomprimiertes Kamera-Original.
-const MAX_BILD_KANTE = 1080;
-const JPEG_QUALITAET = 82;
+// Dateiname eines bereits über upload-image.js hochgeladenen + komprimierten Bilds in
+// planungs-webseite/medien/uploads/ - siehe UPLOADS_FOLDER_KEY-Zweig weiter unten.
+const UPLOAD_FILENAME_PATTERN = /^[\w-]+\.jpg$/;
+const UPLOADS_FOLDER_KEY = 'uploads';
+const UPLOADS_DIR = 'planungs-webseite/medien/uploads';
+const UPLOADS_MEDIA_PREFIX = 'medien/uploads/';
 
 function errorResponse(statusCode, error, details) {
   return { statusCode, body: JSON.stringify(details ? { error, details } : { error }) };
@@ -78,8 +77,8 @@ exports.handler = async (event) => {
   if (typeof titel !== 'string' || !titel.trim() || titel.length > MAX_TITEL_LENGTH) {
     return errorResponse(400, `"titel" ist erforderlich (max. ${MAX_TITEL_LENGTH} Zeichen).`);
   }
-  if (typeof autor !== 'string' || !autor.trim() || autor.length > MAX_AUTOR_LENGTH) {
-    return errorResponse(400, `"autor" ist erforderlich (max. ${MAX_AUTOR_LENGTH} Zeichen).`);
+  if (typeof autor !== 'string' || !TEAM_MEMBERS.includes(autor)) {
+    return errorResponse(400, `"autor" muss einer von: ${TEAM_MEMBERS.join(', ')} sein.`);
   }
   if (typeof kategorie !== 'string' || !kategorie) {
     return errorResponse(400, '"kategorie" ist erforderlich.');
@@ -91,9 +90,15 @@ exports.handler = async (event) => {
     return errorResponse(400, `"bilder" muss ein Array mit 1 bis ${MAX_BILDER} Bildern sein.`);
   }
   for (const eintrag of bilder) {
+    if (eintrag && eintrag.bildFolder === UPLOADS_FOLDER_KEY) {
+      if (typeof eintrag.bildId !== 'string' || !UPLOAD_FILENAME_PATTERN.test(eintrag.bildId)) {
+        return errorResponse(400, '"bildId" hat ein ungültiges Format.');
+      }
+      continue;
+    }
     const folder = eintrag && FOLDERS[eintrag.bildFolder];
     if (!folder) {
-      return errorResponse(400, `"bildFolder" muss einer von: ${Object.keys(FOLDERS).join(', ')} sein.`);
+      return errorResponse(400, `"bildFolder" muss einer von: ${[...Object.keys(FOLDERS), UPLOADS_FOLDER_KEY].join(', ')} sein.`);
     }
     if (typeof eintrag.bildId !== 'string' || !BILD_ID_PATTERN.test(eintrag.bildId)) {
       return errorResponse(400, '"bildId" hat ein ungültiges Format.');
@@ -131,6 +136,20 @@ exports.handler = async (event) => {
     const mediaPaths = [];
     for (let index = 0; index < bilder.length; index += 1) {
       const { bildFolder, bildId } = bilder[index];
+
+      // Bilder aus dem "uploads"-Ordner (siehe upload-image.js) liegen bereits komprimiert und
+      // öffentlich erreichbar im Repo - kein erneuter Download/Kompression/Commit nötig, nur
+      // Existenz am erwarteten Pfad prüfen (Integritätsprüfung analog zum Drive-Zweig unten) und
+      // den bestehenden Pfad direkt übernehmen.
+      if (bildFolder === UPLOADS_FOLDER_KEY) {
+        const uploadExists = await getFile(`${UPLOADS_DIR}/${bildId}`);
+        if (!uploadExists) {
+          return errorResponse(400, `Bild ${index + 1}: wurde im Uploads-Ordner nicht gefunden.`);
+        }
+        mediaPaths.push(`${UPLOADS_MEDIA_PREFIX}${bildId}`);
+        continue;
+      }
+
       const folder = FOLDERS[bildFolder];
 
       // Integritätsprüfung: verhindert, dass eine manipulierte Anfrage ein beliebiges (nicht
@@ -160,15 +179,7 @@ exports.handler = async (event) => {
 
       let compressedBuffer;
       try {
-        compressedBuffer = await sharp(originalBuffer)
-          .resize({
-            width: MAX_BILD_KANTE,
-            height: MAX_BILD_KANTE,
-            fit: 'inside',
-            withoutEnlargement: true,
-          })
-          .jpeg({ quality: JPEG_QUALITAET })
-          .toBuffer();
+        compressedBuffer = await compressImage(originalBuffer);
       } catch (error) {
         return errorResponse(400, `Bild ${index + 1}: konnte nicht verarbeitet werden.`, error.message);
       }

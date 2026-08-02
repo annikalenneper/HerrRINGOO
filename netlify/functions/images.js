@@ -1,16 +1,53 @@
 const { google } = require('googleapis');
 const { FOLDERS } = require('./lib/drive-folders');
+const { listImageFiles } = require('./lib/github');
+
+// "uploads" ist kein Drive-Ordner (siehe drive-folders.js), sondern Bilder, die direkt über
+// upload-image.js ins Repo committet wurden - werden hier stattdessen per GitHub-API gelistet.
+const UPLOADS_FOLDER_KEY = 'uploads';
+const UPLOADS_DIR = 'planungs-webseite/medien/uploads';
+const UPLOADS_MEDIA_PREFIX = 'medien/uploads/';
+
+async function listUploadsFolder() {
+  const paths = await listImageFiles(`${UPLOADS_DIR}/`);
+  // Dateinamen beginnen mit einem Zeitstempel (siehe upload-image.js) - absteigend sortiert
+  // zeigt das neueste Upload zuerst, ohne dass GitHub ein Änderungsdatum liefern müsste.
+  const images = paths
+    .map((path) => path.slice(UPLOADS_DIR.length + 1))
+    .sort()
+    .reverse()
+    .map((filename) => ({ id: filename, name: filename, thumbnailLink: `/${UPLOADS_MEDIA_PREFIX}${filename}` }));
+
+  return { images, nextPageToken: null };
+}
 
 exports.handler = async (event) => {
   const params = event.queryStringParameters || {};
   const folderKey = params.folder;
+
+  if (folderKey === UPLOADS_FOLDER_KEY) {
+    try {
+      const data = await listUploadsFolder();
+      return {
+        statusCode: 200,
+        headers: { 'Cache-Control': 'no-cache' },
+        body: JSON.stringify(data),
+      };
+    } catch (error) {
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: 'Bilder konnten nicht geladen werden.', details: error.message }),
+      };
+    }
+  }
+
   const folder = FOLDERS[folderKey];
 
   if (!folder) {
     return {
       statusCode: 400,
       body: JSON.stringify({
-        error: `Unbekannter oder fehlender Ordner-Schlüssel "${folderKey || ''}". Gültige Werte: ${Object.keys(FOLDERS).join(', ')}`,
+        error: `Unbekannter oder fehlender Ordner-Schlüssel "${folderKey || ''}". Gültige Werte: ${[...Object.keys(FOLDERS), UPLOADS_FOLDER_KEY].join(', ')}`,
       }),
     };
   }

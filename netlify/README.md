@@ -4,7 +4,13 @@
   [`../planungs-webseite/medien/README.md`](../planungs-webseite/medien/README.md) in den
   Bild-Schritt des "Post erstellen"-Wizards (`planungs-webseite/post-erstellen.html`) ein.
   Unterstützt Paging über die Query-Parameter `pageToken`/`pageSize` (Antwortform:
-  `{ images, nextPageToken }`) für den dortigen "Mehr laden"-Button.
+  `{ images, nextPageToken }`) für den dortigen "Mehr laden"-Button. Sonderfall
+  `?folder=uploads`: listet stattdessen direkt `planungs-webseite/medien/uploads/` über die
+  GitHub-API (kein Drive-Ordner, siehe `upload-image.js`), ohne Paging.
+- `upload-image.js` nimmt ein direkt vom Gerät hochgeladenes Bild entgegen (Base64 im Body),
+  komprimiert es über dieselbe `lib/compress-image.js`-Funktion wie `create-post.js` und
+  committet es nach `planungs-webseite/medien/uploads/`. Team-Passwort-geschützt wie alle
+  schreibenden Functions. Erscheint danach über `images.js` (`folder=uploads`) im Bild-Schritt.
 - `post-data.js` liest die Post-Entwürfe aus [`../posts/`](../posts/README.md) (Frontmatter +
   Caption) für die Instagram-Vorschau auf `planungs-webseite/post-erstellen.html`. Sortiert nach
   `erstellt_am` absteigend (neueste zuerst); Posts ohne dieses Feld (Altbestand von vor dessen
@@ -16,7 +22,9 @@
 - `create-post.js` legt einen neuen Post an: lädt das ausgewählte Bild aus Drive herunter,
   committet es nach `planungs-webseite/medien/aus-drive/` und die neue `.md`-Datei nach
   `posts/01-entwuerfe/` – **erste schreibende Function** dieses Projekts, daher zusätzlich per
-  Team-Passwort geschützt (siehe unten). Es gab früher eine eigene `media.js`-Function, die
+  Team-Passwort geschützt (siehe unten). Bilder aus dem "uploads"-Ordner (`bildFolder: "uploads"`,
+  siehe `upload-image.js`) werden dagegen nur referenziert, nicht erneut heruntergeladen/
+  komprimiert/committet – die liegen dort bereits fertig. Es gab früher eine eigene `media.js`-Function, die
   Bilder aus `medien/` über die Function-Laufzeit auslieferte; das führte bei größeren Bildern
   (> ~6 MB) zu `502`-Fehlern, da Netlify Functions ein hartes Response-Size-Limit haben.
   `medien/` liegt seitdem innerhalb von `planungs-webseite/` (dem Netlify-Publish-Verzeichnis)

@@ -1,5 +1,5 @@
 (function () {
-  // Mini-Wizard für "Zur Veröffentlichung freigeben" (entwurf -> bereit): keine Terminwahl mehr,
+  // Mini-Wizard für "Post freigeben" (entwurf -> bereit): keine Terminwahl mehr,
   // sondern eine Review-Bestätigung + Vier-Augen-Freigabe (die freigebende Person darf nicht der
   // Autor des Posts sein). Läuft in einem eigenen <dialog> (nicht in der Seite selbst wie der
   // große "Post erstellen"-Wizard), da es eine Aktion an genau einer bestehenden Post-Karte ist.
@@ -71,15 +71,25 @@
       freigabeLabel.textContent = 'Freigegeben von';
       freigabeGroup.appendChild(freigabeLabel);
 
-      const freigabeInput = document.createElement('input');
-      freigabeInput.type = 'text';
+      const freigabeInput = document.createElement('select');
       freigabeInput.id = 'schedule-freigegeben-von';
-      freigabeInput.maxLength = 60;
+      const freigabePlaceholder = document.createElement('option');
+      freigabePlaceholder.value = '';
+      freigabePlaceholder.textContent = 'Bitte wählen …';
+      freigabeInput.appendChild(freigabePlaceholder);
+      // Kommt aus team-members.js (window.TeamMembers), dieselbe feste Liste wie beim
+      // Autor-Feld im "Post erstellen"-Wizard.
+      window.TeamMembers.forEach((name) => {
+        const option = document.createElement('option');
+        option.value = name;
+        option.textContent = name;
+        freigabeInput.appendChild(option);
+      });
       freigabeInput.value = state.freigegebenVon || '';
       freigabeGroup.appendChild(freigabeInput);
       container.appendChild(freigabeGroup);
 
-      freigabeInput.addEventListener('input', () => {
+      freigabeInput.addEventListener('change', () => {
         state.freigegebenVon = freigabeInput.value;
       });
 
@@ -104,7 +114,7 @@
       confirmBtn.type = 'button';
       confirmBtn.className = 'selection-submit btn-primary';
       confirmBtn.setAttribute('data-wizard-nav', '');
-      confirmBtn.textContent = 'Zur Veröffentlichung freigeben';
+      confirmBtn.textContent = 'Post freigeben';
       nav.appendChild(confirmBtn);
       container.appendChild(nav);
 
@@ -166,7 +176,7 @@
     dialog.className = 'app-dialog wizard-dialog';
 
     const heading = document.createElement('h3');
-    heading.textContent = 'Zur Veröffentlichung freigeben';
+    heading.textContent = 'Post freigeben';
     dialog.appendChild(heading);
 
     const progress = document.createElement('ol');

@@ -60,7 +60,7 @@
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'selection-submit btn-primary';
-      button.textContent = '✅ Zur Veröffentlichung freigeben';
+      button.textContent = '✅ Post freigeben';
       button.addEventListener('click', () => {
         window.ScheduleWizard.open(post, onUpdated);
       });

@@ -3,8 +3,12 @@
   // post-steps-shared.js (window.PostSteps). Nur der Bild-Schritt (Mehrfachauswahl mit
   // Dropdown + Paging) und die Abschluss-Vorschau sind hier feature-spezifisch.
 
-  // Muss mit netlify/functions/lib/drive-folders.js synchron gehalten werden.
+  // "uploads" ist kein Drive-Ordner (siehe upload-wizard.js + netlify/functions/images.js),
+  // die übrigen Einträge müssen mit netlify/functions/lib/drive-folders.js synchron gehalten
+  // werden. "uploads" steht an erster Stelle, da frisch hochgeladene Bilder direkt danach meist
+  // auch verwendet werden sollen.
   const FOLDERS = [
+    { key: 'uploads', label: 'Hochgeladene Bilder' },
     { key: 'presse-mappe', label: 'Presse-Mappe' },
     { key: 'bilder-daniel', label: 'Bilder Daniel' },
     { key: 'bilder-deik', label: 'Bilder Deik' },
@@ -13,6 +17,9 @@
     { key: 'anzeigen', label: 'Anzeigen (Magazine, Zeitschriften etc.)' },
   ];
   const PAGE_SIZE = 60;
+  // Kommt aus team-members.js (window.TeamMembers) - feste Team-Liste statt Freitext, da
+  // Autor/Freigabe fürs Vier-Augen-Prinzip eindeutig einer von genau diesen Personen sein muss.
+  const TEAM_MEMBERS = window.TeamMembers;
 
   const { appendNav, buildFinalCaption, validateKategorieTitel, mountKategorieTitelStep, mountCaptionStep, validateCaption, CATEGORIES } = window.PostSteps;
 
@@ -227,15 +234,23 @@
     autorLabel.textContent = 'Autor';
     autorGroup.appendChild(autorLabel);
 
-    const autorInput = document.createElement('input');
-    autorInput.type = 'text';
+    const autorInput = document.createElement('select');
     autorInput.id = 'wizard-autor';
-    autorInput.maxLength = 60;
+    const autorPlaceholder = document.createElement('option');
+    autorPlaceholder.value = '';
+    autorPlaceholder.textContent = 'Bitte wählen …';
+    autorInput.appendChild(autorPlaceholder);
+    TEAM_MEMBERS.forEach((name) => {
+      const option = document.createElement('option');
+      option.value = name;
+      option.textContent = name;
+      autorInput.appendChild(option);
+    });
     autorInput.value = state.autor || '';
     autorGroup.appendChild(autorInput);
     container.appendChild(autorGroup);
 
-    autorInput.addEventListener('input', () => {
+    autorInput.addEventListener('change', () => {
       state.autor = autorInput.value;
     });
 

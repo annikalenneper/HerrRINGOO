@@ -119,4 +119,23 @@ async function listMarkdownFiles(prefix) {
     .map((entry) => entry.path);
 }
 
-module.exports = { getFile, putFile, deleteFile, moveFile, listMarkdownFiles, REPO };
+// Listet alle Bild-Dateien (jpg/jpeg/png) unterhalb von `prefix` - Analog zu listMarkdownFiles,
+// aber für Bilder. Genutzt von images.js, um den "uploads"-Ordner (siehe upload-image.js) direkt
+// aus dem Repo statt aus Google Drive aufzulisten.
+async function listImageFiles(prefix) {
+  const response = await fetch(`${API_BASE_TREES}/${BRANCH}?recursive=1`, { headers: authHeaders() });
+  if (!response.ok) {
+    throw new Error(`GitHub-Verzeichnisabruf fehlgeschlagen: ${await readErrorDetails(response)}`);
+  }
+
+  const data = await response.json();
+  if (data.truncated) {
+    throw new Error('GitHub-Verzeichnisbaum ist zu groß für eine einzelne Anfrage (truncated).');
+  }
+
+  return (data.tree || [])
+    .filter((entry) => entry.type === 'blob' && entry.path.startsWith(prefix) && /\.(jpe?g|png)$/i.test(entry.path))
+    .map((entry) => entry.path);
+}
+
+module.exports = { getFile, putFile, deleteFile, moveFile, listMarkdownFiles, listImageFiles, REPO };
