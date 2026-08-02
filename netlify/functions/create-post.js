@@ -128,21 +128,20 @@ exports.handler = async (event) => {
 
       // Integritätsprüfung: verhindert, dass eine manipulierte Anfrage ein beliebiges (nicht
       // zum angegebenen Ordner gehörendes bzw. nicht-Bild-) Drive-Objekt einschleust.
-      const meta = await drive.files.get({
-        fileId: bildId,
-        fields: 'parents,mimeType,name',
+      // files.get({fields: 'parents'}) liefert das parents-Feld für Dateien in einer Shared
+      // Drive nicht zuverlässig zurück (Drive-API-v3-Eigenheit) - deshalb wird die
+      // Ordner-Zugehörigkeit stattdessen über dieselbe containment-Query geprüft, die images.js
+      // für die Galerie bereits erfolgreich nutzt.
+      const listResponse = await drive.files.list({
+        q: `'${folder.id}' in parents and mimeType contains 'image/' and trashed = false`,
+        fields: 'files(id)',
+        pageSize: 1000,
         supportsAllDrives: true,
+        includeItemsFromAllDrives: true,
       });
-      const isImage = (meta.data.mimeType || '').startsWith('image/');
-      const belongsToFolder = (meta.data.parents || []).includes(folder.id);
-      if (!isImage || !belongsToFolder) {
-        console.error('Bild-Integritätsprüfung fehlgeschlagen:', {
-          bildId,
-          erwarteterOrdner: folder.id,
-          tatsaechlicheParents: meta.data.parents,
-          mimeType: meta.data.mimeType,
-          name: meta.data.name,
-        });
+      const belongsToFolder = (listResponse.data.files || []).some((f) => f.id === bildId);
+      if (!belongsToFolder) {
+        console.error('Bild-Integritätsprüfung fehlgeschlagen:', { bildId, erwarteterOrdner: folder.id });
         return errorResponse(400, `Bild ${index + 1}: gehört nicht zum angegebenen Ordner oder ist kein Bild.`);
       }
 
