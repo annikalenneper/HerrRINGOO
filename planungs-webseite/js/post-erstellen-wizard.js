@@ -213,6 +213,32 @@
     meta.appendChild(titelEl);
     container.appendChild(meta);
 
+    // Autor wird hier (statt in post-steps-shared.js) erfasst, weil dieser Schritt nur im
+    // Erstellen-Wizard gemountet wird, nicht im Bearbeiten-Wizard (edit-wizard.js nutzt
+    // mountKategorieTitelStep mit) - der Autor eines Entwurfs soll nach dem Anlegen nicht mehr
+    // änderbar sein. Für das Vier-Augen-Prinzip bei der Freigabe (siehe schedule-wizard.js)
+    // muss dieser Name sich vom "Freigegeben von"-Namen unterscheiden.
+    const autorGroup = document.createElement('div');
+    autorGroup.className = 'form-group';
+    autorGroup.setAttribute('data-field', 'autor');
+
+    const autorLabel = document.createElement('label');
+    autorLabel.setAttribute('for', 'wizard-autor');
+    autorLabel.textContent = 'Autor';
+    autorGroup.appendChild(autorLabel);
+
+    const autorInput = document.createElement('input');
+    autorInput.type = 'text';
+    autorInput.id = 'wizard-autor';
+    autorInput.maxLength = 60;
+    autorInput.value = state.autor || '';
+    autorGroup.appendChild(autorInput);
+    container.appendChild(autorGroup);
+
+    autorInput.addEventListener('input', () => {
+      state.autor = autorInput.value;
+    });
+
     const status = document.createElement('p');
     status.className = 'gallery-status';
     status.setAttribute('data-field', 'submit');
@@ -255,6 +281,7 @@
             kategorie: state.kategorie,
             bilder: state.bilder.map((b) => ({ bildFolder: b.folderKey, bildId: b.id })),
             caption: buildFinalCaption(state),
+            autor: (state.autor || '').trim(),
           }),
         });
         const data = await response.json();
@@ -265,6 +292,12 @@
     }
 
     confirmBtn.addEventListener('click', async () => {
+      if (!(state.autor || '').trim()) {
+        status.className = 'gallery-status error';
+        status.textContent = 'Bitte einen Autor eintragen.';
+        return;
+      }
+
       helpers.setBusy(true);
       status.className = 'gallery-status';
       status.textContent = 'Post wird gespeichert …';

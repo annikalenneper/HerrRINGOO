@@ -3,6 +3,7 @@ titel: "Zitatkachel – Charlie Chaplin"
 kategorie: zitatkachel
 plattform: instagram
 status: entwurf
+erstellt_am: "2026-08-02T16:39:59.000Z"
 datum_geplant: ""
 datum_veroeffentlicht:
 medien:

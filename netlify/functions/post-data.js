@@ -25,13 +25,22 @@ exports.handler = async () => {
         kategorie: data.kategorie || '',
         plattform: data.plattform || '',
         status: data.status || '',
+        erstellt_am: data.erstellt_am || '',
+        autor: data.autor || '',
+        freigegeben_von: data.freigegeben_von || '',
         datum_geplant: data.datum_geplant || '',
         medien: Array.isArray(data.medien) ? data.medien : [],
         caption: extractCaption(content),
       };
     }));
 
-    posts.sort((a, b) => a.datei.localeCompare(b.datei));
+    // Neueste zuerst. Ältere Posts ohne erstellt_am (vor Einführung dieses Felds) landen ans
+    // Ende, untereinander weiter alphabetisch nach Dateiname sortiert (Fallback für Altbestand).
+    posts.sort((a, b) => {
+      if (a.erstellt_am && b.erstellt_am) return b.erstellt_am.localeCompare(a.erstellt_am);
+      if (a.erstellt_am !== b.erstellt_am) return a.erstellt_am ? -1 : 1;
+      return a.datei.localeCompare(b.datei);
+    });
 
     return {
       statusCode: 200,

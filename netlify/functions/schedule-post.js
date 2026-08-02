@@ -1,3 +1,4 @@
+const matter = require('gray-matter');
 const { checkSecret } = require('./lib/auth');
 const { getFile, moveFile } = require('./lib/github');
 const { updateFrontmatter } = require('./lib/posts');
@@ -5,8 +6,7 @@ const { updateFrontmatter } = require('./lib/posts');
 const SOURCE_DIR = 'posts/01-entwuerfe';
 const TARGET_DIR = 'posts/02-bereit-zur-veroeffentlichung';
 const DATEI_PATTERN = new RegExp(`^${SOURCE_DIR}/[\\w-]+\\.md$`);
-// Format des HTML5 <input type="datetime-local">-Werts (Datum + Uhrzeit, kein Sekunden-Teil).
-const DATUM_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
+const MAX_FREIGEGEBEN_VON_LENGTH = 60;
 
 function errorResponse(statusCode, error, details) {
   return { statusCode, body: JSON.stringify(details ? { error, details } : { error }) };
@@ -24,7 +24,7 @@ exports.handler = async (event) => {
     return errorResponse(400, 'Ungültiges JSON im Request-Body.');
   }
 
-  const { secret, datei, datum_geplant: datumGeplant } = payload;
+  const { secret, datei, freigegeben_von: freigegebenVon } = payload;
 
   if (!checkSecret(secret)) {
     return errorResponse(401, 'Ungültiges oder fehlendes Team-Passwort.');
@@ -32,8 +32,8 @@ exports.handler = async (event) => {
   if (typeof datei !== 'string' || !DATEI_PATTERN.test(datei)) {
     return errorResponse(400, `"datei" muss ein Post in "${SOURCE_DIR}/" sein.`);
   }
-  if (typeof datumGeplant !== 'string' || !DATUM_PATTERN.test(datumGeplant)) {
-    return errorResponse(400, '"datum_geplant" muss im Format JJJJ-MM-TTThh:mm angegeben werden.');
+  if (typeof freigegebenVon !== 'string' || !freigegebenVon.trim() || freigegebenVon.length > MAX_FREIGEGEBEN_VON_LENGTH) {
+    return errorResponse(400, `"freigegeben_von" ist erforderlich (max. ${MAX_FREIGEGEBEN_VON_LENGTH} Zeichen).`);
   }
 
   try {
@@ -42,9 +42,21 @@ exports.handler = async (event) => {
       return errorResponse(404, `Datei "${datei}" nicht gefunden.`);
     }
 
-    const newContent = updateFrontmatter(existing.content.toString('utf8'), {
+    const existingContent = existing.content.toString('utf8');
+
+    // Vier-Augen-Prinzip: serverseitig durchgesetzt, nicht nur im Frontend (schedule-wizard.js
+    // prüft dasselbe, aber ein Client-Check allein ließe sich per direktem Function-Aufruf
+    // umgehen). Ältere Entwürfe ohne "autor"-Feld werden durchgelassen, da sich das Prinzip ohne
+    // hinterlegten Autor nicht durchsetzen lässt.
+    const { autor } = matter(existingContent).data;
+    const freigegebenVonTrimmed = freigegebenVon.trim();
+    if (autor && String(autor).trim().toLowerCase() === freigegebenVonTrimmed.toLowerCase()) {
+      return errorResponse(400, `Vier-Augen-Prinzip: Die Freigabe darf nicht durch den Autor (${autor}) selbst erfolgen.`);
+    }
+
+    const newContent = updateFrontmatter(existingContent, {
       status: 'bereit',
-      datum_geplant: datumGeplant,
+      freigegeben_von: freigegebenVonTrimmed,
     });
 
     const filename = datei.slice(SOURCE_DIR.length + 1);

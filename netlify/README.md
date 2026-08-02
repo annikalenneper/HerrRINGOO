@@ -6,7 +6,9 @@
   Unterstützt Paging über die Query-Parameter `pageToken`/`pageSize` (Antwortform:
   `{ images, nextPageToken }`) für den dortigen "Mehr laden"-Button.
 - `post-data.js` liest die Post-Entwürfe aus [`../posts/`](../posts/README.md) (Frontmatter +
-  Caption) für die Instagram-Vorschau auf `planungs-webseite/post-erstellen.html`. Heißt bewusst
+  Caption) für die Instagram-Vorschau auf `planungs-webseite/post-erstellen.html`. Sortiert nach
+  `erstellt_am` absteigend (neueste zuerst); Posts ohne dieses Feld (Altbestand von vor dessen
+  Einführung) landen ans Ende, untereinander alphabetisch nach Dateiname. Heißt bewusst
   nicht `posts.js` – Netlifys Node-Laufzeit importiert Functions über ihren Dateinamen, und ein
   gleichnamiger eingebundener Ordner `posts/` (siehe `included_files` unten) würde dabei
   kollidieren (`ERR_UNSUPPORTED_DIR_IMPORT`).
@@ -20,9 +22,11 @@
   `medien/` liegt seitdem innerhalb von `planungs-webseite/` (dem Netlify-Publish-Verzeichnis)
   und wird direkt als statische Datei über die CDN ausgeliefert – kein Limit, keine Function
   mehr nötig.
-- `schedule-post.js` markiert einen Entwurf als bereit: setzt `status: bereit` und
-  `datum_geplant` im Frontmatter und verschiebt die Datei von `posts/01-entwuerfe/` nach
-  `posts/02-bereit-zur-veroeffentlichung/`.
+- `schedule-post.js` gibt einen Entwurf zur Veröffentlichung frei: setzt `status: bereit` und
+  `freigegeben_von` im Frontmatter und verschiebt die Datei von `posts/01-entwuerfe/` nach
+  `posts/02-bereit-zur-veroeffentlichung/`. Setzt kein Datum mehr (kein automatisches
+  Scheduling) – stattdessen Vier-Augen-Prinzip: `freigegeben_von` darf serverseitig nicht mit
+  `autor` (gesetzt beim Anlegen über `create-post.js`) übereinstimmen.
 - `publish-post.js` markiert einen Post als veröffentlicht: setzt `status: veroeffentlicht` und
   `datum_veroeffentlicht` im Frontmatter und verschiebt die Datei von
   `posts/02-bereit-zur-veroeffentlichung/` nach `posts/03-veroeffentlicht/`. Postet nichts

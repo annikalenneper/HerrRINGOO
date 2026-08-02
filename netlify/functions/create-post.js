@@ -10,6 +10,7 @@ const BILD_ID_PATTERN = /^[\w-]+$/;
 const MAX_TITEL_LENGTH = 120;
 const MAX_CAPTION_LENGTH = 2200; // Instagram-Limit
 const MAX_BILDER = 10; // Instagram-Karussell-Limit
+const MAX_AUTOR_LENGTH = 60;
 
 // Instagram skaliert Feed-Bilder ohnehin auf max. 1080px herunter - ein größeres Original
 // bringt keine sichtbare Qualität, nur unnötige Upload-Zeit (Base64 zu GitHub ist der
@@ -33,13 +34,16 @@ function escapeYamlString(value) {
   return value.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
 }
 
-function buildPostContent({ titel, kategorie, mediaPaths, caption }) {
+function buildPostContent({ titel, kategorie, mediaPaths, caption, autor }) {
   const medienBlock = mediaPaths.map((mediaPath) => `  - ${mediaPath}`).join('\n');
   return `---
 titel: "${escapeYamlString(titel)}"
 kategorie: ${kategorie}
 plattform: instagram
 status: entwurf
+erstellt_am: "${new Date().toISOString()}"
+autor: "${escapeYamlString(autor)}"
+freigegeben_von: ""
 datum_geplant: ""
 datum_veroeffentlicht:
 medien:
@@ -65,7 +69,7 @@ exports.handler = async (event) => {
     return errorResponse(400, 'Ungültiges JSON im Request-Body.');
   }
 
-  const { secret, titel, kategorie, bilder, caption } = payload;
+  const { secret, titel, kategorie, bilder, caption, autor } = payload;
 
   if (!checkSecret(secret)) {
     return errorResponse(401, 'Ungültiges oder fehlendes Team-Passwort.');
@@ -73,6 +77,9 @@ exports.handler = async (event) => {
 
   if (typeof titel !== 'string' || !titel.trim() || titel.length > MAX_TITEL_LENGTH) {
     return errorResponse(400, `"titel" ist erforderlich (max. ${MAX_TITEL_LENGTH} Zeichen).`);
+  }
+  if (typeof autor !== 'string' || !autor.trim() || autor.length > MAX_AUTOR_LENGTH) {
+    return errorResponse(400, `"autor" ist erforderlich (max. ${MAX_AUTOR_LENGTH} Zeichen).`);
   }
   if (typeof kategorie !== 'string' || !kategorie) {
     return errorResponse(400, '"kategorie" ist erforderlich.');
@@ -186,7 +193,7 @@ exports.handler = async (event) => {
       mediaPaths.push(mediaPath);
     }
 
-    const content = buildPostContent({ titel: titel.trim(), kategorie, mediaPaths, caption: caption.trim() });
+    const content = buildPostContent({ titel: titel.trim(), kategorie, mediaPaths, caption: caption.trim(), autor: autor.trim() });
     const postPath = `posts/01-entwuerfe/${filename}`;
 
     try {

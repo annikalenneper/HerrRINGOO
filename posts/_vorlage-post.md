@@ -3,6 +3,9 @@ beschreibung: "Kurze, sprechende Beschreibung des Bilds"
 kategorie: werkstatt
 plattform: instagram
 status: entwurf
+erstellt_am: "JJJJ-MM-TTThh:mm:ss.sssZ"
+autor: ""
+freigegeben_von: ""
 datum_geplant: JJJJ-MM-TTThh:mm
 datum_veroeffentlicht:
 medien:
@@ -14,8 +17,15 @@ notizen: ""
 Ausfüllhinweise:
 - kategorie: Kürzel aus kategorien/README.md verwenden (z. B. werkstatt, unterwegs, produkt, ...)
 - status: entwurf | bereit | veroeffentlicht
-- datum_geplant: Datum + Uhrzeit als JJJJ-MM-TTThh:mm (wird normalerweise über "Post
-  einplanen" im Tool gesetzt, nicht von Hand)
+- erstellt_am: Zeitstempel als ISO-8601 (JJJJ-MM-TTThh:mm:ss.sssZ), wird beim Anlegen im Tool
+  automatisch gesetzt (nicht von Hand) - steuert die Sortierung (neueste zuerst) in der Übersicht
+- autor: Name der Person, die den Entwurf angelegt hat (wird normalerweise beim Anlegen im
+  Tool gesetzt, nicht von Hand)
+- freigegeben_von: Name der Person, die den Post zur Veröffentlichung freigegeben hat
+  (Vier-Augen-Prinzip: darf nicht dieselbe Person wie "autor" sein; wird über "Zur
+  Veröffentlichung freigeben" im Tool gesetzt, nicht von Hand)
+- datum_geplant: aktuell nicht in Verwendung (Feld bleibt reserviert für ein späteres
+  automatisches Zeitplan-Feature, siehe netlify/instagram-publish-plan.md)
 - medien: Pfade zu Bild-/Videodateien in medien/, die zu diesem Post gehören
 - notizen: interne Anmerkungen, die NICHT Teil der Caption sind
 -->

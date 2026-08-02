@@ -1,70 +1,87 @@
 (function () {
-  // Mini-Wizard für "Post einplanen" (entwurf -> bereit): Datum & Uhrzeit, dann Vorschau &
-  // Bestätigen. Läuft in einem eigenen <dialog> (nicht in der Seite selbst wie der große
-  // "Post erstellen"-Wizard), da es eine Aktion an genau einer bestehenden Post-Karte ist.
-  // Nutzt WizardEngine + die generischen appendNav/ConfirmDialog/TeamAuth-Bausteine.
+  // Mini-Wizard für "Zur Veröffentlichung freigeben" (entwurf -> bereit): keine Terminwahl mehr,
+  // sondern eine Review-Bestätigung + Vier-Augen-Freigabe (die freigebende Person darf nicht der
+  // Autor des Posts sein). Läuft in einem eigenen <dialog> (nicht in der Seite selbst wie der
+  // große "Post erstellen"-Wizard), da es eine Aktion an genau einer bestehenden Post-Karte ist.
+  // Nutzt WizardEngine + die generischen ConfirmDialog/TeamAuth-Bausteine.
 
-  function validateDatumZeit(state) {
-    if (!state.datumZeit) {
-      return { valid: false, errors: { datumZeit: 'Bitte Datum und Uhrzeit wählen.' } };
+  function validateFreigabe(state, post) {
+    if (!state.reviewBestaetigt) {
+      return { valid: false, errors: { reviewBestaetigt: 'Bitte bestätigen, dass der Post ein Review erhalten hat.' } };
     }
-    const chosen = new Date(state.datumZeit);
-    if (Number.isNaN(chosen.getTime()) || chosen <= new Date()) {
-      return { valid: false, errors: { datumZeit: 'Der Termin muss in der Zukunft liegen.' } };
+
+    const freigegebenVon = (state.freigegebenVon || '').trim();
+    if (!freigegebenVon) {
+      return { valid: false, errors: { freigegebenVon: 'Bitte den Namen der freigebenden Person eintragen.' } };
     }
+
+    const autor = (post.autor || '').trim();
+    if (autor && autor.toLowerCase() === freigegebenVon.toLowerCase()) {
+      return {
+        valid: false,
+        errors: { freigegebenVon: `Vier-Augen-Prinzip: Die Freigabe darf nicht durch den Autor (${autor}) selbst erfolgen.` },
+      };
+    }
+
     return { valid: true };
   }
 
-  function mountDatumZeitStep(container, state, helpers) {
-    const group = document.createElement('div');
-    group.className = 'form-group';
-    group.setAttribute('data-field', 'datumZeit');
-
-    const label = document.createElement('label');
-    label.setAttribute('for', 'schedule-datum-zeit');
-    label.textContent = 'Datum & Uhrzeit';
-    group.appendChild(label);
-
-    const input = document.createElement('input');
-    input.type = 'datetime-local';
-    input.id = 'schedule-datum-zeit';
-    input.value = state.datumZeit || '';
-    group.appendChild(input);
-    container.appendChild(group);
-
-    const nav = window.PostSteps.appendNav(container, helpers, {
-      showBack: false,
-      validate: validateDatumZeit,
-      state,
-    });
-
-    input.addEventListener('input', () => {
-      state.datumZeit = input.value;
-      nav.refresh();
-    });
-  }
-
-  function formatDatumZeit(value) {
-    const date = new Date(value);
-    return date.toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
-  }
-
-  function mountVorschauStep(post) {
+  function mountFreigabeStep(post) {
     return function (container, state, helpers) {
       const hint = document.createElement('p');
       hint.className = 'wizard-step-hint';
-      hint.textContent = 'Prüfe Termin und Post, bevor du ihn einplanst.';
+      hint.textContent = 'Prüfe den Post, bevor du ihn zur Veröffentlichung freigibst.';
       container.appendChild(hint);
 
       const images = (post.medien || []).map((pfad) => ({ url: `/${pfad}`, alt: post.titel || pfad }));
       container.appendChild(window.PostShared.buildMock({ images, caption: post.caption }));
 
-      const meta = document.createElement('div');
-      meta.className = 'post-preview-meta';
-      const termin = document.createElement('span');
-      termin.textContent = `Geplant für: ${formatDatumZeit(state.datumZeit)}`;
-      meta.appendChild(termin);
-      container.appendChild(meta);
+      if (post.autor) {
+        const meta = document.createElement('div');
+        meta.className = 'post-preview-meta';
+        const autorEl = document.createElement('span');
+        autorEl.textContent = `Autor: ${post.autor}`;
+        meta.appendChild(autorEl);
+        container.appendChild(meta);
+      }
+
+      const reviewGroup = document.createElement('div');
+      reviewGroup.className = 'form-group';
+      reviewGroup.setAttribute('data-field', 'reviewBestaetigt');
+
+      const reviewLabel = document.createElement('label');
+      const reviewCheckbox = document.createElement('input');
+      reviewCheckbox.type = 'checkbox';
+      reviewCheckbox.checked = Boolean(state.reviewBestaetigt);
+      reviewLabel.appendChild(reviewCheckbox);
+      reviewLabel.appendChild(document.createTextNode(' Ich bestätige: Dieser Post hat ein Review erhalten und kann veröffentlicht werden.'));
+      reviewGroup.appendChild(reviewLabel);
+      container.appendChild(reviewGroup);
+
+      reviewCheckbox.addEventListener('change', () => {
+        state.reviewBestaetigt = reviewCheckbox.checked;
+      });
+
+      const freigabeGroup = document.createElement('div');
+      freigabeGroup.className = 'form-group';
+      freigabeGroup.setAttribute('data-field', 'freigegebenVon');
+
+      const freigabeLabel = document.createElement('label');
+      freigabeLabel.setAttribute('for', 'schedule-freigegeben-von');
+      freigabeLabel.textContent = 'Freigegeben von';
+      freigabeGroup.appendChild(freigabeLabel);
+
+      const freigabeInput = document.createElement('input');
+      freigabeInput.type = 'text';
+      freigabeInput.id = 'schedule-freigegeben-von';
+      freigabeInput.maxLength = 60;
+      freigabeInput.value = state.freigegebenVon || '';
+      freigabeGroup.appendChild(freigabeInput);
+      container.appendChild(freigabeGroup);
+
+      freigabeInput.addEventListener('input', () => {
+        state.freigegebenVon = freigabeInput.value;
+      });
 
       const status = document.createElement('p');
       status.className = 'gallery-status';
@@ -75,32 +92,39 @@
       const nav = document.createElement('div');
       nav.className = 'wizard-nav';
 
-      const backBtn = document.createElement('button');
-      backBtn.type = 'button';
-      backBtn.className = 'selection-submit btn-secondary';
-      backBtn.setAttribute('data-wizard-nav', '');
-      backBtn.textContent = 'Zurück';
-      backBtn.addEventListener('click', helpers.back);
-      nav.appendChild(backBtn);
+      const cancelBtn = document.createElement('button');
+      cancelBtn.type = 'button';
+      cancelBtn.className = 'selection-submit btn-secondary';
+      cancelBtn.setAttribute('data-wizard-nav', '');
+      cancelBtn.textContent = 'Abbrechen';
+      cancelBtn.addEventListener('click', helpers.cancel);
+      nav.appendChild(cancelBtn);
 
       const confirmBtn = document.createElement('button');
       confirmBtn.type = 'button';
       confirmBtn.className = 'selection-submit btn-primary';
       confirmBtn.setAttribute('data-wizard-nav', '');
-      confirmBtn.textContent = 'Post einplanen';
+      confirmBtn.textContent = 'Zur Veröffentlichung freigeben';
       nav.appendChild(confirmBtn);
       container.appendChild(nav);
 
       confirmBtn.addEventListener('click', async () => {
+        const result = validateFreigabe(state, post);
+        if (!result.valid) {
+          status.className = 'gallery-status error';
+          status.textContent = Object.values(result.errors)[0];
+          return;
+        }
+
         helpers.setBusy(true);
         status.className = 'gallery-status';
-        status.textContent = 'Wird eingeplant …';
+        status.textContent = 'Wird freigegeben …';
 
         const secret = await window.TeamAuth.getOrPromptSecret();
         if (!secret) {
           helpers.setBusy(false);
           status.className = 'gallery-status error';
-          status.textContent = 'Ohne Team-Passwort kann der Post nicht eingeplant werden.';
+          status.textContent = 'Ohne Team-Passwort kann der Post nicht freigegeben werden.';
           return;
         }
 
@@ -108,7 +132,7 @@
           const response = await fetch('/.netlify/functions/schedule-post', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ secret, datei: post.datei, datum_geplant: state.datumZeit }),
+            body: JSON.stringify({ secret, datei: post.datei, freigegeben_von: state.freigegebenVon.trim() }),
           });
           const data = await response.json();
 
@@ -124,13 +148,13 @@
           }
 
           status.className = 'gallery-status success';
-          status.textContent = 'Eingeplant.';
+          status.textContent = 'Freigegeben.';
           confirmBtn.disabled = true;
-          backBtn.disabled = true;
+          cancelBtn.disabled = true;
           setTimeout(helpers.finish, 2000);
         } catch (error) {
           status.className = 'gallery-status error';
-          status.textContent = `Post konnte nicht eingeplant werden: ${error.message}`;
+          status.textContent = `Post konnte nicht freigegeben werden: ${error.message}`;
           helpers.setBusy(false);
         }
       });
@@ -142,7 +166,7 @@
     dialog.className = 'app-dialog wizard-dialog';
 
     const heading = document.createElement('h3');
-    heading.textContent = 'Post einplanen';
+    heading.textContent = 'Zur Veröffentlichung freigeben';
     dialog.appendChild(heading);
 
     const progress = document.createElement('ol');
@@ -161,8 +185,7 @@
 
     const wizard = window.WizardEngine.createWizard({
       steps: [
-        { id: 'datum-zeit', titel: 'Datum & Uhrzeit', mount: mountDatumZeitStep, validate: validateDatumZeit },
-        { id: 'vorschau', titel: 'Vorschau & Bestätigen', mount: mountVorschauStep(post) },
+        { id: 'freigabe', titel: 'Freigabe', mount: mountFreigabeStep(post) },
       ],
       container,
       progressContainer: progress,

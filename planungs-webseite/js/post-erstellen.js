@@ -4,6 +4,12 @@
     return match ? match.label : (key || '–');
   }
 
+  function formatErstelltAm(value) {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+    return date.toLocaleDateString('de-DE', { dateStyle: 'medium' });
+  }
+
   function buildMeta(post) {
     const meta = document.createElement('div');
     meta.className = 'post-preview-meta';
@@ -12,6 +18,25 @@
     kategorieChip.className = 'category-chip';
     kategorieChip.textContent = kategorieLabel(post.kategorie);
     meta.appendChild(kategorieChip);
+
+    const erstelltAmText = formatErstelltAm(post.erstellt_am);
+    if (erstelltAmText) {
+      const erstelltAmEl = document.createElement('span');
+      erstelltAmEl.textContent = `Erstellt: ${erstelltAmText}`;
+      meta.appendChild(erstelltAmEl);
+    }
+
+    if (post.autor) {
+      const autorEl = document.createElement('span');
+      autorEl.textContent = `Autor: ${post.autor}`;
+      meta.appendChild(autorEl);
+    }
+
+    if (post.freigegeben_von) {
+      const freigabeEl = document.createElement('span');
+      freigabeEl.textContent = `Freigegeben von: ${post.freigegeben_von}`;
+      meta.appendChild(freigabeEl);
+    }
 
     return meta;
   }
@@ -24,8 +49,8 @@
     return `${yyyy}-${mm}-${dd}`;
   }
 
-  // Entwurf -> bereit läuft über einen eigenen Mini-Wizard (Datum & Uhrzeit + Vorschau,
-  // siehe schedule-wizard.js), da hier jetzt auch eine Uhrzeit festgelegt werden muss.
+  // Entwurf -> bereit läuft über einen eigenen Mini-Wizard (Review-Bestätigung + Vier-Augen-
+  // Freigabe, siehe schedule-wizard.js), da die freigebende Person hier vom Autor abweichen muss.
   // Bereit -> veroeffentlicht bleibt die einfache Inline-Aktion (nur Datum, kein Wizard).
   function buildActions(post, onUpdated) {
     const wrapper = document.createElement('div');
@@ -35,7 +60,7 @@
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'selection-submit btn-primary';
-      button.textContent = '🗓️ Post einplanen';
+      button.textContent = '✅ Zur Veröffentlichung freigeben';
       button.addEventListener('click', () => {
         window.ScheduleWizard.open(post, onUpdated);
       });

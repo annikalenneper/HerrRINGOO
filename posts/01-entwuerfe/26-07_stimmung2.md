@@ -3,6 +3,7 @@ beschreibung: "Sektglas mit spiegelndem Sonnenlicht und Herr RINGOO bei Sonnenun
 kategorie: unterwegs
 plattform: instagram
 status: entwurf
+erstellt_am: "2026-07-04T15:53:49.000Z"
 datum_geplant: JJJJ-MM-TT
 datum_veroeffentlicht:
 medien:

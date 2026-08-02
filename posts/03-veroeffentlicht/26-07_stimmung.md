@@ -3,6 +3,7 @@ beschreibung: Herr RINGOO auf Hügel bei wolkigem Himmel und Sonnenuntergang
 kategorie: unterwegs
 plattform: instagram
 status: veroeffentlicht
+erstellt_am: "2026-07-04T15:53:49.000Z"
 datum_geplant: '2026-08-01T19:07'
 datum_veroeffentlicht: '2026-08-01'
 medien:
