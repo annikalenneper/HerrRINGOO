@@ -52,5 +52,14 @@
     "beschreibung": "Bilder vom Besuch bei Rauschmayer",
     "bebilderung": "Foto-Reihe vom Besuch vor Ort",
     "erstellt_am": "2026-08-02T14:48:21.699Z"
+  },
+  {
+    "id": "idea-1785682586251",
+    "titel": "Google-Bewertungen posten",
+    "kategorie": "community",
+    "status": "neu",
+    "beschreibung": "Einzelne Sätze oder ganze Bewertungen als Kachel posten.",
+    "bebilderung": "Text auf Hintergrund",
+    "erstellt_am": "2026-08-02T14:56:26.251Z"
   }
 ]
