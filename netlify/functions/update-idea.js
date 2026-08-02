@@ -2,7 +2,6 @@ const { checkSecret } = require('./lib/auth');
 const { readIdeenFile, writeIdeenFile } = require('./lib/ideen');
 const { readKategorienFile } = require('./lib/kategorien');
 
-const STATUS_WERTE = ['neu', 'verfeinert', 'umgesetzt'];
 const MAX_TITEL_LENGTH = 120;
 const MAX_BESCHREIBUNG_LENGTH = 4000;
 const MAX_BEBILDERUNG_LENGTH = 500;
@@ -12,9 +11,7 @@ function errorResponse(statusCode, error, details) {
   return { statusCode, body: JSON.stringify(details ? { error, details } : { error }) };
 }
 
-// Nimmt immer den kompletten editierbaren Feldsatz entgegen (wie update-post.js) - sowohl der
-// volle Bearbeiten-Dialog als auch der schnelle Status-Klick auf der Karte senden alle Felder,
-// damit es nur einen Schreibpfad für Ideen gibt.
+// Nimmt immer den kompletten editierbaren Feldsatz entgegen (wie update-post.js).
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return errorResponse(405, 'Method Not Allowed');
@@ -27,7 +24,7 @@ exports.handler = async (event) => {
     return errorResponse(400, 'Ungültiges JSON im Request-Body.');
   }
 
-  const { secret, id, titel, kategorie, status, beschreibung, bebilderung } = payload;
+  const { secret, id, titel, kategorie, beschreibung, bebilderung } = payload;
 
   if (!checkSecret(secret)) {
     return errorResponse(401, 'Ungültiges oder fehlendes Team-Passwort.');
@@ -40,9 +37,6 @@ exports.handler = async (event) => {
   }
   if (typeof kategorie !== 'string' || !kategorie) {
     return errorResponse(400, '"kategorie" ist erforderlich.');
-  }
-  if (typeof status !== 'string' || !STATUS_WERTE.includes(status)) {
-    return errorResponse(400, `"status" muss einer von: ${STATUS_WERTE.join(', ')} sein.`);
   }
   if (typeof beschreibung !== 'string' || !beschreibung.trim() || beschreibung.length > MAX_BESCHREIBUNG_LENGTH) {
     return errorResponse(400, `"beschreibung" ist erforderlich (max. ${MAX_BESCHREIBUNG_LENGTH} Zeichen).`);
@@ -68,11 +62,13 @@ exports.handler = async (event) => {
       ...ideen[index],
       titel: titel.trim(),
       kategorie,
-      status,
       beschreibung: beschreibung.trim(),
       bebilderung: typeof bebilderung === 'string' ? bebilderung.trim() : '',
       aktualisiert_am: new Date().toISOString(),
     };
+    // Entfernt ein eventuell noch vorhandenes "status"-Feld aus älteren Datensätzen (das Feld
+    // wurde abgeschafft) - ohne das würde der Spread von ideen[index] es sonst weiter mitschleppen.
+    delete aktualisiert.status;
     ideen[index] = aktualisiert;
 
     await writeIdeenFile(ideen, sha, `Update idea: ${aktualisiert.titel}`);

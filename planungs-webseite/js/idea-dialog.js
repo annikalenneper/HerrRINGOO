@@ -3,11 +3,6 @@
   // Felder sind immer gleichzeitig sichtbar, es gibt keinen mehrstufigen Ablauf wie beim
   // Post-Wizard). open(idee, onSaved): idee === null -> anlegen, sonst -> bearbeiten.
 
-  const STATUS_OPTIONS = [
-    { key: 'neu', label: 'Neu', badge: '💡' },
-    { key: 'verfeinert', label: 'Verfeinert', badge: '🔧' },
-    { key: 'umgesetzt', label: 'Umgesetzt', badge: '✅' },
-  ];
   const MAX_TITEL_LENGTH = 120;
   const MAX_BESCHREIBUNG_LENGTH = 4000;
   const MAX_BEBILDERUNG_LENGTH = 500;
@@ -165,36 +160,6 @@
     return group;
   }
 
-  function buildStatusField(state) {
-    const group = document.createElement('div');
-    group.className = 'form-group';
-    group.setAttribute('data-field', 'status');
-
-    const label = document.createElement('label');
-    label.textContent = 'Status';
-    group.appendChild(label);
-
-    const badgeGroup = document.createElement('div');
-    badgeGroup.className = 'status-badge-group';
-
-    STATUS_OPTIONS.forEach(({ key, label: statusLabel, badge }) => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'category-chip';
-      if (state.status === key) btn.classList.add('active');
-      btn.textContent = `${badge} ${statusLabel}`;
-      btn.addEventListener('click', () => {
-        state.status = key;
-        badgeGroup.querySelectorAll('button').forEach((b) => b.classList.remove('active'));
-        btn.classList.add('active');
-      });
-      badgeGroup.appendChild(btn);
-    });
-
-    group.appendChild(badgeGroup);
-    return group;
-  }
-
   function buildTextField({ id, labelText, fieldName, value, maxLength, multiline, hint }) {
     const group = document.createElement('div');
     group.className = 'form-group';
@@ -245,7 +210,6 @@
     const state = {
       titel: idee ? idee.titel : '',
       kategorie: idee ? idee.kategorie : '',
-      status: idee ? idee.status : 'neu',
       beschreibung: idee ? idee.beschreibung : '',
       bebilderung: idee ? idee.bebilderung : '',
     };
@@ -267,7 +231,6 @@
     titelField.input.addEventListener('input', () => { state.titel = titelField.input.value; });
 
     form.appendChild(buildKategorieField(state));
-    form.appendChild(buildStatusField(state));
 
     const beschreibungField = buildTextField({
       id: 'idee-beschreibung', labelText: 'Beschreibung', fieldName: 'beschreibung', value: state.beschreibung,
@@ -332,8 +295,8 @@
 
       const endpoint = isEdit ? 'update-idea' : 'create-idea';
       const body = isEdit
-        ? { secret, id: idee.id, titel: state.titel.trim(), kategorie: state.kategorie, status: state.status, beschreibung: state.beschreibung.trim(), bebilderung: state.bebilderung.trim() }
-        : { secret, titel: state.titel.trim(), kategorie: state.kategorie, status: state.status, beschreibung: state.beschreibung.trim(), bebilderung: state.bebilderung.trim() };
+        ? { secret, id: idee.id, titel: state.titel.trim(), kategorie: state.kategorie, beschreibung: state.beschreibung.trim(), bebilderung: state.bebilderung.trim() }
+        : { secret, titel: state.titel.trim(), kategorie: state.kategorie, beschreibung: state.beschreibung.trim(), bebilderung: state.bebilderung.trim() };
 
       try {
         const response = await fetch(`/.netlify/functions/${endpoint}`, {

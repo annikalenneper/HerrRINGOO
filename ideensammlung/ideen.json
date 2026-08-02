@@ -3,7 +3,6 @@
     "id": "idea-seed-01",
     "titel": "Wo rollt Herr RINGOO?",
     "kategorie": "unterwegs",
-    "status": "neu",
     "beschreibung": "Format-Idee rund um die aktuellen bzw. nächsten Standorte des rollenden Studios.",
     "bebilderung": "",
     "erstellt_am": "2026-08-01T00:00:00.000Z"
@@ -12,7 +11,6 @@
     "id": "idea-seed-02",
     "titel": "Pakete vorstellen einzeln",
     "kategorie": "pakete",
-    "status": "neu",
     "beschreibung": "Jedes Beratungspaket (z. B. \"Voll muckelich\", \"Mit Schmackes\") in einem eigenen Post statt nur im Überblick vorstellen.",
     "bebilderung": "",
     "erstellt_am": "2026-08-01T00:00:01.000Z"
@@ -21,7 +19,6 @@
     "id": "idea-seed-03",
     "titel": "Wie buchen?",
     "kategorie": "wissen",
-    "status": "neu",
     "beschreibung": "Erklär-Content: wie läuft die Buchung eines Termins/Pakets konkret ab.",
     "bebilderung": "",
     "erstellt_am": "2026-08-01T00:00:02.000Z"
@@ -30,7 +27,6 @@
     "id": "idea-seed-04",
     "titel": "Team vorstellen",
     "kategorie": "team",
-    "status": "neu",
     "beschreibung": "Kurzvorstellung der Personen hinter Herr RINGOO.",
     "bebilderung": "",
     "erstellt_am": "2026-08-01T00:00:03.000Z"
@@ -39,7 +35,6 @@
     "id": "idea-seed-06",
     "titel": "Ringe reinigen/säubern",
     "kategorie": "wissen",
-    "status": "neu",
     "beschreibung": "Ratgeber-Content: Pflege-Tipps für Trauringe.",
     "bebilderung": "",
     "erstellt_am": "2026-08-01T00:00:05.000Z"
@@ -48,7 +43,6 @@
     "id": "idea-1785682101699",
     "titel": "Besuch in Pforzheim",
     "kategorie": "werkstatt",
-    "status": "neu",
     "beschreibung": "Bilder vom Besuch bei Rauschmayer",
     "bebilderung": "Foto-Reihe vom Besuch vor Ort",
     "erstellt_am": "2026-08-02T14:48:21.699Z"
@@ -57,7 +51,6 @@
     "id": "idea-1785682586251",
     "titel": "Google-Bewertungen posten",
     "kategorie": "community",
-    "status": "neu",
     "beschreibung": "Einzelne Sätze oder ganze Bewertungen als Kachel posten.",
     "bebilderung": "Text auf Hintergrund",
     "erstellt_am": "2026-08-02T14:56:26.251Z"
@@ -66,7 +59,6 @@
     "id": "idea-1785682974861",
     "titel": "WICHTIG: Teaser fürs Trauringstudio",
     "kategorie": "ladengeschaeft",
-    "status": "neu",
     "beschreibung": "Trauringstudio-Umbau teasern, begleiten",
     "bebilderung": "folgt",
     "erstellt_am": "2026-08-02T15:02:54.861Z"

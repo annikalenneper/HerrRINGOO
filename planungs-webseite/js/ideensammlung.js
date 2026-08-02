@@ -4,81 +4,6 @@
     return match ? match.label : (key || '–');
   }
 
-  const STATUS_META = {
-    neu: { label: 'Neu', badge: '💡' },
-    verfeinert: { label: 'Verfeinert', badge: '🔧' },
-    umgesetzt: { label: 'Umgesetzt', badge: '✅' },
-  };
-
-  function buildStatusBadges(idee, onChanged) {
-    const group = document.createElement('div');
-    group.className = 'status-badge-group';
-
-    const status = document.createElement('p');
-    status.className = 'gallery-status';
-    status.setAttribute('aria-live', 'polite');
-
-    Object.entries(STATUS_META).forEach(([key, meta]) => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'category-chip';
-      if (idee.status === key) btn.classList.add('active');
-      btn.textContent = `${meta.badge} ${meta.label}`;
-
-      btn.addEventListener('click', async () => {
-        if (idee.status === key) return;
-
-        const secret = await window.TeamAuth.getOrPromptSecret();
-        if (!secret) {
-          status.className = 'gallery-status error';
-          status.textContent = 'Ohne Team-Passwort kann der Status nicht geändert werden.';
-          return;
-        }
-
-        group.querySelectorAll('button').forEach((b) => { b.disabled = true; });
-        status.className = 'gallery-status';
-        status.textContent = 'Wird gespeichert …';
-
-        try {
-          const response = await fetch('/.netlify/functions/update-idea', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              secret,
-              id: idee.id,
-              titel: idee.titel,
-              kategorie: idee.kategorie,
-              status: key,
-              beschreibung: idee.beschreibung,
-              bebilderung: idee.bebilderung,
-            }),
-          });
-          const data = await response.json();
-
-          if (!response.ok) {
-            if (response.status === 401) window.TeamAuth.clearCachedSecret();
-            throw new Error(data.details ? `${data.error} (${data.details})` : data.error || `HTTP ${response.status}`);
-          }
-
-          status.className = 'gallery-status success';
-          status.textContent = 'Aktualisiert.';
-          setTimeout(onChanged, 600);
-        } catch (error) {
-          status.className = 'gallery-status error';
-          status.textContent = `Status konnte nicht geändert werden: ${error.message}`;
-          group.querySelectorAll('button').forEach((b) => { b.disabled = false; });
-        }
-      });
-
-      group.appendChild(btn);
-    });
-
-    const wrapper = document.createElement('div');
-    wrapper.appendChild(group);
-    wrapper.appendChild(status);
-    return wrapper;
-  }
-
   function buildCard(idee, onChanged) {
     const card = document.createElement('div');
     card.className = 'card idea-card';
@@ -91,8 +16,6 @@
     kategorieChip.className = 'category-chip';
     kategorieChip.textContent = kategorieLabel(idee.kategorie);
     card.appendChild(kategorieChip);
-
-    card.appendChild(buildStatusBadges(idee, onChanged));
 
     const beschreibung = document.createElement('p');
     beschreibung.textContent = idee.beschreibung;
@@ -163,21 +86,18 @@
     return card;
   }
 
-  // Filter: Status exklusiv (wie eine Radio-Gruppe - eine Idee hat nie mehr als einen Status
-  // gleichzeitig), Kategorie additiv (Mehrfachauswahl, ODER-verknüpft), plus Freitextsuche über
-  // Titel+Beschreibung - exaktes Gegenstück zum Filter-Muster in post-erstellen.js.
+  // Filter: Kategorie additiv (Mehrfachauswahl, ODER-verknüpft), plus Freitextsuche über
+  // Titel+Beschreibung.
   let allIdeen = [];
-  let activeStatus = null;
   const activeKategorien = new Set();
   let searchTerm = '';
 
   function matchesFilters(idee) {
-    const statusOk = !activeStatus || idee.status === activeStatus;
     const kategorieOk = activeKategorien.size === 0 || activeKategorien.has(idee.kategorie);
     const searchOk = !searchTerm
       || (idee.titel || '').toLowerCase().includes(searchTerm)
       || (idee.beschreibung || '').toLowerCase().includes(searchTerm);
-    return statusOk && kategorieOk && searchOk;
+    return kategorieOk && searchOk;
   }
 
   function renderGrid() {
@@ -229,16 +149,6 @@
       container.appendChild(chip);
     });
   }
-
-  const statusChips = document.querySelectorAll('[data-status-filters] [data-status]');
-  statusChips.forEach((chip) => {
-    chip.addEventListener('click', () => {
-      const status = chip.dataset.status;
-      activeStatus = activeStatus === status ? null : status;
-      statusChips.forEach((c) => c.classList.toggle('active', c.dataset.status === activeStatus));
-      renderGrid();
-    });
-  });
 
   const searchInput = document.querySelector('[data-idee-suche]');
   if (searchInput) {
