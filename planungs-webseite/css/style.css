@@ -592,7 +592,11 @@ button.category-chip:hover {
 
 .image-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  /* auto-fill statt auto-fit: leere Spalten bleiben als Platzhalter erhalten statt zu
+     kollabieren - sonst strecken sich die Kacheln in dünn gefüllten Ordnern (z. B. "uploads"
+     mit erst wenigen Bildern) über die ganze Zeilenbreite und wirken dadurch deutlich größer
+     als in gut gefüllten Ordnern. */
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: var(--space-4);
   margin-top: var(--space-3);
 }
@@ -619,22 +623,12 @@ button.category-chip:hover {
   background: var(--gray-100);
 }
 
-.image-card .image-tag {
-  padding: var(--space-2) var(--space-3);
-  font-size: 0.85rem;
-  color: var(--color-text-muted);
-}
-
 .image-card {
   cursor: pointer;
 }
 
 .image-card.selected {
   border-color: var(--gold);
-}
-
-.image-card.selected .image-tag {
-  color: var(--color-accent-dark);
 }
 
 .gallery-status {

@@ -117,7 +117,7 @@ Komponenten derselben Rolle auf eines von vier Tiers zu:
 | Tier | block / inline | Beispiele |
 |---|---|---|
 | **pill** | `--space-1` / `--space-3` | `.source-note`, `.keyword-tags span` |
-| **compact** | `--space-2` / `--space-3` | `th, td`, `.phrase-list li`, `.image-card .image-tag`, `.checklist li` |
+| **compact** | `--space-2` / `--space-3` | `th, td`, `.phrase-list li`, `.checklist li` |
 | **standard** | `--space-3` / `--space-4` | `.callout`, `.status-legend .card` |
 | **card** | `--space-5` / `--space-5` | `.card` |
 

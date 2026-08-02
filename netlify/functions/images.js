@@ -8,6 +8,20 @@ const UPLOADS_FOLDER_KEY = 'uploads';
 const UPLOADS_DIR = 'planungs-webseite/medien/uploads';
 const UPLOADS_MEDIA_PREFIX = 'medien/uploads/';
 
+// Drive liefert über thumbnailLink standardmäßig ein kleines Vorschaubild (~220px), deutlich
+// kleiner als die eigenen, auf 1080px komprimierten Bilder (siehe lib/compress-image.js). In der
+// Bildauswahl-Kachel (dieselbe CSS-Box für alle Ordner, object-fit: cover) wirkt das dadurch
+// hochskaliert und unscharf/"kleiner" als die Kacheln aus dem uploads-Ordner. Deshalb wird hier
+// explizit dieselbe Zielgröße angefordert, indem der Größen-Parameter am Ende der von Drive
+// gelieferten URL ersetzt (bzw. ergänzt) wird - undokumentiertes, aber weit verbreitetes
+// Drive-Thumbnail-Verhalten (`=sNNNN`-Suffix).
+const DRIVE_THUMBNAIL_SIZE = 1080;
+
+function withThumbnailSize(url, size) {
+  if (!url) return url;
+  return /=s\d+$/.test(url) ? url.replace(/=s\d+$/, `=s${size}`) : `${url}=s${size}`;
+}
+
 async function listUploadsFolder() {
   const paths = await listImageFiles(`${UPLOADS_DIR}/`);
   // Dateinamen beginnen mit einem Zeitstempel (siehe upload-image.js) - absteigend sortiert
@@ -80,7 +94,7 @@ exports.handler = async (event) => {
     const images = (response.data.files || []).map((file) => ({
       id: file.id,
       name: file.name,
-      thumbnailLink: file.thumbnailLink,
+      thumbnailLink: withThumbnailSize(file.thumbnailLink, DRIVE_THUMBNAIL_SIZE),
     }));
 
     return {

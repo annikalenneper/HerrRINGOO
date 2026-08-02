@@ -110,12 +110,7 @@
         img.alt = image.name;
         img.loading = 'lazy';
 
-        const tag = document.createElement('div');
-        tag.className = 'image-tag';
-        tag.textContent = image.name;
-
         card.appendChild(img);
-        card.appendChild(tag);
         card.addEventListener('click', () => {
           if (selected.has(image.id)) {
             selected.delete(image.id);
