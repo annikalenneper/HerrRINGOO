@@ -228,17 +228,17 @@
   }
 
   // Filter: Status-Chips sind statisch im HTML, Kategorie-Chips werden aus den tatsächlich
-  // geladenen Posts generiert (nur Kategorien, die gerade vorkommen). Status ist exklusiv
-  // (immer nur ein Status gleichzeitig aktiv, wie eine Radio-Gruppe - ein Post hat ohnehin nie
-  // mehr als einen Status). Kategorie ist additiv (Mehrfachauswahl, ODER-verknüpft, da mehrere
-  // gewählte Kategorien den Ergebnis-Umfang erweitern sollen). Leere Auswahl = kein Filter in
-  // dieser Dimension.
+  // geladenen Posts generiert (nur Kategorien, die gerade vorkommen). Status ist exklusiv und
+  // Pflicht (immer genau ein Status aktiv, wie eine Radio-Gruppe statt Checkboxen - ein Post hat
+  // ohnehin nie mehr als einen Status, und ohne Filter wäre die Übersicht bei wachsendem
+  // Postbestand schnell unübersichtlich). Kategorie bleibt additiv (Mehrfachauswahl,
+  // ODER-verknüpft) mit optionaler leerer Auswahl = kein Filter in dieser Dimension.
   let allPosts = [];
-  let activeStatus = null;
+  let activeStatus = 'entwurf';
   const activeKategorien = new Set();
 
   function matchesFilters(post) {
-    const statusOk = !activeStatus || post.status === activeStatus;
+    const statusOk = post.status === activeStatus;
     const kategorieOk = activeKategorien.size === 0 || activeKategorien.has(post.kategorie);
     return statusOk && kategorieOk;
   }
@@ -294,14 +294,22 @@
   }
 
   const statusChips = document.querySelectorAll('[data-status-filters] [data-status]');
+
+  function setActiveStatus(status) {
+    activeStatus = status;
+    statusChips.forEach((c) => c.classList.toggle('active', c.dataset.status === activeStatus));
+  }
+
   statusChips.forEach((chip) => {
+    // Kein Abwählen des aktiven Status mehr (früher: erneuter Klick auf den aktiven Chip
+    // löschte den Filter) - ein Klick setzt immer genau einen Status, nie "kein Filter".
     chip.addEventListener('click', () => {
-      const status = chip.dataset.status;
-      activeStatus = activeStatus === status ? null : status;
-      statusChips.forEach((c) => c.classList.toggle('active', c.dataset.status === activeStatus));
+      setActiveStatus(chip.dataset.status);
       renderGrid();
     });
   });
+
+  setActiveStatus(activeStatus);
 
   async function loadPosts() {
     const grid = document.querySelector('[data-post-grid]');
