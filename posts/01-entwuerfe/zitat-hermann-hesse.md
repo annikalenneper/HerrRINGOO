@@ -1,5 +1,5 @@
 ---
-titel: Zitatkachel – Hermann Hesse
+titel: Zitatkachel – Charlie Chaplin
 kategorie: zitatkachel
 plattform: instagram
 status: entwurf
