@@ -1,20 +1,22 @@
 ---
-titel: "Zitatkachel – Bertolt Brecht"
+titel: Zitatkachel – Bertolt Brecht
 kategorie: zitatkachel
 plattform: instagram
 status: entwurf
-erstellt_am: "2026-08-02T16:39:59.000Z"
-datum_geplant: ""
-datum_veroeffentlicht:
+erstellt_am: '2026-08-02T16:39:59.000Z'
+datum_geplant: ''
+datum_veroeffentlicht: null
 medien:
   - medien/zitatkacheln/BertholdBrecht.png
-notizen: "Achtung: Auf der Kachel steht 'Berthold Brecht', korrekt ist 'Bertolt Brecht' – Grafik ggf. vor Veröffentlichung korrigieren."
+notizen: >-
+  Achtung: Auf der Kachel steht 'Berthold Brecht', korrekt ist 'Bertolt Brecht'
+  – Grafik ggf. vor Veröffentlichung korrigieren.
 ---
 
 ## Caption
 
 "Liebe ist der Wunsch, etwas zu geben, nicht zu erhalten." – Bertolt Brecht
 
-Genau das ist es, was uns bei jedem Ringtermin begegnet: zwei Menschen, die einander etwas schenken wollen. 💛
+Ob der erste Antrag, der erste Ringtermin oder der Start in ein gemeinsames Leben: Manche Anfänge bleiben für immer in Erinnerung. ✨
 
 #HerrRINGOO #RollendesTrauringstudio #Trauringe #Eheringe #Zitat #Liebeszitat
