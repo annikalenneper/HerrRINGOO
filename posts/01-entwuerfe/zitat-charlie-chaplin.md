@@ -1,5 +1,5 @@
 ---
-titel: Zitatkachel – Charlie Chaplin
+titel: Zitatkachel – Bertold Brecht
 kategorie: zitatkachel
 plattform: instagram
 status: entwurf
