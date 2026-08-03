@@ -1,5 +1,5 @@
 ---
-titel: Zitatkachel – Bertolt Brecht
+titel: Zitatkachel – Hermann Hesse
 kategorie: zitatkachel
 plattform: instagram
 status: entwurf
