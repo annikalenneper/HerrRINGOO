@@ -15,7 +15,7 @@ notizen: >-
 
 ## Caption
 
-"Liebe ist der Wunsch, etwas zu geben, nicht zu erhalten." – Bertolt Brecht
+"Jedem Anfang wohnt ein Zaber inne." - Hermann Hesse
 
 Ob der erste Antrag, der erste Ringtermin oder der Start in ein gemeinsames Leben: Manche Anfänge bleiben für immer in Erinnerung. ✨
 
