@@ -13,7 +13,7 @@ notizen: ''
 
 ## Caption
 
-"Jedem Anfang wohnt ein Zauber inne." – Hermann Hesse
+"Macht brauchst du nur, wenn du Böses vorhast. Für alles andere reicht Liebe." - Charlie Chaplin
 
 Ein Satz, der auch nach über 80 Jahren noch trifft. 🎬
 
