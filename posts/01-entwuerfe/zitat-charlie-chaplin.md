@@ -15,6 +15,6 @@ notizen: ''
 
 "Liebe ist der Wunsch, etwas zu geben, nicht zu erhalten." – Bertolt Brecht
 
-Ein Satz, der auch nach über 80 Jahren noch trifft. 🎬
+Genau das ist es, was uns bei jedem Ringtermin begegnet: zwei Menschen, die einander etwas schenken wollen. 💛
 
 #HerrRINGOO #RollendesTrauringstudio #Trauringe #Eheringe #Zitat #Liebeszitat
