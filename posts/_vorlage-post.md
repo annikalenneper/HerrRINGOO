@@ -26,8 +26,9 @@ Ausfüllhinweise:
   (Vier-Augen-Prinzip: darf nicht dieselbe Person wie "autor" sein; wird über "Post freigeben"
   im Tool gesetzt, nicht von Hand)
 - kommentare: Liste von { von, von_name, text, erstellt_am }, über das Kommentarfeld in der
-  Post-Vorschau im Tool ergänzt (nicht von Hand). von_name ist nur bei von: "Extern" gesetzt
-  (identifiziert die externe Person, da "Extern" allein das nicht tut)
+  Post-Vorschau im Tool ergänzt (nicht von Hand) - nur im Status "entwurf" les- und schreibbar.
+  von_name ist nur bei von: "Extern" gesetzt (identifiziert die externe Person, da "Extern"
+  allein das nicht tut)
 - datum_geplant: Datum + Uhrzeit als JJJJ-MM-TTThh:mm, wird über "Post einplanen" im Tool
   gesetzt (nicht von Hand) - sobald der Termin erreicht ist, setzt
   publish-scheduled-posts-background.js den Status automatisch auf "veroeffentlicht"

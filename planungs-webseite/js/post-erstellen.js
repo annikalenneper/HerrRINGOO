@@ -132,9 +132,212 @@
     });
   }
 
-  // Kommentare sind status-unabhängig (anders als buildActions, das je nach Status
-  // freigeben/veröffentlichen zeigt) - jeder Post kann in jedem Status kommentiert werden, das
-  // Kommentarfeld sitzt deshalb als eigener Block unterhalb der Post-Vorschau, siehe buildCard.
+  const RESET_GRUENDE = [
+    { key: 'fehler_entdeckt', label: 'Fehler entdeckt' },
+    { key: 'verbesserung_vorschlagen', label: 'Verbesserung vorschlagen' },
+    { key: 'sonstiges', label: 'Sonstiges' },
+  ];
+
+  // Popup für "Status zurücksetzen" im Status "bereit" (bereit -> entwurf): fragt Bearbeiter,
+  // Grund und optional einen Kommentar ab. Der Kommentar landet über reset-to-entwurf.js in
+  // derselben "kommentare"-Liste wie normale Kommentare und ist danach wieder sichtbar, da der
+  // Post ja zurück im Status "entwurf" ist (siehe buildComments/buildCard).
+  function promptResetToEntwurf() {
+    return new Promise((resolve) => {
+      const dialog = document.createElement('dialog');
+      dialog.className = 'app-dialog';
+
+      const heading = document.createElement('h3');
+      heading.textContent = 'Den Post in den Status "Entwurf" zurücksetzen';
+      dialog.appendChild(heading);
+
+      const bearbeiterGroup = document.createElement('div');
+      bearbeiterGroup.className = 'form-group';
+      const bearbeiterLabel = document.createElement('label');
+      bearbeiterLabel.setAttribute('for', 'reset-bearbeiter');
+      bearbeiterLabel.textContent = 'Bearbeiter';
+      bearbeiterGroup.appendChild(bearbeiterLabel);
+
+      const bearbeiterSelect = document.createElement('select');
+      bearbeiterSelect.id = 'reset-bearbeiter';
+      const bearbeiterPlaceholder = document.createElement('option');
+      bearbeiterPlaceholder.value = '';
+      bearbeiterPlaceholder.textContent = 'Bitte wählen …';
+      bearbeiterSelect.appendChild(bearbeiterPlaceholder);
+      (window.TeamMembers || []).forEach((name) => {
+        const option = document.createElement('option');
+        option.value = name;
+        option.textContent = name;
+        bearbeiterSelect.appendChild(option);
+      });
+      bearbeiterGroup.appendChild(bearbeiterSelect);
+      dialog.appendChild(bearbeiterGroup);
+
+      const grundGroup = document.createElement('div');
+      grundGroup.className = 'form-group';
+      const grundLabel = document.createElement('label');
+      grundLabel.setAttribute('for', 'reset-grund');
+      grundLabel.textContent = 'Grund';
+      grundGroup.appendChild(grundLabel);
+
+      const grundSelect = document.createElement('select');
+      grundSelect.id = 'reset-grund';
+      const grundPlaceholder = document.createElement('option');
+      grundPlaceholder.value = '';
+      grundPlaceholder.textContent = 'Bitte wählen …';
+      grundSelect.appendChild(grundPlaceholder);
+      RESET_GRUENDE.forEach(({ key, label }) => {
+        const option = document.createElement('option');
+        option.value = key;
+        option.textContent = label;
+        grundSelect.appendChild(option);
+      });
+      grundGroup.appendChild(grundSelect);
+      dialog.appendChild(grundGroup);
+
+      const kommentarGroup = document.createElement('div');
+      kommentarGroup.className = 'form-group';
+      const kommentarLabel = document.createElement('label');
+      kommentarLabel.setAttribute('for', 'reset-kommentar');
+      kommentarLabel.textContent = 'Kommentar (optional)';
+      kommentarGroup.appendChild(kommentarLabel);
+
+      const kommentarInput = document.createElement('textarea');
+      kommentarInput.id = 'reset-kommentar';
+      kommentarInput.rows = 3;
+      kommentarGroup.appendChild(kommentarInput);
+      dialog.appendChild(kommentarGroup);
+
+      const errorEl = document.createElement('p');
+      errorEl.className = 'field-error';
+      errorEl.setAttribute('role', 'alert');
+      dialog.appendChild(errorEl);
+
+      const actions = document.createElement('div');
+      actions.className = 'app-dialog-actions';
+
+      const cancelBtn = document.createElement('button');
+      cancelBtn.type = 'button';
+      cancelBtn.className = 'selection-submit btn-secondary';
+      cancelBtn.textContent = 'Abbrechen';
+      cancelBtn.addEventListener('click', () => dialog.close('cancel'));
+      actions.appendChild(cancelBtn);
+
+      const okBtn = document.createElement('button');
+      okBtn.type = 'button';
+      okBtn.className = 'selection-submit btn-primary';
+      okBtn.textContent = 'Zurücksetzen';
+      okBtn.addEventListener('click', () => {
+        if (!bearbeiterSelect.value) {
+          errorEl.textContent = 'Bitte einen Bearbeiter auswählen.';
+          return;
+        }
+        if (!grundSelect.value) {
+          errorEl.textContent = 'Bitte einen Grund auswählen.';
+          return;
+        }
+        dialog.close('ok');
+      });
+      actions.appendChild(okBtn);
+
+      dialog.appendChild(actions);
+      document.body.appendChild(dialog);
+
+      dialog.addEventListener('close', () => {
+        const result = dialog.returnValue === 'ok'
+          ? { bearbeiter: bearbeiterSelect.value, grund: grundSelect.value, kommentar: kommentarInput.value.trim() }
+          : null;
+        dialog.remove();
+        resolve(result);
+      });
+
+      dialog.showModal();
+      bearbeiterSelect.focus();
+    });
+  }
+
+  // Popup für "Status zurücksetzen" im Status "eingeplant" (eingeplant -> bereit): einfacher als
+  // promptResetToEntwurf, nur Namensbestätigung - kein Grund/Kommentar nötig, da der Post
+  // inhaltlich unverändert bleibt und nur der Termin verworfen wird.
+  function promptResetToBereit() {
+    return new Promise((resolve) => {
+      const dialog = document.createElement('dialog');
+      dialog.className = 'app-dialog';
+
+      const heading = document.createElement('h3');
+      heading.textContent = 'Veröffentlichungstermin zurücknehmen?';
+      dialog.appendChild(heading);
+
+      const hint = document.createElement('p');
+      hint.textContent = 'Der Post landet wieder bei "Bereit zur Veröffentlichung". Bitte mit Namen bestätigen.';
+      dialog.appendChild(hint);
+
+      const group = document.createElement('div');
+      group.className = 'form-group';
+      const label = document.createElement('label');
+      label.setAttribute('for', 'reset-bereit-bestaetigt-von');
+      label.textContent = 'Bestätigt von';
+      group.appendChild(label);
+
+      const select = document.createElement('select');
+      select.id = 'reset-bereit-bestaetigt-von';
+      const placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = 'Bitte wählen …';
+      select.appendChild(placeholder);
+      (window.TeamMembers || []).forEach((name) => {
+        const option = document.createElement('option');
+        option.value = name;
+        option.textContent = name;
+        select.appendChild(option);
+      });
+      group.appendChild(select);
+      dialog.appendChild(group);
+
+      const errorEl = document.createElement('p');
+      errorEl.className = 'field-error';
+      errorEl.setAttribute('role', 'alert');
+      dialog.appendChild(errorEl);
+
+      const actions = document.createElement('div');
+      actions.className = 'app-dialog-actions';
+
+      const cancelBtn = document.createElement('button');
+      cancelBtn.type = 'button';
+      cancelBtn.className = 'selection-submit btn-secondary';
+      cancelBtn.textContent = 'Abbrechen';
+      cancelBtn.addEventListener('click', () => dialog.close('cancel'));
+      actions.appendChild(cancelBtn);
+
+      const okBtn = document.createElement('button');
+      okBtn.type = 'button';
+      okBtn.className = 'selection-submit btn-primary';
+      okBtn.textContent = 'Bestätigen';
+      okBtn.addEventListener('click', () => {
+        if (!select.value) {
+          errorEl.textContent = 'Bitte auswählen, wer bestätigt.';
+          return;
+        }
+        dialog.close('ok');
+      });
+      actions.appendChild(okBtn);
+
+      dialog.appendChild(actions);
+      document.body.appendChild(dialog);
+
+      dialog.addEventListener('close', () => {
+        const result = dialog.returnValue === 'ok' ? { bestaetigtVon: select.value } : null;
+        dialog.remove();
+        resolve(result);
+      });
+
+      dialog.showModal();
+      select.focus();
+    });
+  }
+
+  // Kommentare sind nur im Status "entwurf" les- und schreibbar (siehe buildCard) - sobald der
+  // Post weiter ist, gilt die Kommentierungsphase als abgeschlossen.
   function buildComments(post, onUpdated) {
     const wrapper = document.createElement('div');
     wrapper.className = 'post-comments';
@@ -383,6 +586,62 @@
         window.SchedulePublishWizard.open(post, onUpdated);
       });
       wrapper.appendChild(button);
+
+      const resetButton = document.createElement('button');
+      resetButton.type = 'button';
+      resetButton.className = 'selection-submit btn-secondary';
+      resetButton.textContent = '↩️ Status zurücksetzen';
+      wrapper.appendChild(resetButton);
+
+      const resetStatus = document.createElement('p');
+      resetStatus.className = 'gallery-status';
+      resetStatus.setAttribute('aria-live', 'polite');
+      wrapper.appendChild(resetStatus);
+
+      resetButton.addEventListener('click', async () => {
+        const result = await promptResetToEntwurf();
+        if (!result) return;
+
+        const secret = await window.TeamAuth.getOrPromptSecret();
+        if (!secret) {
+          resetStatus.className = 'gallery-status error';
+          resetStatus.textContent = 'Ohne Team-Passwort kann diese Aktion nicht ausgeführt werden.';
+          return;
+        }
+
+        resetButton.disabled = true;
+        resetStatus.className = 'gallery-status';
+        resetStatus.textContent = 'Wird zurückgesetzt …';
+
+        try {
+          const response = await fetch('/.netlify/functions/reset-to-entwurf', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              secret,
+              datei: post.datei,
+              bearbeiter: result.bearbeiter,
+              grund: result.grund,
+              kommentar: result.kommentar,
+            }),
+          });
+          const data = await response.json();
+
+          if (!response.ok) {
+            if (response.status === 401) window.TeamAuth.clearCachedSecret();
+            throw new Error(data.details ? `${data.error} (${data.details})` : data.error || `HTTP ${response.status}`);
+          }
+
+          resetStatus.className = 'gallery-status success';
+          resetStatus.textContent = 'Zurückgesetzt.';
+          setTimeout(onUpdated, 1000);
+        } catch (error) {
+          resetStatus.className = 'gallery-status error';
+          resetStatus.textContent = `Zurücksetzen fehlgeschlagen: ${error.message}`;
+          resetButton.disabled = false;
+        }
+      });
+
       return wrapper;
     }
 
@@ -403,10 +662,54 @@
     button.textContent = '🚀 Jetzt veröffentlichen';
     wrapper.appendChild(button);
 
+    const resetButton = document.createElement('button');
+    resetButton.type = 'button';
+    resetButton.className = 'selection-submit btn-secondary';
+    resetButton.textContent = '↩️ Status zurücksetzen';
+    wrapper.appendChild(resetButton);
+
     const status = document.createElement('p');
     status.className = 'gallery-status';
     status.setAttribute('aria-live', 'polite');
     wrapper.appendChild(status);
+
+    resetButton.addEventListener('click', async () => {
+      const result = await promptResetToBereit();
+      if (!result) return;
+
+      const secret = await window.TeamAuth.getOrPromptSecret();
+      if (!secret) {
+        status.className = 'gallery-status error';
+        status.textContent = 'Ohne Team-Passwort kann diese Aktion nicht ausgeführt werden.';
+        return;
+      }
+
+      resetButton.disabled = true;
+      status.className = 'gallery-status';
+      status.textContent = 'Termin wird zurückgenommen …';
+
+      try {
+        const response = await fetch('/.netlify/functions/reset-to-bereit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ secret, datei: post.datei, bestaetigt_von: result.bestaetigtVon }),
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+          if (response.status === 401) window.TeamAuth.clearCachedSecret();
+          throw new Error(data.details ? `${data.error} (${data.details})` : data.error || `HTTP ${response.status}`);
+        }
+
+        status.className = 'gallery-status success';
+        status.textContent = 'Termin zurückgenommen.';
+        setTimeout(onUpdated, 1000);
+      } catch (error) {
+        status.className = 'gallery-status error';
+        status.textContent = `Aktion fehlgeschlagen: ${error.message}`;
+        resetButton.disabled = false;
+      }
+    });
 
     button.addEventListener('click', async () => {
       const confirmed = await window.ConfirmDialog.confirmAction({
@@ -467,7 +770,12 @@
     }));
     card.appendChild(buildMeta(post));
     card.appendChild(buildActions(post, () => window.location.reload()));
-    card.appendChild(buildComments(post, () => window.location.reload()));
+    // Kommentare nur im Status "entwurf" - sobald der Post die Runde weiter ist, ist die
+    // Kommentierungsphase vorbei (siehe auch den neuen "Status zurücksetzen"-Button, der
+    // genau dafür sorgt, dass ein Post zum Nachbessern wieder kommentierbar wird).
+    if (post.status === 'entwurf') {
+      card.appendChild(buildComments(post, () => window.location.reload()));
+    }
     return card;
   }
 

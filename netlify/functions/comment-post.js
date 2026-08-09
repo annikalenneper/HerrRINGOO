@@ -4,10 +4,11 @@ const { getFile, putFile } = require('./lib/github');
 const { updateFrontmatter } = require('./lib/posts');
 const { TEAM_MEMBERS } = require('./lib/team-members');
 
-// Kommentare sind status-unabhängig (anders als schedule-post.js/publish-post.js) - ein Post
-// bleibt am gleichen Pfad, es wird nur die "kommentare"-Liste im Frontmatter ergänzt und die
-// Datei per putFile am selben Ort aktualisiert (kein moveFile nötig).
-const DATEI_PATTERN = /^posts\/(01-entwuerfe|02-bereit-zur-veroeffentlichung|03-veroeffentlicht)\/[\w-]+\.md$/;
+// Kommentare sind auf den Status "entwurf" beschränkt (serverseitig durchgesetzt, nicht nur im
+// Frontend versteckt - siehe post-erstellen.js buildCard). Post bleibt am gleichen Pfad, es wird
+// nur die "kommentare"-Liste im Frontmatter ergänzt und die Datei per putFile aktualisiert (kein
+// moveFile nötig, da sich der Status hier nicht ändert).
+const DATEI_PATTERN = /^posts\/01-entwuerfe\/[\w-]+\.md$/;
 const MAX_TEXT_LENGTH = 2000;
 const MAX_VON_NAME_LENGTH = 60;
 

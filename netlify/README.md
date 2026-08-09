@@ -41,6 +41,16 @@
   Datei von `posts/02-bereit-zur-veroeffentlichung/` nach
   `posts/03-warten-auf-veroeffentlichung/`. Nicht zu verwechseln mit `schedule-post.js`
   (entwurf -> bereit, ohne Datum).
+- `reset-to-entwurf.js` setzt einen bereiten Post zurück auf `status: entwurf` (Gegenrichtung zu
+  `schedule-post.js`) und verschiebt ihn zurück nach `posts/01-entwuerfe/`. Braucht `bearbeiter`
+  (aus `lib/team-members.js`) und `grund` (`fehler_entdeckt` | `verbesserung_vorschlagen` |
+  `sonstiges`); ein optionaler `kommentar` wird zusammen mit dem Grund als normaler Eintrag an
+  die `kommentare`-Liste angehängt (dort dann wieder sichtbar, da Kommentare nur im Status
+  `entwurf` angezeigt werden, siehe `post-erstellen.js`).
+- `reset-to-bereit.js` nimmt einen eingeplanten Veröffentlichungstermin zurück (Gegenrichtung zu
+  `schedule-publish.js`): setzt `status: bereit`, leert `datum_geplant` und verschiebt die Datei
+  zurück nach `posts/02-bereit-zur-veroeffentlichung/`. Braucht nur `bestaetigt_von` (aus
+  `lib/team-members.js`), da der Post inhaltlich unverändert bleibt.
 - `publish-post.js` markiert einen Post als veröffentlicht: setzt `status: veroeffentlicht` und
   `datum_veroeffentlicht` im Frontmatter und verschiebt die Datei von
   `posts/03-warten-auf-veroeffentlichung/` nach `posts/04-veroeffentlicht/`. Manueller Vorgriff
