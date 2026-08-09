@@ -6,6 +6,7 @@ status: entwurf
 erstellt_am: "JJJJ-MM-TTThh:mm:ss.sssZ"
 autor: ""
 freigegeben_von: ""
+kommentare: []
 datum_geplant: JJJJ-MM-TTThh:mm
 datum_veroeffentlicht:
 medien:
@@ -22,8 +23,10 @@ Ausfüllhinweise:
 - autor: Name der Person, die den Entwurf angelegt hat (wird normalerweise beim Anlegen im
   Tool gesetzt, nicht von Hand)
 - freigegeben_von: Name der Person, die den Post zur Veröffentlichung freigegeben hat
-  (Vier-Augen-Prinzip: darf nicht dieselbe Person wie "autor" sein; wird über "Zur
-  Veröffentlichung freigeben" im Tool gesetzt, nicht von Hand)
+  (Vier-Augen-Prinzip: darf nicht dieselbe Person wie "autor" sein; wird über "Post freigeben"
+  im Tool gesetzt, nicht von Hand)
+- kommentare: Liste von { von, text, erstellt_am }, über das Kommentarfeld in der Post-Vorschau
+  im Tool ergänzt (nicht von Hand)
 - datum_geplant: aktuell nicht in Verwendung (Feld bleibt reserviert für ein späteres
   automatisches Zeitplan-Feature, siehe netlify/instagram-publish-plan.md)
 - medien: Pfade zu Bild-/Videodateien in medien/, die zu diesem Post gehören

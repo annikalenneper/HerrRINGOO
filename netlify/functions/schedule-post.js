@@ -47,7 +47,9 @@ exports.handler = async (event) => {
     // Vier-Augen-Prinzip: serverseitig durchgesetzt, nicht nur im Frontend (schedule-wizard.js
     // prüft dasselbe, aber ein Client-Check allein ließe sich per direktem Function-Aufruf
     // umgehen). Ältere Entwürfe ohne "autor"-Feld werden durchgelassen, da sich das Prinzip ohne
-    // hinterlegten Autor nicht durchsetzen lässt.
+    // hinterlegten Autor nicht durchsetzen lässt. Achtung: bei autor: "Extern" greift die Prüfung
+    // nur namentlich - zwei verschiedene externe Personen können sich so nicht gegenseitig
+    // freigeben, ohne dass das hier auffällt (kein echtes Login, das Personen unterscheidet).
     const { autor } = matter(existingContent).data;
     const freigegebenVonTrimmed = freigegebenVon.trim();
     if (autor && String(autor).trim().toLowerCase() === freigegebenVonTrimmed.toLowerCase()) {

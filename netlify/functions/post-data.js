@@ -28,6 +28,7 @@ exports.handler = async () => {
         erstellt_am: data.erstellt_am || '',
         autor: data.autor || '',
         freigegeben_von: data.freigegeben_von || '',
+        kommentare: Array.isArray(data.kommentare) ? data.kommentare : [],
         datum_geplant: data.datum_geplant || '',
         medien: Array.isArray(data.medien) ? data.medien : [],
         caption: extractCaption(content),

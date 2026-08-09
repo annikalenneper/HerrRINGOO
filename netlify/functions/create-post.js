@@ -43,6 +43,7 @@ status: entwurf
 erstellt_am: "${new Date().toISOString()}"
 autor: "${escapeYamlString(autor)}"
 freigegeben_von: ""
+kommentare: []
 datum_geplant: ""
 datum_veroeffentlicht:
 medien:

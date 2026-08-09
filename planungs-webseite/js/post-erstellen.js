@@ -10,6 +10,132 @@
     return date.toLocaleDateString('de-DE', { dateStyle: 'medium' });
   }
 
+  function formatKommentarDatum(value) {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+    return date.toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
+  }
+
+  // Kommentare sind status-unabhängig (anders als buildActions, das je nach Status
+  // freigeben/veröffentlichen zeigt) - jeder Post kann in jedem Status kommentiert werden, das
+  // Kommentarfeld sitzt deshalb als eigener Block unterhalb der Post-Vorschau, siehe buildCard.
+  function buildComments(post, onUpdated) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'post-comments';
+
+    const heading = document.createElement('h4');
+    heading.textContent = 'Kommentare';
+    wrapper.appendChild(heading);
+
+    const list = document.createElement('div');
+    list.className = 'post-comment-list';
+    const kommentare = post.kommentare || [];
+
+    if (kommentare.length === 0) {
+      const empty = document.createElement('p');
+      empty.className = 'post-comment-empty';
+      empty.textContent = 'Noch keine Kommentare.';
+      wrapper.appendChild(empty);
+    } else {
+      kommentare.forEach((kommentar) => {
+        const entry = document.createElement('p');
+        entry.className = 'post-comment';
+
+        const meta = document.createElement('span');
+        meta.className = 'post-comment-meta';
+        meta.textContent = `${kommentar.von} · ${formatKommentarDatum(kommentar.erstellt_am)}`;
+        entry.appendChild(meta);
+        entry.appendChild(document.createElement('br'));
+        entry.appendChild(document.createTextNode(kommentar.text));
+
+        list.appendChild(entry);
+      });
+      wrapper.appendChild(list);
+    }
+
+    const form = document.createElement('div');
+    form.className = 'post-comment-form';
+
+    const vonSelect = document.createElement('select');
+    vonSelect.setAttribute('aria-label', 'Von');
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = 'Von …';
+    vonSelect.appendChild(placeholder);
+    (window.TeamMembers || []).forEach((name) => {
+      const option = document.createElement('option');
+      option.value = name;
+      option.textContent = name;
+      vonSelect.appendChild(option);
+    });
+    form.appendChild(vonSelect);
+
+    const textInput = document.createElement('textarea');
+    textInput.rows = 2;
+    textInput.placeholder = 'Kommentar schreiben …';
+    form.appendChild(textInput);
+
+    const submitBtn = document.createElement('button');
+    submitBtn.type = 'button';
+    submitBtn.className = 'selection-submit btn-secondary';
+    submitBtn.textContent = 'Kommentieren';
+    form.appendChild(submitBtn);
+
+    const status = document.createElement('p');
+    status.className = 'gallery-status';
+    status.setAttribute('aria-live', 'polite');
+    form.appendChild(status);
+
+    submitBtn.addEventListener('click', async () => {
+      if (!vonSelect.value) {
+        status.className = 'gallery-status error';
+        status.textContent = 'Bitte auswählen, wer kommentiert.';
+        return;
+      }
+      if (!textInput.value.trim()) {
+        status.className = 'gallery-status error';
+        status.textContent = 'Bitte einen Kommentar eingeben.';
+        return;
+      }
+
+      const secret = await window.TeamAuth.getOrPromptSecret();
+      if (!secret) {
+        status.className = 'gallery-status error';
+        status.textContent = 'Ohne Team-Passwort kann kein Kommentar gespeichert werden.';
+        return;
+      }
+
+      submitBtn.disabled = true;
+      status.className = 'gallery-status';
+      status.textContent = 'Wird gespeichert …';
+
+      try {
+        const response = await fetch('/.netlify/functions/comment-post', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ secret, datei: post.datei, von: vonSelect.value, text: textInput.value.trim() }),
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+          if (response.status === 401) window.TeamAuth.clearCachedSecret();
+          throw new Error(data.details ? `${data.error} (${data.details})` : data.error || `HTTP ${response.status}`);
+        }
+
+        status.className = 'gallery-status success';
+        status.textContent = 'Kommentar gespeichert.';
+        setTimeout(onUpdated, 600);
+      } catch (error) {
+        status.className = 'gallery-status error';
+        status.textContent = `Kommentar konnte nicht gespeichert werden: ${error.message}`;
+        submitBtn.disabled = false;
+      }
+    });
+
+    wrapper.appendChild(form);
+    return wrapper;
+  }
+
   function buildMeta(post) {
     const meta = document.createElement('div');
     meta.className = 'post-preview-meta';
@@ -224,6 +350,7 @@
     }));
     card.appendChild(buildMeta(post));
     card.appendChild(buildActions(post, () => window.location.reload()));
+    card.appendChild(buildComments(post, () => window.location.reload()));
     return card;
   }
 
