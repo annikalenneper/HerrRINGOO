@@ -13,6 +13,13 @@ medien:
   - medien/post-folien/26-08-gebrauchsspuren-4.jpg
   - medien/post-folien/26-08-gebrauchsspuren-5.jpg
 notizen: ''
+kommentare:
+  - von: Petra
+    von_name: ''
+    text: |-
+      Bitte das Wort Geschirr durch das Wort Besteck ersetzen. 
+      Sowohl GERSTNER, als auch RAUSCHMAYER haben es so in ihren Hinweisen
+    erstellt_am: '2026-08-09T16:23:09.300Z'
 ---
 
 ## Caption
