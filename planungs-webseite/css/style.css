@@ -191,6 +191,13 @@ code {
   color: var(--white);
 }
 
+/* Gleicher Grund wie bei .identity-gate[hidden] weiter unten: display: flex gewinnt sonst
+   gegen die Browser-Standardregel [hidden] { display: none }, das Abmelden/Name-Element bliebe
+   trotz gesetztem hidden-Attribut sichtbar. */
+.identity-status[hidden] {
+  display: none;
+}
+
 .identity-logout-btn {
   font-family: var(--font-body);
   font-size: 0.8rem;

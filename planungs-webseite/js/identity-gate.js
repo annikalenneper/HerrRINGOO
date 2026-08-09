@@ -107,18 +107,51 @@
       showError(`Login fehlgeschlagen: ${(err && err.message) || 'unbekannter Fehler'}. Bitte erneut versuchen.`);
     });
 
-    netlifyIdentity.init();
+    // Baut sein Popup beim allerersten open() erkennbar langsam auf (in Tests 5-6 Sekunden
+    // ohne jede Rückmeldung) - resetLoginButton() unten gibt in der Zwischenzeit sichtbares
+    // Feedback, damit das nicht wie ein hängender Button wirkt.
+    netlifyIdentity.on('open', () => {
+      resetLoginButton();
+    });
+
+    netlifyIdentity.init({ locale: 'de' });
   } else {
     // Widget-Skript konnte nicht laden (z. B. offline, oder Identity läuft nicht als
     // Netlify-Deploy) - klare Fehlermeldung statt eines für immer leeren, unerklärten Gates.
     showError('Login-Dienst konnte nicht geladen werden. Bitte Seite neu laden oder später erneut versuchen.');
   }
 
+  const LOGIN_BTN_DEFAULT_TEXT = 'Einloggen';
+
+  // Setzt den Button zurück, sobald das Widget-Popup tatsächlich offen ist (on('open') oben)
+  // oder spätestens nach 10s (Fallback, falls open() aus irgendeinem Grund nie feuert - lieber
+  // ein zu früh nutzbarer Button als ein für immer blockierter).
+  let loginBtnResetTimeout = null;
+  function resetLoginButton() {
+    if (loginBtnResetTimeout) {
+      clearTimeout(loginBtnResetTimeout);
+      loginBtnResetTimeout = null;
+    }
+    const loginBtn = document.querySelector('[data-identity-login]');
+    if (loginBtn) {
+      loginBtn.disabled = false;
+      loginBtn.textContent = LOGIN_BTN_DEFAULT_TEXT;
+    }
+  }
+
   function wireButtons() {
     const loginBtn = document.querySelector('[data-identity-login]');
     const logoutBtn = document.querySelector('[data-identity-logout]');
     if (loginBtn && window.netlifyIdentity) {
-      loginBtn.addEventListener('click', () => netlifyIdentity.open('login'));
+      loginBtn.addEventListener('click', () => {
+        // Das Widget-Popup braucht beim allerersten Öffnen mehrere Sekunden, ohne dass von
+        // selbst irgendetwas sichtbar passiert - ohne dieses Feedback wirkt der Button wie
+        // hängengeblieben (genau das beobachtete Symptom).
+        loginBtn.disabled = true;
+        loginBtn.textContent = 'Wird geöffnet …';
+        loginBtnResetTimeout = setTimeout(resetLoginButton, 10000);
+        netlifyIdentity.open('login');
+      });
     }
     if (logoutBtn && window.netlifyIdentity) {
       logoutBtn.addEventListener('click', () => netlifyIdentity.logout());
