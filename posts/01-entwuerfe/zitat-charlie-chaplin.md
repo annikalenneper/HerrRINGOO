@@ -9,6 +9,11 @@ datum_veroeffentlicht: null
 medien:
   - medien/zitatkacheln/CharlieChaplin.png
 notizen: ''
+kommentare:
+  - von: Anni
+    von_name: ''
+    text: Bereits veröffentlicht.
+    erstellt_am: '2026-08-09T14:43:43.855Z'
 ---
 
 ## Caption
