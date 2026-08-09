@@ -62,36 +62,15 @@
         state.reviewBestaetigt = reviewCheckbox.checked;
       });
 
-      const freigabeGroup = document.createElement('div');
-      freigabeGroup.className = 'form-group';
-      freigabeGroup.setAttribute('data-field', 'freigegebenVon');
-
-      const freigabeLabel = document.createElement('label');
-      freigabeLabel.setAttribute('for', 'schedule-freigegeben-von');
-      freigabeLabel.textContent = 'Freigegeben von';
-      freigabeGroup.appendChild(freigabeLabel);
-
-      const freigabeInput = document.createElement('select');
-      freigabeInput.id = 'schedule-freigegeben-von';
-      const freigabePlaceholder = document.createElement('option');
-      freigabePlaceholder.value = '';
-      freigabePlaceholder.textContent = 'Bitte wählen …';
-      freigabeInput.appendChild(freigabePlaceholder);
-      // Kommt aus team-members.js (window.TeamMembers), dieselbe feste Liste wie beim
-      // Autor-Feld im "Post erstellen"-Wizard.
-      window.TeamMembers.forEach((name) => {
-        const option = document.createElement('option');
-        option.value = name;
-        option.textContent = name;
-        freigabeInput.appendChild(option);
-      });
-      freigabeInput.value = state.freigegebenVon || '';
-      freigabeGroup.appendChild(freigabeInput);
-      container.appendChild(freigabeGroup);
-
-      freigabeInput.addEventListener('change', () => {
-        state.freigegebenVon = freigabeInput.value;
-      });
+      // Freigegeben von kommt automatisch von der eingeloggten Person (siehe
+      // identity-gate.js) statt einer manuellen Auswahl - genau die Person, die hier klickt,
+      // gibt frei. Das Vier-Augen-Prinzip (siehe validateFreigabe oben) verhindert, dass das
+      // dieselbe Person wie der Autor ist.
+      state.freigegebenVon = window.getIdentityUserName();
+      const freigabeMeta = document.createElement('p');
+      freigabeMeta.className = 'wizard-step-hint';
+      freigabeMeta.textContent = `Freigegeben von: ${state.freigegebenVon || '–'}`;
+      container.appendChild(freigabeMeta);
 
       const status = document.createElement('p');
       status.className = 'gallery-status';

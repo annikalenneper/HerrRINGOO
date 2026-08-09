@@ -17,9 +17,6 @@
     { key: 'anzeigen', label: 'Anzeigen (Magazine, Zeitschriften etc.)' },
   ];
   const PAGE_SIZE = 60;
-  // Kommt aus team-members.js (window.TeamMembers) - feste Team-Liste statt Freitext, da
-  // Autor/Freigabe fürs Vier-Augen-Prinzip eindeutig einer von genau diesen Personen sein muss.
-  const TEAM_MEMBERS = window.TeamMembers;
 
   const { appendNav, buildFinalCaption, validateKategorieTitel, mountKategorieTitelStep, mountCaptionStep, validateCaption, CATEGORIES } = window.PostSteps;
 
@@ -213,41 +210,16 @@
     const titelEl = document.createElement('span');
     titelEl.textContent = `Titel: ${state.titel}`;
     meta.appendChild(titelEl);
+
+    // Autor kommt automatisch von der eingeloggten Person (siehe identity-gate.js) statt einer
+    // manuellen Auswahl - der Autor eines Entwurfs ist nach dem Anlegen ohnehin nicht mehr
+    // änderbar. Für das Vier-Augen-Prinzip bei der Freigabe (siehe schedule-wizard.js) muss
+    // dieser Name sich von der Person unterscheiden, die später freigibt.
+    state.autor = window.getIdentityUserName();
+    const autorEl = document.createElement('span');
+    autorEl.textContent = `Autor: ${state.autor || '–'}`;
+    meta.appendChild(autorEl);
     container.appendChild(meta);
-
-    // Autor wird hier (statt in post-steps-shared.js) erfasst, weil dieser Schritt nur im
-    // Erstellen-Wizard gemountet wird, nicht im Bearbeiten-Wizard (edit-wizard.js nutzt
-    // mountKategorieTitelStep mit) - der Autor eines Entwurfs soll nach dem Anlegen nicht mehr
-    // änderbar sein. Für das Vier-Augen-Prinzip bei der Freigabe (siehe schedule-wizard.js)
-    // muss dieser Name sich vom "Freigegeben von"-Namen unterscheiden.
-    const autorGroup = document.createElement('div');
-    autorGroup.className = 'form-group';
-    autorGroup.setAttribute('data-field', 'autor');
-
-    const autorLabel = document.createElement('label');
-    autorLabel.setAttribute('for', 'wizard-autor');
-    autorLabel.textContent = 'Autor';
-    autorGroup.appendChild(autorLabel);
-
-    const autorInput = document.createElement('select');
-    autorInput.id = 'wizard-autor';
-    const autorPlaceholder = document.createElement('option');
-    autorPlaceholder.value = '';
-    autorPlaceholder.textContent = 'Bitte wählen …';
-    autorInput.appendChild(autorPlaceholder);
-    TEAM_MEMBERS.forEach((name) => {
-      const option = document.createElement('option');
-      option.value = name;
-      option.textContent = name;
-      autorInput.appendChild(option);
-    });
-    autorInput.value = state.autor || '';
-    autorGroup.appendChild(autorInput);
-    container.appendChild(autorGroup);
-
-    autorInput.addEventListener('change', () => {
-      state.autor = autorInput.value;
-    });
 
     const status = document.createElement('p');
     status.className = 'gallery-status';
@@ -304,7 +276,7 @@
     confirmBtn.addEventListener('click', async () => {
       if (!(state.autor || '').trim()) {
         status.className = 'gallery-status error';
-        status.textContent = 'Bitte einen Autor eintragen.';
+        status.textContent = 'Autor konnte nicht ermittelt werden - bitte Seite neu laden und erneut einloggen.';
         return;
       }
 

@@ -4,10 +4,10 @@ const { getFile, putFile } = require('./lib/github');
 const { FOLDERS } = require('./lib/drive-folders');
 const { readKategorienFile } = require('./lib/kategorien');
 const { slugify } = require('./lib/slug');
-const { TEAM_MEMBERS } = require('./lib/team-members');
 const { compressImage } = require('./lib/compress-image');
 
 const BILD_ID_PATTERN = /^[\w-]+$/;
+const MAX_AUTOR_LENGTH = 30;
 const MAX_TITEL_LENGTH = 120;
 const MAX_CAPTION_LENGTH = 2200; // Instagram-Limit
 const MAX_BILDER = 10; // Instagram-Karussell-Limit
@@ -78,8 +78,8 @@ exports.handler = async (event) => {
   if (typeof titel !== 'string' || !titel.trim() || titel.length > MAX_TITEL_LENGTH) {
     return errorResponse(400, `"titel" ist erforderlich (max. ${MAX_TITEL_LENGTH} Zeichen).`);
   }
-  if (typeof autor !== 'string' || !TEAM_MEMBERS.includes(autor)) {
-    return errorResponse(400, `"autor" muss einer von: ${TEAM_MEMBERS.join(', ')} sein.`);
+  if (typeof autor !== 'string' || !autor.trim() || autor.length > MAX_AUTOR_LENGTH) {
+    return errorResponse(400, `"autor" ist erforderlich (max. ${MAX_AUTOR_LENGTH} Zeichen).`);
   }
   if (typeof kategorie !== 'string' || !kategorie) {
     return errorResponse(400, '"kategorie" ist erforderlich.');

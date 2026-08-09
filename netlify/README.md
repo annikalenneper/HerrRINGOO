@@ -46,16 +46,17 @@
   (entwurf -> bereit, ohne Datum).
 - `reset-to-entwurf.js` setzt einen bereiten Post zurück auf `status: entwurf` (Gegenrichtung zu
   `schedule-post.js`) und verschiebt ihn zurück nach `posts/01-entwuerfe/`. Braucht `bearbeiter`
-  (aus `lib/team-members.js`) und `grund` (`fehler_entdeckt` | `verbesserung_vorschlagen` |
-  `sonstiges`); Grund + optionaler `kommentar` landen als Eintrag in der `kommentare`-Liste
-  (dort dann wieder sichtbar, da Kommentare nur im Status `entwurf` angezeigt werden, siehe
-  `post-erstellen.js`), mit dem Text-Präfix `von {bearbeiter} zurückgesetzt ({grund}): ...` -
-  so bleibt in der Kommentar-Historie erkennbar, dass der Eintrag aus einem Reset stammt, nicht
-  aus dem normalen Kommentarfeld (`comment-post.js`).
+  (Klartext-Name der eingeloggten Person, siehe `identity-gate.js`) und `grund`
+  (`fehler_entdeckt` | `verbesserung_vorschlagen` | `sonstiges`); Grund + optionaler `kommentar`
+  landen als Eintrag in der `kommentare`-Liste (dort dann wieder sichtbar, da Kommentare nur im
+  Status `entwurf` angezeigt werden, siehe `post-erstellen.js`), mit dem Text-Präfix
+  `von {bearbeiter} zurückgesetzt ({grund}): ...` - so bleibt in der Kommentar-Historie
+  erkennbar, dass der Eintrag aus einem Reset stammt, nicht aus dem normalen Kommentarfeld
+  (`comment-post.js`).
 - `reset-to-bereit.js` nimmt einen eingeplanten Veröffentlichungstermin zurück (Gegenrichtung zu
   `schedule-publish.js`): setzt `status: bereit`, leert `datum_geplant` und verschiebt die Datei
-  zurück nach `posts/02-bereit-zur-veroeffentlichung/`. Braucht nur `bestaetigt_von` (aus
-  `lib/team-members.js`), da der Post inhaltlich unverändert bleibt.
+  zurück nach `posts/02-bereit-zur-veroeffentlichung/`. Braucht nur `bestaetigt_von`
+  (Klartext-Name der eingeloggten Person), da der Post inhaltlich unverändert bleibt.
 - `publish-post.js` markiert einen Post als veröffentlicht: setzt `status: veroeffentlicht` und
   `datum_veroeffentlicht` im Frontmatter und verschiebt die Datei von
   `posts/03-warten-auf-veroeffentlichung/` nach `posts/04-veroeffentlicht/`. Manueller Vorgriff
@@ -78,11 +79,10 @@
   `<input type="datetime-local">`), faktisch Europe/Berlin - der Vergleich mit "jetzt" wird
   deshalb explizit in Europe/Berlin-Ortszeit gebildet, sonst entstünde durch den UTC-Betrieb von
   Netlify Functions ein systematischer 1–2-Stunden-Versatz.
-- `comment-post.js` hängt einen Kommentar (`{ von, von_name, text, erstellt_am }`) an die
+- `comment-post.js` hängt einen Kommentar (`{ von, text, erstellt_am }`) an die
   `kommentare`-Liste im Frontmatter an - anders als `schedule-post.js`/`publish-post.js`
-  status-unabhängig (Post bleibt am gleichen Pfad, kein `moveFile`). `von` muss einer der Werte
-  aus `lib/team-members.js` sein, dieselbe Liste wie bei `autor`/`freigegeben_von`; bei
-  `von: "Extern"` ist `von_name` zusätzlich Pflicht (identifiziert die externe Person).
+  status-unabhängig (Post bleibt am gleichen Pfad, kein `moveFile`). `von` ist der Klartext-Name
+  der eingeloggten Person (siehe `identity-gate.js`), keine feste Werteliste mehr.
 
 - `categories-data.js` liest [`../kategorien/kategorien.json`](../kategorien/kategorien.json)
   live (kein Auth) - die gemeinsame, dynamische Kategorie-Liste für Posts UND die
@@ -143,18 +143,20 @@ den ohnehin bestehenden serverseitigen Function-Absicherungen über `CREATE_POST
 1. Site auswählen → **Site configuration → Identity → Enable Identity**.
 2. Unter **Registration preferences** auf **Invite only** stellen - sonst könnte sich jede/r mit
    beliebiger E-Mail-Adresse selbst registrieren.
-3. Unter **Identity → Invite users** die vier Team-Mitglieder einzeln per E-Mail-Adresse
-   einladen. Beim Einladen jeweils den **Full Name** auf den passenden Namen aus
-   `lib/team-members.js` setzen (`Petra`, `Helmut`, `Anni`, `Lui`) - dieser Name erscheint dann
-   oben rechts im Header, sobald die Person eingeloggt ist.
+3. Unter **Identity → Invite users** die Team-Mitglieder einzeln per E-Mail-Adresse einladen.
+   Der Name (`user_metadata.full_name`) wird **nicht** hier im Dashboard gesetzt, sondern beim
+   allerersten Login von der Person selbst vergeben (siehe unten).
 4. Jede eingeladene Person bekommt eine E-Mail mit einem Link, über den sie **ihr eigenes
    Passwort selbst festlegt** (Standardverhalten von Netlify Identity, keine zusätzliche
    Konfiguration nötig). Passwort vergessen funktioniert ebenso automatisch über den
    "Forgot password?"-Link im Login-Fenster des Widgets.
 
-**Hinweis:** Dieses Login ist bewusst unabhängig von den Team-Mitglieder-Dropdowns
-(Autor/Freigabe/Kommentare, siehe `lib/team-members.js`) - wer eingeloggt ist, wird aktuell nicht
-automatisch in diese Dropdowns übernommen, das bleibt weiterhin manuelle Auswahl pro Aktion.
+**Name beim ersten Login:** Hat der eingeloggte User noch kein `user_metadata.full_name`
+gesetzt, zeigt `identity-gate.js` statt der eigentlichen Seite eine eigene Abfrage
+(`[data-identity-name-gate]`) und speichert den eingegebenen Namen per `user.update({ data:
+{ full_name } })`. Dieser Name ist danach die alleinige Quelle für Autor/Freigabe/Bearbeiter/
+Kommentare im ganzen Tool (`window.getIdentityUserName()`) - es gibt keine manuelle Auswahl
+mehr, die früheren Team-Mitglieder-Dropdowns (`lib/team-members.js`) wurden entfernt.
 
 ## Lokal starten
 

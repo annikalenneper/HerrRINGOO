@@ -7,6 +7,10 @@
   //
   // Erwartet im HTML:
   // - [data-identity-gate]: Login-Aufforderung, standardmäßig sichtbar (kein "hidden" im HTML)
+  // - [data-identity-name-gate]: Name-Abfrage nach dem allerersten Login, standardmäßig mit
+  //   "hidden" im HTML
+  // - [data-identity-name-input] / [data-identity-name-submit] / [data-identity-name-error]:
+  //   Eingabefeld/Button/Fehlertext in der Name-Abfrage
   // - [data-identity-protected]: der eigentliche Seiteninhalt, standardmäßig mit "hidden"
   //   im HTML (verhindert ein kurzes Aufblitzen vor dem ersten JS-Check)
   // - [data-identity-status]: Container für Nutzername + Logout im Header, standardmäßig
@@ -14,6 +18,11 @@
   // - [data-identity-user]: Textknoten für den angezeigten Namen
   // - [data-identity-login] / [data-identity-logout]: Buttons
   // - [data-identity-error]: Fehlertext, standardmäßig mit "hidden" im HTML
+  //
+  // Der beim ersten Login abgefragte Name landet in user_metadata.full_name (per
+  // GoTrueUser.update()) und wird ab dann überall im Tool automatisch als Autor/Bearbeiter
+  // verwendet (siehe window.getIdentityUserName() unten) - ersetzt die früheren
+  // Team-Mitglieder-Dropdowns, die es ohne echtes Login brauchte.
   //
   // Wichtig: netlifyIdentity.init() wird HIER SOFORT aufgerufen (nicht erst bei
   // DOMContentLoaded) - das Widget beginnt beim Ausführen seines eigenen <script>-Tags bereits
@@ -28,35 +37,37 @@
   // nachher bekannt wird.
 
   let domReady = false;
-  let pendingState = null; // 'loggedIn' | 'loggedOut'
+  let pendingState = null; // 'loggedIn' | 'loggedOut' | 'needsName'
   let pendingUser = null;
+
+  function getFullName(user) {
+    return (user && user.user_metadata && user.user_metadata.full_name || '').trim();
+  }
 
   function applyState() {
     if (!domReady || pendingState === null) return;
 
     const gate = document.querySelector('[data-identity-gate]');
+    const nameGate = document.querySelector('[data-identity-name-gate]');
     const protectedContent = document.querySelector('[data-identity-protected]');
     const statusEl = document.querySelector('[data-identity-status]');
     const userEl = document.querySelector('[data-identity-user]');
 
-    if (pendingState === 'loggedIn') {
-      if (gate) gate.hidden = true;
-      if (protectedContent) protectedContent.hidden = false;
-      if (statusEl) statusEl.hidden = false;
-      if (userEl && pendingUser) {
-        const name = (pendingUser.user_metadata && pendingUser.user_metadata.full_name) || pendingUser.email;
-        userEl.textContent = name;
-      }
-    } else {
-      if (gate) gate.hidden = false;
-      if (protectedContent) protectedContent.hidden = true;
-      if (statusEl) statusEl.hidden = true;
+    const isLoggedIn = pendingState === 'loggedIn';
+    const isNeedsName = pendingState === 'needsName';
+
+    if (gate) gate.hidden = isLoggedIn || isNeedsName;
+    if (nameGate) nameGate.hidden = !isNeedsName;
+    if (protectedContent) protectedContent.hidden = !isLoggedIn;
+    if (statusEl) statusEl.hidden = !(isLoggedIn || isNeedsName);
+    if (userEl && pendingUser) {
+      userEl.textContent = getFullName(pendingUser) || pendingUser.email;
     }
   }
 
   function setLoggedIn(user) {
-    pendingState = 'loggedIn';
     pendingUser = user;
+    pendingState = getFullName(user) ? 'loggedIn' : 'needsName';
     applyState();
   }
 
@@ -75,9 +86,9 @@
   function reconcile() {
     if (!window.netlifyIdentity) return;
     const user = netlifyIdentity.currentUser();
-    if (user && pendingState !== 'loggedIn') {
+    if (user && pendingState === 'loggedOut') {
       setLoggedIn(user);
-    } else if (!user && pendingState === 'loggedIn') {
+    } else if (!user && pendingState !== 'loggedOut') {
       setLoggedOut();
     }
   }
@@ -140,6 +151,16 @@
     showError('Login-Dienst konnte nicht geladen werden. Bitte Seite neu laden oder später erneut versuchen.');
   }
 
+  // Von anderen Skripten genutzt (post-erstellen-wizard.js, schedule-wizard.js,
+  // post-erstellen.js), um Autor/Freigabe/Kommentar/Bearbeiter automatisch auf die
+  // eingeloggte Person zu setzen, statt sie manuell auswählen zu lassen.
+  window.getIdentityUserName = function () {
+    if (!window.netlifyIdentity) return null;
+    const user = netlifyIdentity.currentUser();
+    if (!user) return null;
+    return getFullName(user) || user.email;
+  };
+
   const LOGIN_BTN_DEFAULT_TEXT = 'Einloggen';
 
   // Setzt den Button zurück, sobald das Widget-Popup tatsächlich offen ist (on('open') oben)
@@ -158,9 +179,56 @@
     }
   }
 
+  function submitName() {
+    const input = document.querySelector('[data-identity-name-input]');
+    const errorEl = document.querySelector('[data-identity-name-error]');
+    const submitBtn = document.querySelector('[data-identity-name-submit]');
+    if (!input) return;
+
+    const name = input.value.trim();
+    if (errorEl) {
+      errorEl.hidden = true;
+      errorEl.textContent = '';
+    }
+    if (!name) {
+      if (errorEl) {
+        errorEl.hidden = false;
+        errorEl.textContent = 'Bitte einen Namen eingeben.';
+      }
+      return;
+    }
+    if (name.length > 30) {
+      if (errorEl) {
+        errorEl.hidden = false;
+        errorEl.textContent = 'Bitte max. 30 Zeichen.';
+      }
+      return;
+    }
+
+    const user = netlifyIdentity.currentUser();
+    if (!user) return;
+
+    if (submitBtn) submitBtn.disabled = true;
+    user
+      .update({ data: { full_name: name } })
+      .then((updatedUser) => {
+        setLoggedIn(updatedUser);
+      })
+      .catch((err) => {
+        if (submitBtn) submitBtn.disabled = false;
+        if (errorEl) {
+          errorEl.hidden = false;
+          errorEl.textContent = `Name konnte nicht gespeichert werden: ${(err && err.message) || 'unbekannter Fehler'}.`;
+        }
+      });
+  }
+
   function wireButtons() {
     const loginBtn = document.querySelector('[data-identity-login]');
     const logoutBtn = document.querySelector('[data-identity-logout]');
+    const nameSubmitBtn = document.querySelector('[data-identity-name-submit]');
+    const nameInput = document.querySelector('[data-identity-name-input]');
+
     if (loginBtn && window.netlifyIdentity) {
       loginBtn.addEventListener('click', () => {
         // Das Widget-Popup braucht beim allerersten Öffnen mehrere Sekunden, ohne dass von
@@ -174,6 +242,14 @@
     }
     if (logoutBtn && window.netlifyIdentity) {
       logoutBtn.addEventListener('click', () => netlifyIdentity.logout());
+    }
+    if (nameSubmitBtn) {
+      nameSubmitBtn.addEventListener('click', submitName);
+    }
+    if (nameInput) {
+      nameInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') submitName();
+      });
     }
   }
 

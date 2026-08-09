@@ -2,7 +2,6 @@ const matter = require('gray-matter');
 const { checkSecret } = require('./lib/auth');
 const { getFile, moveFile } = require('./lib/github');
 const { updateFrontmatter } = require('./lib/posts');
-const { TEAM_MEMBERS } = require('./lib/team-members');
 
 // Setzt einen Post aus "bereit" zurück auf "entwurf" (z. B. weil beim Review doch noch ein
 // Fehler auffiel). Der gewählte Grund + optionale Kommentar landen als normaler Eintrag in der
@@ -12,6 +11,7 @@ const SOURCE_DIR = 'posts/02-bereit-zur-veroeffentlichung';
 const TARGET_DIR = 'posts/01-entwuerfe';
 const DATEI_PATTERN = new RegExp(`^${SOURCE_DIR}/[\\w-]+\\.md$`);
 const MAX_KOMMENTAR_LENGTH = 2000;
+const MAX_BEARBEITER_LENGTH = 30;
 
 const GRUENDE = {
   fehler_entdeckt: 'Fehler entdeckt',
@@ -43,8 +43,8 @@ exports.handler = async (event) => {
   if (typeof datei !== 'string' || !DATEI_PATTERN.test(datei)) {
     return errorResponse(400, `"datei" muss ein Post in "${SOURCE_DIR}/" sein.`);
   }
-  if (typeof bearbeiter !== 'string' || !TEAM_MEMBERS.includes(bearbeiter)) {
-    return errorResponse(400, `"bearbeiter" muss einer von: ${TEAM_MEMBERS.join(', ')} sein.`);
+  if (typeof bearbeiter !== 'string' || !bearbeiter.trim() || bearbeiter.length > MAX_BEARBEITER_LENGTH) {
+    return errorResponse(400, `"bearbeiter" ist erforderlich (max. ${MAX_BEARBEITER_LENGTH} Zeichen).`);
   }
   if (typeof grund !== 'string' || !GRUENDE[grund]) {
     return errorResponse(400, `"grund" muss einer von: ${Object.keys(GRUENDE).join(', ')} sein.`);
@@ -68,7 +68,7 @@ exports.handler = async (event) => {
     const kommentarText = typeof kommentar === 'string' && kommentar.trim()
       ? `von ${bearbeiter} zurückgesetzt (${GRUENDE[grund]}): ${kommentar.trim()}`
       : `von ${bearbeiter} zurückgesetzt (${GRUENDE[grund]})`;
-    const neuerKommentar = { von: bearbeiter, von_name: '', text: kommentarText, erstellt_am: new Date().toISOString() };
+    const neuerKommentar = { von: bearbeiter, text: kommentarText, erstellt_am: new Date().toISOString() };
     const aktualisierteKommentare = [...(Array.isArray(kommentare) ? kommentare : []), neuerKommentar];
 
     const newContent = updateFrontmatter(existingContent, {

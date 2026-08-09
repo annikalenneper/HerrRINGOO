@@ -22,126 +22,17 @@
     return date.toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
   }
 
-  function formatKommentarVon(kommentar) {
-    if (kommentar.von === 'Extern' && kommentar.von_name) {
-      return `Extern (${kommentar.von_name})`;
-    }
-    return kommentar.von;
-  }
-
-  // Wer kommentiert, wird erst beim Abschicken in einem eigenen Popup abgefragt (statt eines
-  // dauerhaft sichtbaren Dropdowns im Formular) - hält das Kommentarformular selbst schlank.
-  // Bei "Extern" wird zusätzlich ein Name verlangt, da "Extern" sonst keine Person identifiziert
-  // (relevant z. B. für die Kommentarliste, s. formatKommentarVon).
-  function promptKommentarAutor() {
-    return new Promise((resolve) => {
-      const dialog = document.createElement('dialog');
-      dialog.className = 'app-dialog';
-
-      const heading = document.createElement('h3');
-      heading.textContent = 'Wer kommentiert?';
-      dialog.appendChild(heading);
-
-      const vonGroup = document.createElement('div');
-      vonGroup.className = 'form-group';
-      const vonLabel = document.createElement('label');
-      vonLabel.setAttribute('for', 'kommentar-von');
-      vonLabel.textContent = 'Von';
-      vonGroup.appendChild(vonLabel);
-
-      const vonSelect = document.createElement('select');
-      vonSelect.id = 'kommentar-von';
-      const placeholder = document.createElement('option');
-      placeholder.value = '';
-      placeholder.textContent = 'Bitte wählen …';
-      vonSelect.appendChild(placeholder);
-      (window.TeamMembers || []).forEach((name) => {
-        const option = document.createElement('option');
-        option.value = name;
-        option.textContent = name;
-        vonSelect.appendChild(option);
-      });
-      vonGroup.appendChild(vonSelect);
-      dialog.appendChild(vonGroup);
-
-      const nameGroup = document.createElement('div');
-      nameGroup.className = 'form-group';
-      nameGroup.hidden = true;
-      const nameLabel = document.createElement('label');
-      nameLabel.setAttribute('for', 'kommentar-von-name');
-      nameLabel.textContent = 'Name';
-      nameGroup.appendChild(nameLabel);
-      const nameInput = document.createElement('input');
-      nameInput.type = 'text';
-      nameInput.id = 'kommentar-von-name';
-      nameInput.maxLength = 60;
-      nameGroup.appendChild(nameInput);
-      dialog.appendChild(nameGroup);
-
-      const errorEl = document.createElement('p');
-      errorEl.className = 'field-error';
-      errorEl.setAttribute('role', 'alert');
-      dialog.appendChild(errorEl);
-
-      vonSelect.addEventListener('change', () => {
-        nameGroup.hidden = vonSelect.value !== 'Extern';
-        errorEl.textContent = '';
-        if (!nameGroup.hidden) nameInput.focus();
-      });
-
-      const actions = document.createElement('div');
-      actions.className = 'app-dialog-actions';
-
-      const cancelBtn = document.createElement('button');
-      cancelBtn.type = 'button';
-      cancelBtn.className = 'selection-submit btn-secondary';
-      cancelBtn.textContent = 'Abbrechen';
-      cancelBtn.addEventListener('click', () => dialog.close('cancel'));
-      actions.appendChild(cancelBtn);
-
-      const okBtn = document.createElement('button');
-      okBtn.type = 'button';
-      okBtn.className = 'selection-submit btn-primary';
-      okBtn.textContent = 'Kommentieren';
-      okBtn.addEventListener('click', () => {
-        if (!vonSelect.value) {
-          errorEl.textContent = 'Bitte auswählen, wer kommentiert.';
-          return;
-        }
-        if (vonSelect.value === 'Extern' && !nameInput.value.trim()) {
-          errorEl.textContent = 'Bitte einen Namen eingeben.';
-          return;
-        }
-        dialog.close('ok');
-      });
-      actions.appendChild(okBtn);
-
-      dialog.appendChild(actions);
-      document.body.appendChild(dialog);
-
-      dialog.addEventListener('close', () => {
-        const result = dialog.returnValue === 'ok'
-          ? { von: vonSelect.value, vonName: nameInput.value.trim() }
-          : null;
-        dialog.remove();
-        resolve(result);
-      });
-
-      dialog.showModal();
-      vonSelect.focus();
-    });
-  }
-
   const RESET_GRUENDE = [
     { key: 'fehler_entdeckt', label: 'Fehler entdeckt' },
     { key: 'verbesserung_vorschlagen', label: 'Verbesserung vorschlagen' },
     { key: 'sonstiges', label: 'Sonstiges' },
   ];
 
-  // Popup für "Status zurücksetzen" im Status "bereit" (bereit -> entwurf): fragt Bearbeiter,
-  // Grund und optional einen Kommentar ab. Der Kommentar landet über reset-to-entwurf.js in
-  // derselben "kommentare"-Liste wie normale Kommentare und ist danach wieder sichtbar, da der
-  // Post ja zurück im Status "entwurf" ist (siehe buildComments/buildCard).
+  // Popup für "Status zurücksetzen" im Status "bereit" (bereit -> entwurf): fragt Grund und
+  // optional einen Kommentar ab, Bearbeiter kommt automatisch von der eingeloggten Person
+  // (siehe identity-gate.js). Der Kommentar landet über reset-to-entwurf.js in derselben
+  // "kommentare"-Liste wie normale Kommentare und ist danach wieder sichtbar, da der Post ja
+  // zurück im Status "entwurf" ist (siehe buildComments/buildCard).
   function promptResetToEntwurf() {
     return new Promise((resolve) => {
       const dialog = document.createElement('dialog');
@@ -151,27 +42,11 @@
       heading.textContent = 'Den Post in den Status "Entwurf" zurücksetzen';
       dialog.appendChild(heading);
 
-      const bearbeiterGroup = document.createElement('div');
-      bearbeiterGroup.className = 'form-group';
-      const bearbeiterLabel = document.createElement('label');
-      bearbeiterLabel.setAttribute('for', 'reset-bearbeiter');
-      bearbeiterLabel.textContent = 'Bearbeiter';
-      bearbeiterGroup.appendChild(bearbeiterLabel);
-
-      const bearbeiterSelect = document.createElement('select');
-      bearbeiterSelect.id = 'reset-bearbeiter';
-      const bearbeiterPlaceholder = document.createElement('option');
-      bearbeiterPlaceholder.value = '';
-      bearbeiterPlaceholder.textContent = 'Bitte wählen …';
-      bearbeiterSelect.appendChild(bearbeiterPlaceholder);
-      (window.TeamMembers || []).forEach((name) => {
-        const option = document.createElement('option');
-        option.value = name;
-        option.textContent = name;
-        bearbeiterSelect.appendChild(option);
-      });
-      bearbeiterGroup.appendChild(bearbeiterSelect);
-      dialog.appendChild(bearbeiterGroup);
+      const bearbeiter = window.getIdentityUserName();
+      const bearbeiterHint = document.createElement('p');
+      bearbeiterHint.className = 'wizard-step-hint';
+      bearbeiterHint.textContent = `Bearbeiter: ${bearbeiter || '–'}`;
+      dialog.appendChild(bearbeiterHint);
 
       const grundGroup = document.createElement('div');
       grundGroup.className = 'form-group';
@@ -228,8 +103,8 @@
       okBtn.className = 'selection-submit btn-primary';
       okBtn.textContent = 'Zurücksetzen';
       okBtn.addEventListener('click', () => {
-        if (!bearbeiterSelect.value) {
-          errorEl.textContent = 'Bitte einen Bearbeiter auswählen.';
+        if (!bearbeiter) {
+          errorEl.textContent = 'Bearbeiter konnte nicht ermittelt werden - bitte Seite neu laden und erneut einloggen.';
           return;
         }
         if (!grundSelect.value) {
@@ -245,95 +120,32 @@
 
       dialog.addEventListener('close', () => {
         const result = dialog.returnValue === 'ok'
-          ? { bearbeiter: bearbeiterSelect.value, grund: grundSelect.value, kommentar: kommentarInput.value.trim() }
+          ? { bearbeiter, grund: grundSelect.value, kommentar: kommentarInput.value.trim() }
           : null;
         dialog.remove();
         resolve(result);
       });
 
       dialog.showModal();
-      bearbeiterSelect.focus();
+      grundSelect.focus();
     });
   }
 
-  // Popup für "Status zurücksetzen" im Status "eingeplant" (eingeplant -> bereit): einfacher als
-  // promptResetToEntwurf, nur Namensbestätigung - kein Grund/Kommentar nötig, da der Post
+  // Bestätigung für "Status zurücksetzen" im Status "eingeplant" (eingeplant -> bereit): wer
+  // bestätigt, kommt automatisch von der eingeloggten Person (siehe identity-gate.js) - reicht
+  // deshalb ein einfacher Confirm statt eines eigenen Popups mit Namensauswahl, da der Post
   // inhaltlich unverändert bleibt und nur der Termin verworfen wird.
-  function promptResetToBereit() {
-    return new Promise((resolve) => {
-      const dialog = document.createElement('dialog');
-      dialog.className = 'app-dialog';
+  async function promptResetToBereit() {
+    const bestaetigtVon = window.getIdentityUserName();
+    if (!bestaetigtVon) return null;
 
-      const heading = document.createElement('h3');
-      heading.textContent = 'Veröffentlichungstermin zurücknehmen?';
-      dialog.appendChild(heading);
-
-      const hint = document.createElement('p');
-      hint.textContent = 'Der Post landet wieder bei "Bereit zur Veröffentlichung". Bitte mit Namen bestätigen.';
-      dialog.appendChild(hint);
-
-      const group = document.createElement('div');
-      group.className = 'form-group';
-      const label = document.createElement('label');
-      label.setAttribute('for', 'reset-bereit-bestaetigt-von');
-      label.textContent = 'Bestätigt von';
-      group.appendChild(label);
-
-      const select = document.createElement('select');
-      select.id = 'reset-bereit-bestaetigt-von';
-      const placeholder = document.createElement('option');
-      placeholder.value = '';
-      placeholder.textContent = 'Bitte wählen …';
-      select.appendChild(placeholder);
-      (window.TeamMembers || []).forEach((name) => {
-        const option = document.createElement('option');
-        option.value = name;
-        option.textContent = name;
-        select.appendChild(option);
-      });
-      group.appendChild(select);
-      dialog.appendChild(group);
-
-      const errorEl = document.createElement('p');
-      errorEl.className = 'field-error';
-      errorEl.setAttribute('role', 'alert');
-      dialog.appendChild(errorEl);
-
-      const actions = document.createElement('div');
-      actions.className = 'app-dialog-actions';
-
-      const cancelBtn = document.createElement('button');
-      cancelBtn.type = 'button';
-      cancelBtn.className = 'selection-submit btn-secondary';
-      cancelBtn.textContent = 'Abbrechen';
-      cancelBtn.addEventListener('click', () => dialog.close('cancel'));
-      actions.appendChild(cancelBtn);
-
-      const okBtn = document.createElement('button');
-      okBtn.type = 'button';
-      okBtn.className = 'selection-submit btn-primary';
-      okBtn.textContent = 'Bestätigen';
-      okBtn.addEventListener('click', () => {
-        if (!select.value) {
-          errorEl.textContent = 'Bitte auswählen, wer bestätigt.';
-          return;
-        }
-        dialog.close('ok');
-      });
-      actions.appendChild(okBtn);
-
-      dialog.appendChild(actions);
-      document.body.appendChild(dialog);
-
-      dialog.addEventListener('close', () => {
-        const result = dialog.returnValue === 'ok' ? { bestaetigtVon: select.value } : null;
-        dialog.remove();
-        resolve(result);
-      });
-
-      dialog.showModal();
-      select.focus();
+    const confirmed = await window.ConfirmDialog.confirmAction({
+      titel: 'Veröffentlichungstermin zurücknehmen?',
+      nachricht: `Der Post landet wieder bei "Bereit zur Veröffentlichung". Bestätigt von: ${bestaetigtVon}.`,
+      bestaetigenLabel: 'Ja, zurücknehmen',
+      abbrechenLabel: 'Abbrechen',
     });
+    return confirmed ? { bestaetigtVon } : null;
   }
 
   // Kommentare sind nur im Status "entwurf" les- und schreibbar (siehe buildCard) - sobald der
@@ -362,7 +174,7 @@
 
         const meta = document.createElement('span');
         meta.className = 'post-comment-meta';
-        meta.textContent = `${formatKommentarVon(kommentar)} · ${formatKommentarDatum(kommentar.erstellt_am)}`;
+        meta.textContent = `${kommentar.von} · ${formatKommentarDatum(kommentar.erstellt_am)}`;
         entry.appendChild(meta);
         entry.appendChild(document.createElement('br'));
         entry.appendChild(document.createTextNode(kommentar.text));
@@ -398,8 +210,12 @@
         return;
       }
 
-      const autor = await promptKommentarAutor();
-      if (!autor) return;
+      const von = window.getIdentityUserName();
+      if (!von) {
+        status.className = 'gallery-status error';
+        status.textContent = 'Name konnte nicht ermittelt werden - bitte Seite neu laden und erneut einloggen.';
+        return;
+      }
 
       const secret = await window.TeamAuth.getOrPromptSecret();
       if (!secret) {
@@ -419,8 +235,7 @@
           body: JSON.stringify({
             secret,
             datei: post.datei,
-            von: autor.von,
-            von_name: autor.vonName,
+            von,
             text: textInput.value.trim(),
           }),
         });

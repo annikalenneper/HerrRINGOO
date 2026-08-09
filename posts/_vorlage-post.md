@@ -20,15 +20,14 @@ Ausfüllhinweise:
 - status: entwurf | bereit | eingeplant | veroeffentlicht
 - erstellt_am: Zeitstempel als ISO-8601 (JJJJ-MM-TTThh:mm:ss.sssZ), wird beim Anlegen im Tool
   automatisch gesetzt (nicht von Hand) - steuert die Sortierung (neueste zuerst) in der Übersicht
-- autor: Name der Person, die den Entwurf angelegt hat (wird normalerweise beim Anlegen im
-  Tool gesetzt, nicht von Hand)
-- freigegeben_von: Name der Person, die den Post zur Veröffentlichung freigegeben hat
-  (Vier-Augen-Prinzip: darf nicht dieselbe Person wie "autor" sein; wird über "Post freigeben"
-  im Tool gesetzt, nicht von Hand)
-- kommentare: Liste von { von, von_name, text, erstellt_am }, über das Kommentarfeld in der
-  Post-Vorschau im Tool ergänzt (nicht von Hand) - nur im Status "entwurf" les- und schreibbar.
-  von_name ist nur bei von: "Extern" gesetzt (identifiziert die externe Person, da "Extern"
-  allein das nicht tut)
+- autor: Name der eingeloggten Person, die den Entwurf angelegt hat (kommt automatisch vom
+  Login, siehe netlify/README.md "Login (Netlify Identity)" - keine manuelle Eingabe)
+- freigegeben_von: Name der eingeloggten Person, die den Post zur Veröffentlichung freigegeben
+  hat (Vier-Augen-Prinzip: darf nicht dieselbe Person wie "autor" sein; kommt automatisch vom
+  Login über "Post freigeben" im Tool)
+- kommentare: Liste von { von, text, erstellt_am }, über das Kommentarfeld in der Post-Vorschau
+  im Tool ergänzt (von kommt automatisch vom Login) - nur im Status "entwurf" les- und
+  schreibbar
 - datum_geplant: Datum + Uhrzeit als JJJJ-MM-TTThh:mm, wird über "Post einplanen" im Tool
   gesetzt (nicht von Hand) - sobald der Termin erreicht ist, setzt
   publish-scheduled-posts-background.js den Status automatisch auf "veroeffentlicht"
