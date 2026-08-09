@@ -173,3 +173,4 @@ Die Functions sind danach unter `/.netlify/functions/images?folder=<schlüssel>`
 entgegen. Gültige `folder`-Schlüssel stehen in
 [`functions/lib/drive-folders.js`](functions/lib/drive-folders.js), gültige `kategorie`-Werte in
 [`functions/lib/categories.js`](functions/lib/categories.js).
+
