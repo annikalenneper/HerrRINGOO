@@ -816,6 +816,14 @@
       return;
     }
 
+    // "Warten auf Veröffentlichung": nach Veröffentlichungstermin sortieren (nächster zuerst
+    // statt neuester zuerst wie sonst überall, siehe post-data.js) - hier interessiert vor
+    // allem, was als Nächstes dran ist. datum_geplant (JJJJ-MM-TTThh:mm) ist lexikografisch
+    // sortierbar.
+    if (activeStatus === 'eingeplant') {
+      filtered.sort((a, b) => (a.datum_geplant || '').localeCompare(b.datum_geplant || ''));
+    }
+
     filtered.forEach((post) => grid.appendChild(buildCard(post)));
   }
 

@@ -62,9 +62,12 @@ exports.handler = async (event) => {
     const existingContent = existing.content.toString('utf8');
     const { kommentare } = matter(existingContent).data;
 
+    // Als Reset markiert (statt eines normalen Kommentartexts), damit in der Kommentar-Historie
+    // erkennbar bleibt, dass dieser Eintrag aus einem "Status zurücksetzen" stammt, nicht aus
+    // dem normalen Kommentarfeld (siehe comment-post.js).
     const kommentarText = typeof kommentar === 'string' && kommentar.trim()
-      ? `${GRUENDE[grund]}: ${kommentar.trim()}`
-      : GRUENDE[grund];
+      ? `von ${bearbeiter} zurückgesetzt (${GRUENDE[grund]}): ${kommentar.trim()}`
+      : `von ${bearbeiter} zurückgesetzt (${GRUENDE[grund]})`;
     const neuerKommentar = { von: bearbeiter, von_name: '', text: kommentarText, erstellt_am: new Date().toISOString() };
     const aktualisierteKommentare = [...(Array.isArray(kommentare) ? kommentare : []), neuerKommentar];
 

@@ -18,7 +18,10 @@
   Einführung) landen ans Ende, untereinander alphabetisch nach Dateiname. Heißt bewusst
   nicht `posts.js` – Netlifys Node-Laufzeit importiert Functions über ihren Dateinamen, und ein
   gleichnamiger eingebundener Ordner `posts/` (siehe `included_files` unten) würde dabei
-  kollidieren (`ERR_UNSUPPORTED_DIR_IMPORT`).
+  kollidieren (`ERR_UNSUPPORTED_DIR_IMPORT`). Für den Status-Filter "eingeplant" überschreibt
+  `post-erstellen.js` (`renderGrid`) das clientseitig mit einer Sortierung nach `datum_geplant`
+  aufsteigend (nächster Termin zuerst) - dort ist die Reihenfolge relevanter als das
+  Erstellungsdatum.
 - `caption-blocks.js` liest die Hashtag-Sets aus [`../captions/hashtag-sets.md`](../captions/hashtag-sets.md).
 - `create-post.js` legt einen neuen Post an: lädt das ausgewählte Bild aus Drive herunter,
   committet es nach `planungs-webseite/medien/aus-drive/` und die neue `.md`-Datei nach
@@ -44,9 +47,11 @@
 - `reset-to-entwurf.js` setzt einen bereiten Post zurück auf `status: entwurf` (Gegenrichtung zu
   `schedule-post.js`) und verschiebt ihn zurück nach `posts/01-entwuerfe/`. Braucht `bearbeiter`
   (aus `lib/team-members.js`) und `grund` (`fehler_entdeckt` | `verbesserung_vorschlagen` |
-  `sonstiges`); ein optionaler `kommentar` wird zusammen mit dem Grund als normaler Eintrag an
-  die `kommentare`-Liste angehängt (dort dann wieder sichtbar, da Kommentare nur im Status
-  `entwurf` angezeigt werden, siehe `post-erstellen.js`).
+  `sonstiges`); Grund + optionaler `kommentar` landen als Eintrag in der `kommentare`-Liste
+  (dort dann wieder sichtbar, da Kommentare nur im Status `entwurf` angezeigt werden, siehe
+  `post-erstellen.js`), mit dem Text-Präfix `von {bearbeiter} zurückgesetzt ({grund}): ...` -
+  so bleibt in der Kommentar-Historie erkennbar, dass der Eintrag aus einem Reset stammt, nicht
+  aus dem normalen Kommentarfeld (`comment-post.js`).
 - `reset-to-bereit.js` nimmt einen eingeplanten Veröffentlichungstermin zurück (Gegenrichtung zu
   `schedule-publish.js`): setzt `status: bereit`, leert `datum_geplant` und verschiebt die Datei
   zurück nach `posts/02-bereit-zur-veroeffentlichung/`. Braucht nur `bestaetigt_von` (aus
