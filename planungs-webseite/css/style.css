@@ -180,6 +180,61 @@ code {
   text-transform: uppercase;
 }
 
+/* Netlify-Identity-Login (siehe js/identity-gate.js) */
+
+.identity-status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--white);
+}
+
+.identity-logout-btn {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--gold);
+  background: none;
+  border: 1px solid var(--gold);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-3);
+  cursor: pointer;
+}
+
+.identity-logout-btn:hover {
+  background: var(--gold);
+  color: var(--gray-950);
+}
+
+.identity-gate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  padding: var(--space-6) var(--space-5);
+}
+
+.identity-gate-box {
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+  padding: var(--space-8) var(--space-6);
+}
+
+.identity-gate-box h2 {
+  margin-top: 0;
+}
+
+.identity-gate-box p {
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-5);
+}
+
 /* Layout */
 
 main {

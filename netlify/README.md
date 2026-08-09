@@ -110,7 +110,7 @@ GitHub-API (wie `post-data.js`), brauchen also kein `included_files`.
 |---|---|
 | `GOOGLE_SERVICE_ACCOUNT_JSON` | Vollständiger JSON-Key eines Google Service Accounts (als eine Zeile) mit Zugriff auf die Drive-API |
 | `GITHUB_TOKEN` | Fine-grained GitHub PAT, nur für dieses Repo, Permission "Contents: Read and write" – sonst nichts. Wird von `create-post.js` genutzt, um neue Dateien zu committen |
-| `CREATE_POST_SECRET` | Frei wählbares Team-Passwort. Schützt die schreibenden Functions `create-post.js`, `schedule-post.js` und `publish-post.js`, da die Seite kein Nutzer-Login hat |
+| `CREATE_POST_SECRET` | Frei wählbares Team-Passwort. Schützt alle schreibenden Functions (Post/Idee anlegen, Status ändern, kommentieren, Kategorie anlegen, hochladen). Unabhängig vom Netlify-Identity-Login unten - das regelt nur, wer die Oberfläche überhaupt sieht, nicht wer schreiben darf |
 
 Lokal in einer `.env`-Datei im Projekt-Root ablegen (siehe [`../.env.example`](../.env.example)),
 `.env` ist in `.gitignore` und wird nie eingecheckt.
@@ -129,6 +129,32 @@ Lokal in einer `.env`-Datei im Projekt-Root ablegen (siehe [`../.env.example`](.
    über einen Passwort-Generator) und im Team teilen.
 5. `GOOGLE_SERVICE_ACCOUNT_JSON`, `GITHUB_TOKEN` und `CREATE_POST_SECRET` sowohl lokal (`.env`)
    als auch in den Netlify-Site-Settings (Environment variables) hinterlegen.
+
+## Login (Netlify Identity)
+
+Die gesamte Oberfläche (alle vier Seiten unter `planungs-webseite/`) ist über
+[Netlify Identity](https://docs.netlify.com/manage/security/secure-access-to-sites/identity/) +
+[`netlify-identity-widget`](https://github.com/netlify/netlify-identity-widget) hinter einem
+Login versteckt (`planungs-webseite/js/identity-gate.js`) - rein clientseitig, ändert nichts an
+den ohnehin bestehenden serverseitigen Function-Absicherungen über `CREATE_POST_SECRET` oben.
+
+**Einmaliges Setup im Netlify-Dashboard (nicht im Code):**
+
+1. Site auswählen → **Site configuration → Identity → Enable Identity**.
+2. Unter **Registration preferences** auf **Invite only** stellen - sonst könnte sich jede/r mit
+   beliebiger E-Mail-Adresse selbst registrieren.
+3. Unter **Identity → Invite users** die vier Team-Mitglieder einzeln per E-Mail-Adresse
+   einladen. Beim Einladen jeweils den **Full Name** auf den passenden Namen aus
+   `lib/team-members.js` setzen (`Petra`, `Helmut`, `Anni`, `Lui`) - dieser Name erscheint dann
+   oben rechts im Header, sobald die Person eingeloggt ist.
+4. Jede eingeladene Person bekommt eine E-Mail mit einem Link, über den sie **ihr eigenes
+   Passwort selbst festlegt** (Standardverhalten von Netlify Identity, keine zusätzliche
+   Konfiguration nötig). Passwort vergessen funktioniert ebenso automatisch über den
+   "Forgot password?"-Link im Login-Fenster des Widgets.
+
+**Hinweis:** Dieses Login ist bewusst unabhängig von den Team-Mitglieder-Dropdowns
+(Autor/Freigabe/Kommentare, siehe `lib/team-members.js`) - wer eingeloggt ist, wird aktuell nicht
+automatisch in diese Dropdowns übernommen, das bleibt weiterhin manuelle Auswahl pro Aktion.
 
 ## Lokal starten
 

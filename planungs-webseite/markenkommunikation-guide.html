@@ -21,16 +21,32 @@
 </head>
 <body>
 
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<script src="js/identity-gate.js"></script>
+
 <header class="site-header">
   <div class="header-inner">
     <a class="brand" href="index.html">
       <img class="brand-logo" src="medien/logos/logo-weiss-gold.png" alt="Herr RINGOO">
       <span class="brand-tag">Content-Planer</span>
     </a>
+    <div class="identity-status" data-identity-status hidden>
+      <span data-identity-user></span>
+      <button type="button" class="identity-logout-btn" data-identity-logout>Abmelden</button>
+    </div>
   </div>
 </header>
 
-<main class="guide-page">
+<div class="identity-gate" data-identity-gate>
+  <div class="identity-gate-box">
+    <h2>Anmeldung erforderlich</h2>
+    <p>Dieser Bereich ist nur für das Herr RINGOO Team zugänglich.</p>
+    <button type="button" class="selection-submit" data-identity-login>Einloggen</button>
+    <p class="field-error" data-identity-error hidden></p>
+  </div>
+</div>
+
+<main class="guide-page" data-identity-protected hidden>
   <div class="page-intro">
     <p class="eyebrow">Markenkommunikations-Guide</p>
     <h1>Wie Herr RINGOO spricht</h1>
