@@ -66,6 +66,22 @@
     applyState();
   }
 
+  // Selbstheilung: gleicht den DOM-Zustand direkt gegen netlifyIdentity.currentUser() ab
+  // (die eigentliche Quelle der Wahrheit, unabhängig von Event-Timing). Beobachtet: nach dem
+  // Passwort-Setzen im Invite-Flow blieb das Gate manchmal sichtbar, obwohl der Login
+  // serverseitig bereits erfolgreich war (erst ein manueller Reload zeigte den korrekten
+  // Zustand) - der genaue Auslöser im Widget ist von außen nicht einsehbar, daher hier robust
+  // dagegen absichern statt nur das eine Symptom zu patchen.
+  function reconcile() {
+    if (!window.netlifyIdentity) return;
+    const user = netlifyIdentity.currentUser();
+    if (user && pendingState !== 'loggedIn') {
+      setLoggedIn(user);
+    } else if (!user && pendingState === 'loggedIn') {
+      setLoggedOut();
+    }
+  }
+
   function showError(message) {
     function apply() {
       const errorEl = document.querySelector('[data-identity-error]');
@@ -97,6 +113,9 @@
     netlifyIdentity.on('login', (user) => {
       setLoggedIn(user);
       netlifyIdentity.close();
+      // Zusätzliche verzögerte Gegenprüfung - falls das direkte setLoggedIn() oben aus
+      // irgendeinem Grund nicht sichtbar ankam (siehe reconcile()-Kommentar).
+      setTimeout(reconcile, 500);
     });
 
     netlifyIdentity.on('logout', () => {
@@ -166,4 +185,12 @@
 
   if (document.readyState !== 'loading') onDomReady();
   else document.addEventListener('DOMContentLoaded', onDomReady);
+
+  // Zusätzliche Selbstheilungs-Trigger: sobald der Tab wieder aktiv wird, einmal mit dem
+  // tatsächlichen Widget-Zustand abgleichen. Deckt genau das beobachtete "nur nach manuellem
+  // Reload korrekt" ab, ohne dass Nutzer:innen selbst neu laden müssen.
+  window.addEventListener('focus', reconcile);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') reconcile();
+  });
 })();
