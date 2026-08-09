@@ -1,0 +1,16 @@
+name: Publish scheduled Instagram posts
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch: {}
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger scheduled publish status update
+        run: |
+          curl -sf -X POST "${{ vars.NETLIFY_SITE_URL }}/.netlify/functions/publish-scheduled-posts-background" \
+            -H "Content-Type: application/json" \
+            -d "{\"secret\":\"${{ secrets.CREATE_POST_SECRET }}\"}"
