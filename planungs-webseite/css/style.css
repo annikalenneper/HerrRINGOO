@@ -262,7 +262,9 @@ section > h3 {
 
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  /* auto-fill statt auto-fit: siehe .post-preview-grid weiter unten - relevant hier vor allem
+     für die Ideensammlung (data-idee-grid), deren Eintragszahl variiert. */
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
   gap: var(--space-4);
 }
 
@@ -712,7 +714,12 @@ button.category-chip:hover {
 
 .post-preview-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  /* auto-fill statt auto-fit: leere Spalten bleiben als Platzhalter erhalten statt zu
+     kollabieren - sonst stretchen sich die Post-Karten in dünn gefüllten Status-Filtern (z. B.
+     "Veröffentlicht" oder "Warten auf Veröffentlichung" mit nur 1-2 Posts) über die ganze
+     Zeilenbreite und wirken dadurch größer als in gut gefüllten Filtern wie "Entwurf". Gleiches
+     Muster wie bei .image-grid (Bildauswahl-Raster im "Post erstellen"-Wizard). */
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: var(--space-6);
 }
 
@@ -936,7 +943,6 @@ button.category-chip:hover {
 }
 
 .post-comments {
-  max-width: 400px;
   border-top: 1px solid var(--color-border);
   padding-top: var(--space-3);
 }
