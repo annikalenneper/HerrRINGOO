@@ -6,7 +6,11 @@
   // regelt nur, wer die Oberfläche überhaupt zu sehen bekommt.
   //
   // Erwartet im HTML:
-  // - [data-identity-gate]: Login-Aufforderung, standardmäßig sichtbar (kein "hidden" im HTML)
+  // - [data-identity-loading]: neutrale Lade-Anzeige, standardmäßig sichtbar (kein "hidden" im
+  //   HTML) - verhindert ein kurzes Aufblitzen der Login-Box bei bereits eingeloggten Personen
+  //   (das Widget-Skript lädt asynchron nach, bis netlifyIdentity den echten Status kennt,
+  //   wäre sonst kurz die Login-Box im HTML-Default-Zustand sichtbar)
+  // - [data-identity-gate]: Login-Aufforderung, standardmäßig mit "hidden" im HTML
   // - [data-identity-name-gate]: Name-Abfrage nach dem allerersten Login, standardmäßig mit
   //   "hidden" im HTML
   // - [data-identity-name-input] / [data-identity-name-submit] / [data-identity-name-error]:
@@ -47,6 +51,7 @@
   function applyState() {
     if (!domReady || pendingState === null) return;
 
+    const loading = document.querySelector('[data-identity-loading]');
     const gate = document.querySelector('[data-identity-gate]');
     const nameGate = document.querySelector('[data-identity-name-gate]');
     const protectedContent = document.querySelector('[data-identity-protected]');
@@ -56,6 +61,7 @@
     const isLoggedIn = pendingState === 'loggedIn';
     const isNeedsName = pendingState === 'needsName';
 
+    if (loading) loading.hidden = true;
     if (gate) gate.hidden = isLoggedIn || isNeedsName;
     if (nameGate) nameGate.hidden = !isNeedsName;
     if (protectedContent) protectedContent.hidden = !isLoggedIn;
@@ -94,8 +100,14 @@
   }
 
   function showError(message) {
+    // Fehlertext sitzt in der Login-Box - die muss also sichtbar sein, sonst sieht niemand die
+    // Meldung (z. B. wenn das Widget-Skript nie lädt und pendingState nie gesetzt wird).
     function apply() {
+      const loading = document.querySelector('[data-identity-loading]');
+      const gate = document.querySelector('[data-identity-gate]');
       const errorEl = document.querySelector('[data-identity-error]');
+      if (loading) loading.hidden = true;
+      if (gate) gate.hidden = false;
       if (errorEl) {
         errorEl.hidden = false;
         errorEl.textContent = message;
