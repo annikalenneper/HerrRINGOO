@@ -43,10 +43,11 @@
   Publishing API + zeitgesteuertes Auto-Publish) liegt bereit unter
   [`instagram-publish-plan.md`](instagram-publish-plan.md), zurückgestellt bis die
   Meta-App/Entwicklerkonto-Einrichtung ansteht.
-- `comment-post.js` hängt einen Kommentar (`{ von, text, erstellt_am }`) an die
+- `comment-post.js` hängt einen Kommentar (`{ von, von_name, text, erstellt_am }`) an die
   `kommentare`-Liste im Frontmatter an - anders als `schedule-post.js`/`publish-post.js`
   status-unabhängig (Post bleibt am gleichen Pfad, kein `moveFile`). `von` muss einer der Werte
-  aus `lib/team-members.js` sein, dieselbe Liste wie bei `autor`/`freigegeben_von`.
+  aus `lib/team-members.js` sein, dieselbe Liste wie bei `autor`/`freigegeben_von`; bei
+  `von: "Extern"` ist `von_name` zusätzlich Pflicht (identifiziert die externe Person).
 
 - `categories-data.js` liest [`../kategorien/kategorien.json`](../kategorien/kategorien.json)
   live (kein Auth) - die gemeinsame, dynamische Kategorie-Liste für Posts UND die

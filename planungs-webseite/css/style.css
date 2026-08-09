@@ -936,6 +936,7 @@ button.category-chip:hover {
 }
 
 .post-comments {
+  max-width: 400px;
   border-top: 1px solid var(--color-border);
   padding-top: var(--space-3);
 }

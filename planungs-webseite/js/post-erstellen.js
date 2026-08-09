@@ -16,6 +16,116 @@
     return date.toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
   }
 
+  function formatKommentarVon(kommentar) {
+    if (kommentar.von === 'Extern' && kommentar.von_name) {
+      return `Extern (${kommentar.von_name})`;
+    }
+    return kommentar.von;
+  }
+
+  // Wer kommentiert, wird erst beim Abschicken in einem eigenen Popup abgefragt (statt eines
+  // dauerhaft sichtbaren Dropdowns im Formular) - hält das Kommentarformular selbst schlank.
+  // Bei "Extern" wird zusätzlich ein Name verlangt, da "Extern" sonst keine Person identifiziert
+  // (relevant z. B. für die Kommentarliste, s. formatKommentarVon).
+  function promptKommentarAutor() {
+    return new Promise((resolve) => {
+      const dialog = document.createElement('dialog');
+      dialog.className = 'app-dialog';
+
+      const heading = document.createElement('h3');
+      heading.textContent = 'Wer kommentiert?';
+      dialog.appendChild(heading);
+
+      const vonGroup = document.createElement('div');
+      vonGroup.className = 'form-group';
+      const vonLabel = document.createElement('label');
+      vonLabel.setAttribute('for', 'kommentar-von');
+      vonLabel.textContent = 'Von';
+      vonGroup.appendChild(vonLabel);
+
+      const vonSelect = document.createElement('select');
+      vonSelect.id = 'kommentar-von';
+      const placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = 'Bitte wählen …';
+      vonSelect.appendChild(placeholder);
+      (window.TeamMembers || []).forEach((name) => {
+        const option = document.createElement('option');
+        option.value = name;
+        option.textContent = name;
+        vonSelect.appendChild(option);
+      });
+      vonGroup.appendChild(vonSelect);
+      dialog.appendChild(vonGroup);
+
+      const nameGroup = document.createElement('div');
+      nameGroup.className = 'form-group';
+      nameGroup.hidden = true;
+      const nameLabel = document.createElement('label');
+      nameLabel.setAttribute('for', 'kommentar-von-name');
+      nameLabel.textContent = 'Name';
+      nameGroup.appendChild(nameLabel);
+      const nameInput = document.createElement('input');
+      nameInput.type = 'text';
+      nameInput.id = 'kommentar-von-name';
+      nameInput.maxLength = 60;
+      nameGroup.appendChild(nameInput);
+      dialog.appendChild(nameGroup);
+
+      const errorEl = document.createElement('p');
+      errorEl.className = 'field-error';
+      errorEl.setAttribute('role', 'alert');
+      dialog.appendChild(errorEl);
+
+      vonSelect.addEventListener('change', () => {
+        nameGroup.hidden = vonSelect.value !== 'Extern';
+        errorEl.textContent = '';
+        if (!nameGroup.hidden) nameInput.focus();
+      });
+
+      const actions = document.createElement('div');
+      actions.className = 'app-dialog-actions';
+
+      const cancelBtn = document.createElement('button');
+      cancelBtn.type = 'button';
+      cancelBtn.className = 'selection-submit btn-secondary';
+      cancelBtn.textContent = 'Abbrechen';
+      cancelBtn.addEventListener('click', () => dialog.close('cancel'));
+      actions.appendChild(cancelBtn);
+
+      const okBtn = document.createElement('button');
+      okBtn.type = 'button';
+      okBtn.className = 'selection-submit btn-primary';
+      okBtn.textContent = 'Kommentieren';
+      okBtn.addEventListener('click', () => {
+        if (!vonSelect.value) {
+          errorEl.textContent = 'Bitte auswählen, wer kommentiert.';
+          return;
+        }
+        if (vonSelect.value === 'Extern' && !nameInput.value.trim()) {
+          errorEl.textContent = 'Bitte einen Namen eingeben.';
+          return;
+        }
+        dialog.close('ok');
+      });
+      actions.appendChild(okBtn);
+
+      dialog.appendChild(actions);
+      document.body.appendChild(dialog);
+
+      dialog.addEventListener('close', () => {
+        const result = dialog.returnValue === 'ok'
+          ? { von: vonSelect.value, vonName: nameInput.value.trim() }
+          : null;
+        dialog.remove();
+        resolve(result);
+      });
+
+      dialog.showModal();
+      vonSelect.focus();
+    });
+  }
+
   // Kommentare sind status-unabhängig (anders als buildActions, das je nach Status
   // freigeben/veröffentlichen zeigt) - jeder Post kann in jedem Status kommentiert werden, das
   // Kommentarfeld sitzt deshalb als eigener Block unterhalb der Post-Vorschau, siehe buildCard.
@@ -43,7 +153,7 @@
 
         const meta = document.createElement('span');
         meta.className = 'post-comment-meta';
-        meta.textContent = `${kommentar.von} · ${formatKommentarDatum(kommentar.erstellt_am)}`;
+        meta.textContent = `${formatKommentarVon(kommentar)} · ${formatKommentarDatum(kommentar.erstellt_am)}`;
         entry.appendChild(meta);
         entry.appendChild(document.createElement('br'));
         entry.appendChild(document.createTextNode(kommentar.text));
@@ -55,20 +165,6 @@
 
     const form = document.createElement('div');
     form.className = 'post-comment-form';
-
-    const vonSelect = document.createElement('select');
-    vonSelect.setAttribute('aria-label', 'Von');
-    const placeholder = document.createElement('option');
-    placeholder.value = '';
-    placeholder.textContent = 'Von …';
-    vonSelect.appendChild(placeholder);
-    (window.TeamMembers || []).forEach((name) => {
-      const option = document.createElement('option');
-      option.value = name;
-      option.textContent = name;
-      vonSelect.appendChild(option);
-    });
-    form.appendChild(vonSelect);
 
     const textInput = document.createElement('textarea');
     textInput.rows = 2;
@@ -87,16 +183,14 @@
     form.appendChild(status);
 
     submitBtn.addEventListener('click', async () => {
-      if (!vonSelect.value) {
-        status.className = 'gallery-status error';
-        status.textContent = 'Bitte auswählen, wer kommentiert.';
-        return;
-      }
       if (!textInput.value.trim()) {
         status.className = 'gallery-status error';
         status.textContent = 'Bitte einen Kommentar eingeben.';
         return;
       }
+
+      const autor = await promptKommentarAutor();
+      if (!autor) return;
 
       const secret = await window.TeamAuth.getOrPromptSecret();
       if (!secret) {
@@ -113,7 +207,13 @@
         const response = await fetch('/.netlify/functions/comment-post', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ secret, datei: post.datei, von: vonSelect.value, text: textInput.value.trim() }),
+          body: JSON.stringify({
+            secret,
+            datei: post.datei,
+            von: autor.von,
+            von_name: autor.vonName,
+            text: textInput.value.trim(),
+          }),
         });
         const data = await response.json();
 

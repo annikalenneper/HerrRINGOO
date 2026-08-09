@@ -25,8 +25,9 @@ Ausfüllhinweise:
 - freigegeben_von: Name der Person, die den Post zur Veröffentlichung freigegeben hat
   (Vier-Augen-Prinzip: darf nicht dieselbe Person wie "autor" sein; wird über "Post freigeben"
   im Tool gesetzt, nicht von Hand)
-- kommentare: Liste von { von, text, erstellt_am }, über das Kommentarfeld in der Post-Vorschau
-  im Tool ergänzt (nicht von Hand)
+- kommentare: Liste von { von, von_name, text, erstellt_am }, über das Kommentarfeld in der
+  Post-Vorschau im Tool ergänzt (nicht von Hand). von_name ist nur bei von: "Extern" gesetzt
+  (identifiziert die externe Person, da "Extern" allein das nicht tut)
 - datum_geplant: aktuell nicht in Verwendung (Feld bleibt reserviert für ein späteres
   automatisches Zeitplan-Feature, siehe netlify/instagram-publish-plan.md)
 - medien: Pfade zu Bild-/Videodateien in medien/, die zu diesem Post gehören
