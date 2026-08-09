@@ -20,6 +20,12 @@ kommentare:
       Bitte das Wort Geschirr durch das Wort Besteck ersetzen. 
       Sowohl GERSTNER, als auch RAUSCHMAYER haben es so in ihren Hinweisen
     erstellt_am: '2026-08-09T16:23:09.300Z'
+  - von: Anni
+    von_name: ''
+    text: >-
+      Ok, muss extern neu vorbereitet werden, weil wir hier noch keiner Bilder
+      mit Textinhalt erstellen können (kommt aber in Zukunft)
+    erstellt_am: '2026-08-09T16:31:52.328Z'
 ---
 
 ## Caption
