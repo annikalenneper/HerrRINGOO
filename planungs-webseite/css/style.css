@@ -220,6 +220,14 @@ code {
   padding: var(--space-6) var(--space-5);
 }
 
+/* [hidden] hat dieselbe Spezifität wie .identity-gate oben, gewinnt gegen die
+   Browser-Standardregel ([hidden] { display: none }) aber nicht automatisch, da Autor-CSS bei
+   Gleichstand Vorrang vor dem User-Agent-Stylesheet hat - ohne diese Regel bleibt die Gate-Box
+   trotz gesetztem hidden-Attribut sichtbar (display: flex gewinnt). */
+.identity-gate[hidden] {
+  display: none;
+}
+
 .identity-gate-box {
   max-width: 420px;
   width: 100%;
