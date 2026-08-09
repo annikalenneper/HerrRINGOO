@@ -208,6 +208,11 @@ code {
 }
 
 .identity-gate {
+  /* Übernimmt main { flex: 1 0 auto; } (siehe weiter unten), solange main per [hidden]
+     ausgeblendet ist - sonst fehlt das Element, das den Footer nach unten drückt (Sticky-
+     Footer-Pattern auf body), und der Footer hängt direkt unter der Login-Box statt am
+     Seitenende. */
+  flex: 1 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
