@@ -2,8 +2,11 @@ const { checkSecret } = require('./lib/auth');
 const { getFile, moveFile } = require('./lib/github');
 const { updateFrontmatter } = require('./lib/posts');
 
-const SOURCE_DIR = 'posts/02-bereit-zur-veroeffentlichung';
-const TARGET_DIR = 'posts/03-veroeffentlicht';
+// Manuelles "Jetzt veröffentlichen" - Vorwegnahme des automatischen Übergangs, den
+// publish-scheduled-posts-background.js für fällige Termine übernimmt (z. B. falls ein Post
+// schon vor dem geplanten Termin raus soll).
+const SOURCE_DIR = 'posts/03-warten-auf-veroeffentlichung';
+const TARGET_DIR = 'posts/04-veroeffentlicht';
 const DATEI_PATTERN = new RegExp(`^${SOURCE_DIR}/[\\w-]+\\.md$`);
 const DATUM_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 

@@ -1,18 +1,23 @@
 # Posts
 
 Hier lebt jeder einzelne Instagram-Post als eigene Markdown-Datei – von der ersten Ausarbeitung
-bis zur Veröffentlichung. Der Ordner ist in drei Stufen unterteilt, die den Fortschritt eines
+bis zur Veröffentlichung. Der Ordner ist in vier Stufen unterteilt, die den Fortschritt eines
 Posts abbilden:
 
 | Ordner | Bedeutung |
 |---|---|
 | [`01-entwuerfe/`](01-entwuerfe/) | Post ist angelegt und in Arbeit, aber noch nicht fertig |
-| [`02-bereit-zur-veroeffentlichung/`](02-bereit-zur-veroeffentlichung/) | Inhaltlich und mit Medien fertig, wartet auf den geplanten Termin |
-| [`03-veroeffentlicht/`](03-veroeffentlicht/) | Bereits live auf Instagram – dient als Archiv |
+| [`02-bereit-zur-veroeffentlichung/`](02-bereit-zur-veroeffentlichung/) | Inhaltlich und mit Medien fertig, noch ohne festen Termin |
+| [`03-warten-auf-veroeffentlichung/`](03-warten-auf-veroeffentlichung/) | Termin gesetzt ("Post einplanen"), wartet auf den geplanten Zeitpunkt |
+| [`04-veroeffentlicht/`](04-veroeffentlicht/) | Bereits live auf Instagram – dient als Archiv |
 
 Eine Post-Datei wandert einfach durch diese Ordner (verschieben, nicht kopieren), während sie den
-Prozess durchläuft. Der Status im [`../planung/content-kalender.md`](../planung/content-kalender.md)
-wird dabei jeweils mit aktualisiert.
+Prozess durchläuft. Der Übergang von der dritten zur vierten Stufe passiert automatisch, sobald
+der geplante Termin erreicht ist (siehe [`../netlify/README.md`](../netlify/README.md),
+`publish-scheduled-posts-background.js`) - postet aber nichts wirklich auf Instagram, das bleibt
+vorerst manuell. Der Status im
+[`../planung/content-kalender.md`](../planung/content-kalender.md) wird dabei jeweils mit
+aktualisiert.
 
 ## Neuen Post anlegen
 

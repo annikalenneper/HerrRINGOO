@@ -9,7 +9,8 @@
 | 💡 Idee | Grob eingeplant, noch nicht ausgearbeitet |
 | ✍️ In Arbeit | Post-Datei angelegt, in [`posts/01-entwuerfe/`](../posts/01-entwuerfe/) |
 | ✅ Bereit | Fertig ausgearbeitet, in [`posts/02-bereit-zur-veroeffentlichung/`](../posts/02-bereit-zur-veroeffentlichung/) |
-| 📤 Veröffentlicht | Live auf der Plattform, in [`posts/03-veroeffentlicht/`](../posts/03-veroeffentlicht/) |
+| ⏳ Eingeplant | Termin gesetzt, wartet in [`posts/03-warten-auf-veroeffentlichung/`](../posts/03-warten-auf-veroeffentlichung/) |
+| 📤 Veröffentlicht | Live auf der Plattform, in [`posts/04-veroeffentlicht/`](../posts/04-veroeffentlicht/) |
 
 ## Plan
 

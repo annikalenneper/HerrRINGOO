@@ -42,17 +42,24 @@ Veröffentlichungs-Status pflegen kann. Details dazu in [`netlify/README.md`](ne
    [`ideensammlung/ideen.json`](ideensammlung/README.md).
 2. **Einordnen** – die Idee wird einer Kategorie aus [`kategorien/`](kategorien/README.md) zugeordnet.
 3. **Einplanen** – ein Termin/Zeitraum wird im [`planung/content-kalender.md`](planung/content-kalender.md) eingetragen.
-4. **Ausarbeiten** – entweder über das interne Tool ("Post erstellen": Bild(er) auswählen,
-   Kategorie/Titel/Caption ausfüllen, Vorschau bestätigen – legt die Post-Datei automatisch an)
-   oder manuell: aus der Vorlage [`posts/_vorlage-post.md`](posts/_vorlage-post.md) wird eine
-   neue Post-Datei erstellt und in [`posts/01-entwuerfe/`](posts/01-entwuerfe/) abgelegt.
-   Caption-Bausteine aus [`captions/`](captions/README.md) können dabei als Ausgangspunkt dienen.
-5. **Fertigstellen** – ist der Post inhaltlich und mit Medien vollständig, wandert die Datei nach
+4. **Ausarbeiten** – entweder über das interne Tool ("Instagram-Content verwalten": Bild(er)
+   hochladen oder auswählen, Kategorie/Titel/Caption ausfüllen, Vorschau bestätigen – legt die
+   Post-Datei automatisch an) oder manuell: aus der Vorlage
+   [`posts/_vorlage-post.md`](posts/_vorlage-post.md) wird eine neue Post-Datei erstellt und in
+   [`posts/01-entwuerfe/`](posts/01-entwuerfe/) abgelegt. Caption-Bausteine aus
+   [`captions/`](captions/README.md) können dabei als Ausgangspunkt dienen.
+5. **Freigeben** – ist der Post inhaltlich und mit Medien vollständig, wandert die Datei nach
    [`posts/02-bereit-zur-veroeffentlichung/`](posts/02-bereit-zur-veroeffentlichung/) (im Tool:
-   "Als bereit markieren").
-6. **Veröffentlichen** – nach der Veröffentlichung wandert die Datei zur Archivierung nach
-   [`posts/03-veroeffentlicht/`](posts/03-veroeffentlicht/) (im Tool: "Als veröffentlicht
-   markieren") und der Status im Kalender wird aktualisiert.
+   "Post freigeben" - Vier-Augen-Prinzip, die freigebende Person muss vom Autor abweichen).
+6. **Einplanen** – über "Post einplanen" im Tool wird ein Termin (Datum + Uhrzeit) gesetzt, die
+   Datei wandert nach
+   [`posts/03-warten-auf-veroeffentlichung/`](posts/03-warten-auf-veroeffentlichung/).
+7. **Veröffentlichen** – sobald der Termin erreicht ist, wird der Post automatisch als
+   veröffentlicht markiert und wandert zur Archivierung nach
+   [`posts/04-veroeffentlicht/`](posts/04-veroeffentlicht/) (alternativ jederzeit manuell über
+   "Jetzt veröffentlichen"); der Status im Kalender wird dabei aktualisiert. Das eigentliche
+   Posten auf Instagram passiert weiterhin manuell, siehe
+   [`netlify/instagram-publish-plan.md`](netlify/instagram-publish-plan.md).
 
 ## Konventionen
 

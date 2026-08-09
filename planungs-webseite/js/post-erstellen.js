@@ -16,6 +16,12 @@
     return date.toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
   }
 
+  function formatGeplantDatum(value) {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+    return date.toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
+  }
+
   function formatKommentarVon(kommentar) {
     if (kommentar.von === 'Extern' && kommentar.von_name) {
       return `Extern (${kommentar.von_name})`;
@@ -277,7 +283,10 @@
 
   // Entwurf -> bereit läuft über einen eigenen Mini-Wizard (Review-Bestätigung + Vier-Augen-
   // Freigabe, siehe schedule-wizard.js), da die freigebende Person hier vom Autor abweichen muss.
-  // Bereit -> veroeffentlicht bleibt die einfache Inline-Aktion (nur Datum, kein Wizard).
+  // Bereit -> eingeplant läuft über einen zweiten Mini-Wizard (Datum & Uhrzeit + Vorschau, siehe
+  // schedule-publish-wizard.js). Eingeplant -> veroeffentlicht passiert automatisch, sobald der
+  // Termin erreicht ist (publish-scheduled-posts-background.js) - die einfache Inline-Aktion
+  // hier ist nur der manuelle Vorgriff darauf ("jetzt schon veröffentlichen").
   function buildActions(post, onUpdated) {
     const wrapper = document.createElement('div');
     wrapper.className = 'post-preview-actions';
@@ -365,19 +374,33 @@
       return wrapper;
     }
 
-    if (post.status !== 'bereit') {
+    if (post.status === 'bereit') {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'selection-submit btn-primary';
+      button.textContent = '🗓️ Post einplanen';
+      button.addEventListener('click', () => {
+        window.SchedulePublishWizard.open(post, onUpdated);
+      });
+      wrapper.appendChild(button);
       return wrapper;
     }
 
-    const dateInput = document.createElement('input');
-    dateInput.type = 'date';
-    dateInput.value = todayISO();
-    wrapper.appendChild(dateInput);
+    if (post.status !== 'eingeplant') {
+      return wrapper;
+    }
+
+    const geplantText = formatGeplantDatum(post.datum_geplant);
+    if (geplantText) {
+      const geplantEl = document.createElement('span');
+      geplantEl.textContent = `Geplant für: ${geplantText}`;
+      wrapper.appendChild(geplantEl);
+    }
 
     const button = document.createElement('button');
     button.type = 'button';
-    button.className = 'selection-submit btn-primary';
-    button.textContent = '🚀 Als veröffentlicht markieren';
+    button.className = 'selection-submit btn-secondary';
+    button.textContent = '🚀 Jetzt veröffentlichen';
     wrapper.appendChild(button);
 
     const status = document.createElement('p');
@@ -386,16 +409,10 @@
     wrapper.appendChild(status);
 
     button.addEventListener('click', async () => {
-      if (!dateInput.value) {
-        status.className = 'gallery-status error';
-        status.textContent = 'Bitte ein Datum wählen.';
-        return;
-      }
-
       const confirmed = await window.ConfirmDialog.confirmAction({
-        titel: 'Aktion bestätigen',
-        nachricht: `Post am ${dateInput.value} als veröffentlicht markieren?`,
-        bestaetigenLabel: 'Ja, markieren',
+        titel: 'Jetzt veröffentlichen?',
+        nachricht: 'Der Post wird sofort als veröffentlicht markiert, unabhängig vom geplanten Termin.',
+        bestaetigenLabel: 'Ja, jetzt veröffentlichen',
         abbrechenLabel: 'Abbrechen',
       });
       if (!confirmed) return;
@@ -409,13 +426,13 @@
 
       button.disabled = true;
       status.className = 'gallery-status';
-      status.textContent = 'Wird aktualisiert …';
+      status.textContent = 'Wird veröffentlicht …';
 
       try {
         const response = await fetch('/.netlify/functions/publish-post', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ secret, datei: post.datei, datum_veroeffentlicht: dateInput.value }),
+          body: JSON.stringify({ secret, datei: post.datei, datum_veroeffentlicht: todayISO() }),
         });
         const data = await response.json();
 
@@ -427,8 +444,8 @@
         }
 
         status.className = 'gallery-status success';
-        status.textContent = 'Aktualisiert.';
-        setTimeout(onUpdated, 3000);
+        status.textContent = 'Veröffentlicht.';
+        setTimeout(onUpdated, 2000);
       } catch (error) {
         status.className = 'gallery-status error';
         status.textContent = `Aktion fehlgeschlagen: ${error.message}`;

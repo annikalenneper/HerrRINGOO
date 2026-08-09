@@ -2,7 +2,8 @@
 
 - `images.js` bindet die Google-Drive-Ordner aus
   [`../planungs-webseite/medien/README.md`](../planungs-webseite/medien/README.md) in den
-  Bild-Schritt des "Post erstellen"-Wizards (`planungs-webseite/post-erstellen.html`) ein.
+  Bild-Schritt des "Post erstellen"-Wizards (`planungs-webseite/post-erstellen.html`, angezeigt
+  als "Instagram-Content verwalten") ein.
   Unterstützt Paging über die Query-Parameter `pageToken`/`pageSize` (Antwortform:
   `{ images, nextPageToken }`) für den dortigen "Mehr laden"-Button. Sonderfall
   `?folder=uploads`: listet stattdessen direkt `planungs-webseite/medien/uploads/` über die
@@ -35,14 +36,33 @@
   `posts/02-bereit-zur-veroeffentlichung/`. Setzt kein Datum mehr (kein automatisches
   Scheduling) – stattdessen Vier-Augen-Prinzip: `freigegeben_von` darf serverseitig nicht mit
   `autor` (gesetzt beim Anlegen über `create-post.js`) übereinstimmen.
+- `schedule-publish.js` plant einen bereiten Post ein: setzt `status: eingeplant` und
+  `datum_geplant` (Datum + Uhrzeit, muss in der Zukunft liegen) im Frontmatter und verschiebt die
+  Datei von `posts/02-bereit-zur-veroeffentlichung/` nach
+  `posts/03-warten-auf-veroeffentlichung/`. Nicht zu verwechseln mit `schedule-post.js`
+  (entwurf -> bereit, ohne Datum).
 - `publish-post.js` markiert einen Post als veröffentlicht: setzt `status: veroeffentlicht` und
   `datum_veroeffentlicht` im Frontmatter und verschiebt die Datei von
-  `posts/02-bereit-zur-veroeffentlichung/` nach `posts/03-veroeffentlicht/`. Postet nichts
-  automatisch auf Instagram – das Team veröffentlicht manuell und markiert den Post danach hier
-  nur als erledigt. Ein Plan für echtes automatisches Veröffentlichen (Instagram Content
-  Publishing API + zeitgesteuertes Auto-Publish) liegt bereit unter
-  [`instagram-publish-plan.md`](instagram-publish-plan.md), zurückgestellt bis die
-  Meta-App/Entwicklerkonto-Einrichtung ansteht.
+  `posts/03-warten-auf-veroeffentlichung/` nach `posts/04-veroeffentlicht/`. Manueller Vorgriff
+  auf den automatischen Übergang (siehe `publish-scheduled-posts-background.js`), z. B. falls ein
+  Post schon vor dem geplanten Termin raus soll. Postet nichts automatisch auf Instagram – das
+  Team veröffentlicht manuell auf der Plattform selbst, dieses Tool markiert den Post nur als
+  erledigt. Ein Plan für echtes automatisches Veröffentlichen (Instagram Content Publishing API)
+  liegt bereit unter [`instagram-publish-plan.md`](instagram-publish-plan.md), zurückgestellt bis
+  die Meta-App/Entwicklerkonto-Einrichtung ansteht.
+- `publish-scheduled-posts-background.js` (Netlify Background Function, bis zu 15 Min. Laufzeit)
+  prüft `posts/03-warten-auf-veroeffentlichung/` und versetzt jeden Post, dessen `datum_geplant`
+  erreicht ist, automatisch nach `posts/04-veroeffentlicht/` (`status: veroeffentlicht`) - exakt
+  dieselbe Statusänderung wie der manuelle Button in `publish-post.js`, nur zeitgesteuert. Wird
+  per GitHub-Actions-Cron alle 15 Minuten getriggert (siehe
+  [`../.github/workflows/publish-scheduled-posts.yml`](../.github/workflows/publish-scheduled-posts.yml)),
+  abgesichert über dasselbe `CREATE_POST_SECRET` (zusätzlich als GitHub-Actions-Repository-Secret
+  hinterlegt, gleicher Wert wie in Netlify) plus `NETLIFY_SITE_URL` als Repository-Variable (z. B.
+  `https://herr-ringoo.netlify.app`, ohne abschließenden Slash) unter GitHub Settings → Secrets
+  and variables → Actions. `datum_geplant` ist eine naive Wanduhrzeit ohne Zeitzone (aus einem
+  `<input type="datetime-local">`), faktisch Europe/Berlin - der Vergleich mit "jetzt" wird
+  deshalb explizit in Europe/Berlin-Ortszeit gebildet, sonst entstünde durch den UTC-Betrieb von
+  Netlify Functions ein systematischer 1–2-Stunden-Versatz.
 - `comment-post.js` hängt einen Kommentar (`{ von, von_name, text, erstellt_am }`) an die
   `kommentare`-Liste im Frontmatter an - anders als `schedule-post.js`/`publish-post.js`
   status-unabhängig (Post bleibt am gleichen Pfad, kein `moveFile`). `von` muss einer der Werte
