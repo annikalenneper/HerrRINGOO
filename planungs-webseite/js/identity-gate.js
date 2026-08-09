@@ -13,68 +13,124 @@
   //   mit "hidden" im HTML
   // - [data-identity-user]: Textknoten für den angezeigten Namen
   // - [data-identity-login] / [data-identity-logout]: Buttons
+  // - [data-identity-error]: Fehlertext, standardmäßig mit "hidden" im HTML
+  //
+  // Wichtig: netlifyIdentity.init() wird HIER SOFORT aufgerufen (nicht erst bei
+  // DOMContentLoaded) - das Widget beginnt beim Ausführen seines eigenen <script>-Tags bereits
+  // selbst, einen Einladungs-/Bestätigungs-/Recovery-Token aus dem URL-Hash zu verarbeiten.
+  // Wartet unser init()-Aufruf zu lange (z. B. bis DOMContentLoaded), entsteht ein Zeitfenster,
+  // in dem das Widget seinen eigenen Passwort-Dialog für den Invite-Flow nicht sauber aufbaut
+  // (beobachtetes Symptom: kurz aufblitzendes, nicht klickbares Overlay statt Passwort-Formular,
+  // erst nach Reload wieder ansprechbar - deckt sich mit bekannten Berichten zu genau diesem
+  // Widget). Da init() selbst kein DOM braucht, ist das gefahrlos möglich; die eigentliche
+  // DOM-Manipulation (Gate ein-/ausblenden) wird über einen "pending state" entkoppelt und erst
+  // angewendet, sobald der DOM bereit ist - unabhängig davon, ob der Login-Status vorher oder
+  // nachher bekannt wird.
 
-  function ready(fn) {
-    if (document.readyState !== 'loading') fn();
-    else document.addEventListener('DOMContentLoaded', fn);
-  }
+  let domReady = false;
+  let pendingState = null; // 'loggedIn' | 'loggedOut'
+  let pendingUser = null;
 
-  ready(() => {
+  function applyState() {
+    if (!domReady || pendingState === null) return;
+
     const gate = document.querySelector('[data-identity-gate]');
     const protectedContent = document.querySelector('[data-identity-protected]');
     const statusEl = document.querySelector('[data-identity-status]');
     const userEl = document.querySelector('[data-identity-user]');
-    const loginBtn = document.querySelector('[data-identity-login]');
-    const logoutBtn = document.querySelector('[data-identity-logout]');
-    const errorEl = document.querySelector('[data-identity-error]');
 
-    if (!window.netlifyIdentity) {
-      // Widget-Skript konnte nicht laden (z. B. offline, oder Identity läuft nicht als
-      // Netlify-Deploy) - klare Fehlermeldung statt eines für immer leeren, unerklärten Gates.
-      if (errorEl) {
-        errorEl.hidden = false;
-        errorEl.textContent = 'Login-Dienst konnte nicht geladen werden. Bitte Seite neu laden oder später erneut versuchen.';
-      }
-      return;
-    }
-
-    function showLoggedIn(user) {
+    if (pendingState === 'loggedIn') {
       if (gate) gate.hidden = true;
       if (protectedContent) protectedContent.hidden = false;
       if (statusEl) statusEl.hidden = false;
-      if (userEl) {
-        const name = (user.user_metadata && user.user_metadata.full_name) || user.email;
+      if (userEl && pendingUser) {
+        const name = (pendingUser.user_metadata && pendingUser.user_metadata.full_name) || pendingUser.email;
         userEl.textContent = name;
       }
-    }
-
-    function showLoggedOut() {
+    } else {
       if (gate) gate.hidden = false;
       if (protectedContent) protectedContent.hidden = true;
       if (statusEl) statusEl.hidden = true;
     }
+  }
 
+  function setLoggedIn(user) {
+    pendingState = 'loggedIn';
+    pendingUser = user;
+    applyState();
+  }
+
+  function setLoggedOut() {
+    pendingState = 'loggedOut';
+    pendingUser = null;
+    applyState();
+  }
+
+  function showError(message) {
+    function apply() {
+      const errorEl = document.querySelector('[data-identity-error]');
+      if (errorEl) {
+        errorEl.hidden = false;
+        errorEl.textContent = message;
+      }
+    }
+    if (domReady) apply();
+    else document.addEventListener('DOMContentLoaded', apply, { once: true });
+  }
+
+  if (window.netlifyIdentity) {
     netlifyIdentity.on('init', (user) => {
-      if (user) showLoggedIn(user);
-      else showLoggedOut();
+      if (user) {
+        setLoggedIn(user);
+        return;
+      }
+      setLoggedOut();
+      // Fallback: falls im Hash noch ein unverarbeiteter Einladungs-/Bestätigungs-/
+      // Recovery-Token steht, das Widget diesen aber nicht selbst automatisch geöffnet hat
+      // (siehe Kommentar oben), das Passwort-Formular explizit erzwingen.
+      const hash = window.location.hash || '';
+      if (/(invite_token|confirmation_token|recovery_token|email_change_token)=/.test(hash)) {
+        netlifyIdentity.open();
+      }
     });
 
     netlifyIdentity.on('login', (user) => {
-      showLoggedIn(user);
+      setLoggedIn(user);
       netlifyIdentity.close();
     });
 
     netlifyIdentity.on('logout', () => {
-      showLoggedOut();
+      setLoggedOut();
     });
 
-    if (loginBtn) {
-      loginBtn.addEventListener('click', () => netlifyIdentity.open('login'));
-    }
-    if (logoutBtn) {
-      logoutBtn.addEventListener('click', () => netlifyIdentity.logout());
-    }
+    netlifyIdentity.on('error', (err) => {
+      showError(`Login fehlgeschlagen: ${(err && err.message) || 'unbekannter Fehler'}. Bitte erneut versuchen.`);
+    });
 
     netlifyIdentity.init();
-  });
+  } else {
+    // Widget-Skript konnte nicht laden (z. B. offline, oder Identity läuft nicht als
+    // Netlify-Deploy) - klare Fehlermeldung statt eines für immer leeren, unerklärten Gates.
+    showError('Login-Dienst konnte nicht geladen werden. Bitte Seite neu laden oder später erneut versuchen.');
+  }
+
+  function wireButtons() {
+    const loginBtn = document.querySelector('[data-identity-login]');
+    const logoutBtn = document.querySelector('[data-identity-logout]');
+    if (loginBtn && window.netlifyIdentity) {
+      loginBtn.addEventListener('click', () => netlifyIdentity.open('login'));
+    }
+    if (logoutBtn && window.netlifyIdentity) {
+      logoutBtn.addEventListener('click', () => netlifyIdentity.logout());
+    }
+  }
+
+  function onDomReady() {
+    domReady = true;
+    applyState();
+    wireButtons();
+  }
+
+  if (document.readyState !== 'loading') onDomReady();
+  else document.addEventListener('DOMContentLoaded', onDomReady);
 })();
