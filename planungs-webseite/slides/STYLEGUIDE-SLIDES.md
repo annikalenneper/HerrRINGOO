@@ -68,6 +68,16 @@ Kein `letter-spacing`. Versalien über `text-transform: uppercase`. Alles **zent
 | Trenner | `.dia` | Raute (Fläche) | 20 × 20 px | Gold |
 | Hervorhebung | `.g` | – | – | Gold dunkel |
 
+### Zeilenumbrüche und Titelschrift
+
+Titel brechen ausgewogen um (`text-wrap: balance`), Fließtext vermeidet einzelne Wörter in der
+letzten Zeile (`text-wrap: pretty`). Manuelle Umbrüche (`<br>`) nur in Cover-Titeln, wenn der
+zweite Teil farbig hervorgehoben wird (z. B. „Vom Material / zum Trauring“).
+
+Längere Titel (mehr als ca. 10 Zeichen, z. B. „1 · Die Legierung“, „Carat · Gewicht“) stehen in
+Open Sans Condensed (`.p-big`). Josefin Sans (`.p-title`) bleibt kurzen, prägnanten Titeln
+vorbehalten (z. B. „Weißgold“), wie auf herr-ringoo.de.
+
 ## 4. Abstände
 
 **8er-Raster:** Alle Abstände sind Vielfache von 8 px und als Tokens in `slides.css` definiert
@@ -137,4 +147,7 @@ Gold ist Akzent, nie Fläche.
 | 26-08-platin-weissgold | 1, 2, 3, 4, 5 |
 | 26-08-goldfarben | 6, 7, 8, 1, 2 |
 | 26-08-bicolor | 3, 4, 5, 6, 7 |
-| nächster Post | 8, 1, 2, 3, 4 |
+| 26-08-gebrauchsspuren | 8, 1, 2, 3, 4 |
+| 26-08-ring-entsteht | 5, 6, 7, 8, 1 |
+| 26-08-die-4c | 2, 3, 4, 5, 6 |
+| nächster Post | 7, 8, 1, 2, 3 |

@@ -113,3 +113,7 @@ body { margin: 0; background: #2a2b2f; color: #e5e6e9; font-family: var(--font-b
 
 /* Prüfung: Inhalt ragt aus dem sicheren Bereich (setzt slides.js) */
 .slide[data-overflow="1"] .content { outline: 6px solid #e0003c; outline-offset: -6px; }
+
+/* Zeilenumbrüche: Titel ausgewogen, Fließtext ohne einzelne Wörter in der letzten Zeile */
+.p-xl, .p-big, .p-title, .p-oder { text-wrap: balance; }
+.p-text, .p-sub { text-wrap: pretty; }
