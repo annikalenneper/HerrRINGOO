@@ -12,7 +12,9 @@ Elemente. Keine Web-Bausteine wie Buttons, Pills, Trennlinien oder Navigationsle
 - **Texte werden wortgleich übernommen.** Nichts kürzen, umformulieren oder ergänzen. Wer am Text
   etwas verbessern möchte, macht einen **Vorschlag**, der freigegeben werden muss.
 - Erlaubte Zusätze ohne Freigabe:
-  - die **Kategorie** oben (z. B. „Materialkunde“, auf einer Tipp-Folie „Unser Tipp“)
+  - die **Kategorie** direkt über dem Inhalt (z. B. „Materialkunde“, auf einer Tipp-Folie „Unser Tipp“).
+    Sie steht im HTML als erstes Element **innerhalb** von `<div class="content">`, also
+    `<p class="kicker">` und darunter der Inhalt, und hat immer 48 px Abstand zum Titel bzw. Text.
   - das **Hervorheben einzelner Wörter in Gold** (z. B. „schneller.“, „in einem Ring“)
 - **Nicht** einbauen: Call-to-Action-Zeilen („Jetzt Beratung buchen“), „Wischen →“,
   Stichwort-Listen, Foliennummern, zusätzliche Überschriften, die nicht freigegeben sind.
@@ -31,8 +33,8 @@ Elemente. Keine Web-Bausteine wie Buttons, Pills, Trennlinien oder Navigationsle
 
 ### Sicherer Textbereich je Hintergrund
 
-Der Textbereich reicht von 152 px (unter der Kategorie) bis **138 px über den höchsten Punkt
-der Silhouette**. Der Inhalt wird innerhalb dieses Bereichs vertikal zentriert. Dadurch sind die
+Der Textbereich reicht von 80 px bis **138 px über den höchsten Punkt der Silhouette**. Der Inhalt
+wird innerhalb dieses Bereichs vertikal zentriert, die Kategorie gehört dazu (siehe unten). Dadurch sind die
 Abstände nach oben und unten optisch ausgeglichen.
 
 | Hintergrund | Schwarz beginnt bei | Textbereich endet bei (`--safe-bottom`) |
@@ -58,13 +60,12 @@ Hintergründe mit weißem Himmel oben und großer schwarzer Fläche, Logo unten.
 `.ibg8` statt `.bg1` bis `.bg8`. Die Farben stellen sich damit automatisch um.
 
 - **Inhalt im schwarzen Bereich:** ab 96 px unter dem tiefsten Punkt des weißen Himmels bis
-  1039 px (176 px über dem Logo, das bei 1215 px beginnt). Der Inhalt wird darin vertikal zentriert
-  und sitzt damit bewusst etwas über der Mitte der schwarzen Fläche.
+  879 px (336 px über dem Logo, das bei 1215 px beginnt). Der Inhalt wird darin vertikal zentriert
+  und sitzt damit deutlich über der Mitte der schwarzen Fläche.
 - **Farben:** Titel Weiß, Fließtext gebrochenes Weiß `#e5e6e9`, Hervorhebungen und Raute im helleren
   Gold `#c8aa6d`. `#a9884c` hätte auf Schwarz zu wenig Kontrast.
-- **Kategorie** steht **nicht** im weißen Himmel, sondern als erstes Element im Inhalt: in Gold,
-  48 px über dem Titel bzw. Text. Im HTML steht `<p class="kicker">` dafür **innerhalb** von
-  `<div class="content">`.
+- **Kategorie** steht **nicht** im weißen Himmel, sondern wie in der hellen Serie direkt über dem
+  Inhalt, hier im helleren Gold.
 
 | Hintergrund | Weiß reicht bis | Höchste Spitze | Textbereich beginnt bei (`--safe-top`) |
 |---|---|---|---|
@@ -85,7 +86,7 @@ Kein `letter-spacing`. Versalien über `text-transform: uppercase`. Alles **zent
 
 | Rolle | Klasse | Schrift | Größe | Farbe |
 |---|---|---|---|---|
-| Kategorie oben (fix, s. Abstände) | `.kicker` | Open Sans Condensed 700, Versalien | 32 px | Gold dunkel |
+| Kategorie (direkt über dem Inhalt) | `.kicker` | Open Sans Condensed 700, Versalien | 32 px | Gold dunkel |
 | Cover-Titel, gestapelt | `.p-xl` | Open Sans Condensed 700, Versalien | 124 px | Schwarz bzw. Gold |
 | Verbindungswort im Cover („oder“) | `.p-oder` | Josefin Sans 600, Versalien | 54 px | Gold dunkel |
 | Große Aussage | `.p-big` | Open Sans Condensed 700, Versalien | 112 px | Schwarz |
@@ -118,8 +119,8 @@ Raute ist eine Fläche (20 × 20 px), ihre Box entspricht ihrer sichtbaren Grö�
 
 | Abstand | Token | Wert |
 |---|---|---|
-| Kategorie: Oberkante Versalien | `--space-10` | 80 px vom oberen Rand |
-| Textbereich: Innenabstand oben / seitlich | `--space-19` / `--space-10` | 152 px / 80 px |
+| Textbereich (helle Serie): oben / seitlich | `--space-10` | 80 px / 80 px |
+| Kategorie ↔ Titel bzw. Text | `--space-6` | 48 px |
 | Cover-Titel ↔ „oder“ ↔ Cover-Titel | `--space-4` | 32 px |
 | Titel/Aussage ↔ Raute ↔ Text | `--space-6` | 48 px |
 

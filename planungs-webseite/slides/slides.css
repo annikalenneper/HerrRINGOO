@@ -14,7 +14,7 @@
 
   --slide-w: 1080px;   /* Instagram-Hochformat 4:5 */
   --slide-h: 1350px;
-  --safe-top: 152px;     /* Oberkante Textbereich (helle Serie: unter der Kategorie) */
+  --safe-top: 80px;      /* Oberkante Textbereich (helle Serie, inkl. Kategorie) */
   --safe-bottom: 860px;  /* Unterkante Textbereich */
   --scale: 0.5;
 
@@ -79,9 +79,9 @@ body { margin: 0; background: #2a2b2f; color: #e5e6e9; font-family: var(--font-b
 }
 .show-safe .content { outline: 3px dashed rgba(255, 0, 80, .6); outline-offset: -3px; }
 
-/* Kategorie oben */
-.kicker {
-  position: absolute; top: var(--space-10); left: 0; right: 0; text-align: center;
+/* Kategorie: erstes Element in .content, 48 px über Titel bzw. Text (beide Serien) */
+.slide .kicker {
+  margin-bottom: var(--space-6);
   font-weight: 700; text-transform: uppercase; font-size: 32px; line-height: 1; color: var(--gold-dark);
   text-box: trim-both cap alphabetic;
 }
@@ -121,7 +121,7 @@ body { margin: 0; background: #2a2b2f; color: #e5e6e9; font-family: var(--font-b
 .p-text, .p-sub { text-wrap: pretty; }
 
 /* ---------- Invertierte Serie (bg-black-font-white): Himmel weiß oben, Inhalt im Schwarz ----------
-   Textbereich: 96 px unter dem tiefsten Punkt des weißen Himmels bis 1039 px (176 px über dem Logo). */
+   Textbereich: 96 px unter dem tiefsten Punkt des weißen Himmels bis 879 px (336 px über dem Logo). */
 .ibg1 { background-image: url('../medien/bg/bg-black-font-white/1.png'); --safe-top: 405px; }
 .ibg2 { background-image: url('../medien/bg/bg-black-font-white/2.png'); --safe-top: 386px; }
 .ibg3 { background-image: url('../medien/bg/bg-black-font-white/3.png'); --safe-top: 406px; }
@@ -131,7 +131,7 @@ body { margin: 0; background: #2a2b2f; color: #e5e6e9; font-family: var(--font-b
 .ibg7 { background-image: url('../medien/bg/bg-black-font-white/7.png'); --safe-top: 412px; }
 .ibg8 { background-image: url('../medien/bg/bg-black-font-white/8.png'); --safe-top: 398px; }
 .ibg1, .ibg2, .ibg3, .ibg4, .ibg5, .ibg6, .ibg7, .ibg8 {
-  --safe-bottom: 1039px;
+  --safe-bottom: 879px;
   --gray-950: #ffffff;    /* Titel weiß */
   --gray-900: #e5e6e9;    /* Fließtext gebrochenes Weiß */
   background-color: #000;
@@ -141,6 +141,6 @@ body { margin: 0; background: #2a2b2f; color: #e5e6e9; font-family: var(--font-b
 .ibg5 .content .g, .ibg6 .content .g, .ibg7 .content .g, .ibg8 .content .g,
 .ibg1 .p-oder, .ibg2 .p-oder, .ibg3 .p-oder, .ibg4 .p-oder,
 .ibg5 .p-oder, .ibg6 .p-oder, .ibg7 .p-oder, .ibg8 .p-oder { color: var(--gold); }
-/* Kategorie steht in der invertierten Serie im Inhalt (erstes Element in .content), in Gold,
-   48 px über dem Titel - nicht im weißen Himmel. */
-.content > .kicker { position: static; margin-bottom: var(--space-6); color: var(--gold); }
+/* Kategorie auf Schwarz im helleren Gold */
+.ibg1 .kicker, .ibg2 .kicker, .ibg3 .kicker, .ibg4 .kicker,
+.ibg5 .kicker, .ibg6 .kicker, .ibg7 .kicker, .ibg8 .kicker { color: var(--gold); }
