@@ -1,0 +1,96 @@
+/* =====================================================================
+   Herr RINGOO – Instagram-Slides (Wissens-Posts)
+   Regeln & Begründungen: STYLEGUIDE-SLIDES.md (gleicher Ordner)
+   ===================================================================== */
+
+:root {
+  --gray-950: #17181a;
+  --gray-900: #212226;
+  --white: #ffffff;
+  --gold: #c8aa6d;       /* nur Ornamente (Raute) */
+  --gold-dark: #a9884c;  /* Text in Gold */
+  --font-heading: "Josefin Sans", "Segoe UI", Arial, sans-serif;
+  --font-body: "Open Sans Condensed", "Segoe UI", Arial, sans-serif;
+
+  --slide-w: 1080px;   /* Instagram-Hochformat 4:5 */
+  --slide-h: 1350px;
+  --safe-bottom: 860px;
+  --scale: 0.5;
+}
+
+* { box-sizing: border-box; }
+
+/* ---------- Vorschau-Seite ---------- */
+body { margin: 0; background: #2a2b2f; color: #e5e6e9; font-family: var(--font-body); font-size: 1.15rem; }
+.toolbar {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;
+  padding: .75rem 1.25rem; background: var(--gray-950); border-bottom: 1px solid #35373c;
+}
+.toolbar strong { font-family: var(--font-heading); font-weight: 600; text-transform: uppercase; color: var(--gold); }
+.toolbar label { display: flex; gap: .4rem; align-items: center; cursor: pointer; }
+.toolbar select { font: inherit; }
+.toolbar a { color: var(--gold); }
+.deck { display: flex; flex-wrap: wrap; gap: 2rem; padding: 2rem 1.25rem 4rem; justify-content: center; }
+.frame { margin: 0; }
+.stage { width: calc(var(--slide-w) * var(--scale)); height: calc(var(--slide-h) * var(--scale)); flex: none; }
+.stage .slide { transform: scale(var(--scale)); transform-origin: top left; box-shadow: 0 10px 40px rgba(0,0,0,.45); }
+.frame figcaption { margin-top: .5rem; font-size: .95rem; color: #adb0b7; text-align: center; }
+
+/* ---------- Render-Modus (?slide=N) für den JPG-Export ---------- */
+.render body, body.render { background: var(--white); }
+.render .toolbar, .render figcaption { display: none; }
+.render .deck { display: block; padding: 0; }
+.render .frame { display: none; }
+.render .frame.active { display: block; }
+.render .stage { width: var(--slide-w); height: var(--slide-h); }
+.render .stage .slide { transform: none; box-shadow: none; }
+
+/* ---------- Slide ---------- */
+.slide {
+  position: relative; width: var(--slide-w); height: var(--slide-h); overflow: hidden;
+  background: var(--white) center / cover no-repeat;
+  color: var(--gray-900); font-family: var(--font-body);
+}
+.slide p { margin: 0; }
+
+/* Hintergründe + sicherer Textbereich: endet ~90 px über dem höchsten Punkt des Schwarz */
+.bg1 { background-image: url('../medien/bg/bg-white-font-black/1.png'); --safe-bottom: 822px; }
+.bg2 { background-image: url('../medien/bg/bg-white-font-black/2.png'); --safe-bottom: 874px; }
+.bg3 { background-image: url('../medien/bg/bg-white-font-black/3.png'); --safe-bottom: 890px; }
+.bg4 { background-image: url('../medien/bg/bg-white-font-black/4.png'); --safe-bottom: 871px; }
+.bg5 { background-image: url('../medien/bg/bg-white-font-black/5.png'); --safe-bottom: 859px; }
+.bg6 { background-image: url('../medien/bg/bg-white-font-black/6.png'); --safe-bottom: 857px; }
+.bg7 { background-image: url('../medien/bg/bg-white-font-black/7.png'); --safe-bottom: 892px; }
+.bg8 { background-image: url('../medien/bg/bg-white-font-black/8.png'); --safe-bottom: 881px; }
+
+.content {
+  position: absolute; left: 0; right: 0; top: 0; height: var(--safe-bottom);
+  padding: 150px 80px 0;
+  display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+}
+.show-safe .content { outline: 3px dashed rgba(255, 0, 80, .6); outline-offset: -3px; }
+
+/* Kategorie oben */
+.kicker {
+  position: absolute; top: 72px; left: 0; right: 0; text-align: center;
+  font-weight: 700; text-transform: uppercase; font-size: 32px; color: var(--gold-dark);
+}
+/* Trenner */
+.slide .dia { color: var(--gold); font-size: 30px; line-height: 1; margin: 30px 0; }
+
+/* Cover-Titel, gestapelt (z. B. PLATIN / oder / WEISSGOLD?) */
+.p-xl { font-weight: 700; text-transform: uppercase; font-size: 124px; line-height: .95; color: var(--gray-950); }
+.slide .p-oder { font-family: var(--font-heading); font-weight: 600; text-transform: uppercase; font-size: 54px; color: var(--gold-dark); margin: 16px 0 8px; }
+/* Große Aussage in Versalien */
+.p-big { font-weight: 700; text-transform: uppercase; font-size: 112px; line-height: 1; color: var(--gray-950); }
+/* Thema-Titel (Josefin Sans) */
+.p-title { font-family: var(--font-heading); font-weight: 600; text-transform: uppercase; font-size: 116px; line-height: 1; color: var(--gray-950); }
+/* Fließtext unter einem Titel */
+.p-text { font-weight: 300; font-size: 52px; line-height: 1.25; color: var(--gray-900); max-width: 880px; }
+.p-text.small { font-size: 48px; }
+/* Reine Text-Folie bzw. Unterzeile einer Aussage */
+.p-sub { font-weight: 300; font-size: 62px; line-height: 1.2; color: var(--gray-900); max-width: 880px; }
+
+.g { color: var(--gold-dark); }
+.nw { white-space: nowrap; }
