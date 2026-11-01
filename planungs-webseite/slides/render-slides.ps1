@@ -1,4 +1,4 @@
-# Rendert die Slides eines oder mehrerer Posts als JPG (1080 x 1350) nach medien/post-folien/.
+﻿# Rendert die Slides eines oder mehrerer Posts als JPG (1080 x 1350) nach medien/post-folien/.
 # Aufruf (aus beliebigem Ordner):
 #   powershell -ExecutionPolicy Bypass -File planungs-webseite\slides\render-slides.ps1 26-08-platin-weissgold 26-08-goldfarben
 # Ohne Argument werden alle *.html-Posts in diesem Ordner (außer index.html) gerendert.
@@ -32,6 +32,16 @@ foreach ($post in $Posts) {
   if (-not (Test-Path $html)) { Write-Warning "Nicht gefunden: $html"; continue }
   $count = ([regex]::Matches((Get-Content $html -Raw -Encoding UTF8), 'class="frame"')).Count
   $url = 'file:///' + ($html -replace '\\', '/')
+
+  # Prüfung vorab: ragt Inhalt aus dem sicheren Bereich? Dann kein Export.
+  $domFile = Join-Path $tmpDir 'dom.html'
+  Start-Process -FilePath $edge -Wait -WindowStyle Hidden `
+    -ArgumentList @('--headless=new', '--disable-gpu', '--virtual-time-budget=6000', '--dump-dom', "`"$url`?check=1`"") `
+    -RedirectStandardOutput $domFile -RedirectStandardError (Join-Path $tmpDir 'edge-stderr.txt')
+  $dom = Get-Content $domFile -Raw -Encoding UTF8
+  if ($dom -notmatch 'data-check="([^"]+)"') { throw "Prüfung konnte nicht ausgeführt werden: $post" }
+  if ($Matches[1] -ne 'ok') { throw "$post - Folie(n) ragen aus dem sicheren Bereich ($($Matches[1])). Text/Größe prüfen, nichts exportiert." }
+  Write-Host "Prüfung ok: $post"
 
   for ($i = 1; $i -le $count; $i++) {
     $png = Join-Path $tmpDir "$post-$i.png"

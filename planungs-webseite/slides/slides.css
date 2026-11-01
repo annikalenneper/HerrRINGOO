@@ -16,6 +16,12 @@
   --slide-h: 1350px;
   --safe-bottom: 860px;
   --scale: 0.5;
+
+  /* Abstands-Raster: Vielfache von 8 px. Abstände sind immer SICHTBARE Abstände
+     (Schriftboxen werden auf Versalhöhe beschnitten, siehe text-box unten). */
+  --space-2: 16px;  --space-3: 24px;  --space-4: 32px;  --space-6: 48px;
+  --space-7: 56px;  --space-10: 80px; --space-19: 152px;
+  --dia-size: 20px;
 }
 
 * { box-sizing: border-box; }
@@ -54,34 +60,44 @@ body { margin: 0; background: #2a2b2f; color: #e5e6e9; font-family: var(--font-b
 }
 .slide p { margin: 0; }
 
-/* Hintergründe + sicherer Textbereich: endet ~90 px über dem höchsten Punkt des Schwarz */
-.bg1 { background-image: url('../medien/bg/bg-white-font-black/1.png'); --safe-bottom: 822px; }
-.bg2 { background-image: url('../medien/bg/bg-white-font-black/2.png'); --safe-bottom: 874px; }
-.bg3 { background-image: url('../medien/bg/bg-white-font-black/3.png'); --safe-bottom: 890px; }
-.bg4 { background-image: url('../medien/bg/bg-white-font-black/4.png'); --safe-bottom: 871px; }
-.bg5 { background-image: url('../medien/bg/bg-white-font-black/5.png'); --safe-bottom: 859px; }
-.bg6 { background-image: url('../medien/bg/bg-white-font-black/6.png'); --safe-bottom: 857px; }
-.bg7 { background-image: url('../medien/bg/bg-white-font-black/7.png'); --safe-bottom: 892px; }
-.bg8 { background-image: url('../medien/bg/bg-white-font-black/8.png'); --safe-bottom: 881px; }
+/* Hintergründe + sicherer Textbereich: endet 138 px über dem höchsten Punkt des Schwarz */
+.bg1 { background-image: url('../medien/bg/bg-white-font-black/1.png'); --safe-bottom: 774px; }
+.bg2 { background-image: url('../medien/bg/bg-white-font-black/2.png'); --safe-bottom: 826px; }
+.bg3 { background-image: url('../medien/bg/bg-white-font-black/3.png'); --safe-bottom: 842px; }
+.bg4 { background-image: url('../medien/bg/bg-white-font-black/4.png'); --safe-bottom: 823px; }
+.bg5 { background-image: url('../medien/bg/bg-white-font-black/5.png'); --safe-bottom: 811px; }
+.bg6 { background-image: url('../medien/bg/bg-white-font-black/6.png'); --safe-bottom: 809px; }
+.bg7 { background-image: url('../medien/bg/bg-white-font-black/7.png'); --safe-bottom: 844px; }
+.bg8 { background-image: url('../medien/bg/bg-white-font-black/8.png'); --safe-bottom: 833px; }
 
 .content {
   position: absolute; left: 0; right: 0; top: 0; height: var(--safe-bottom);
-  padding: 150px 80px 0;
+  padding: var(--space-19) var(--space-10) 0;
   display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
 }
 .show-safe .content { outline: 3px dashed rgba(255, 0, 80, .6); outline-offset: -3px; }
 
 /* Kategorie oben */
 .kicker {
-  position: absolute; top: 72px; left: 0; right: 0; text-align: center;
-  font-weight: 700; text-transform: uppercase; font-size: 32px; color: var(--gold-dark);
+  position: absolute; top: var(--space-10); left: 0; right: 0; text-align: center;
+  font-weight: 700; text-transform: uppercase; font-size: 32px; line-height: 1; color: var(--gold-dark);
+  text-box: trim-both cap alphabetic;
 }
-/* Trenner */
-.slide .dia { color: var(--gold); font-size: 30px; line-height: 1; margin: 30px 0; }
+/* Trenner: Raute als Fläche, damit sichtbare Größe = Box-Größe */
+.slide .dia {
+  width: var(--dia-size); height: var(--dia-size); flex: none;
+  background: var(--gold); clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  font-size: 0; margin: var(--space-6) 0;
+}
+/* Alle Textblöcke auf Versalhöhe/Grundlinie beschneiden -> Margin = sichtbarer Abstand */
+.p-xl, .p-oder, .p-big, .p-title, .p-text, .p-sub { text-box: trim-both cap alphabetic; }
 
 /* Cover-Titel, gestapelt (z. B. PLATIN / oder / WEISSGOLD?) */
 .p-xl { font-weight: 700; text-transform: uppercase; font-size: 124px; line-height: .95; color: var(--gray-950); }
-.slide .p-oder { font-family: var(--font-heading); font-weight: 600; text-transform: uppercase; font-size: 54px; color: var(--gold-dark); margin: 16px 0 8px; }
+.slide .p-oder { font-family: var(--font-heading); font-weight: 600; text-transform: uppercase; font-size: 54px; color: var(--gold-dark); margin: var(--space-4) 0; line-height: 1; }
+/* Optischer Ausgleich: Komma in der Zeile darüber (+16) bzw. Akzent in der Zeile darunter (+24) */
+.slide .p-oder.after-comma  { margin-top: calc(var(--space-4) + var(--space-2)); }
+.slide .p-oder.before-accent { margin-bottom: calc(var(--space-4) + var(--space-3)); }
 /* Große Aussage in Versalien */
 .p-big { font-weight: 700; text-transform: uppercase; font-size: 112px; line-height: 1; color: var(--gray-950); }
 /* Thema-Titel (Josefin Sans) */
@@ -94,3 +110,6 @@ body { margin: 0; background: #2a2b2f; color: #e5e6e9; font-family: var(--font-b
 
 .g { color: var(--gold-dark); }
 .nw { white-space: nowrap; }
+
+/* Prüfung: Inhalt ragt aus dem sicheren Bereich (setzt slides.js) */
+.slide[data-overflow="1"] .content { outline: 6px solid #e0003c; outline-offset: -6px; }
