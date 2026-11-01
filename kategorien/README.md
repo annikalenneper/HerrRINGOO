@@ -18,12 +18,12 @@ Kategorien zugeordnet.
 
 | Kürzel | Kategorie | Beschreibung | Beispiel |
 |---|---|---|---|
-| `werkstatt` | Werkstatt & Prozess | Einblicke in die Entstehung der Ringe, Handwerk, Materialien | Making-of-Video eines Rings |
+| `werkstatt` | Werkstatt & Prozess | Einblicke in die Entstehung der Ringe bei unseren Trauringmanufakturen, Materialien | Making-of-Video eines Rings |
 | `unterwegs` | Unterwegs / Standorte | Das "rollende" Studio selbst – Touren, Standorte, Ankunft/Abfahrt | "Nächster Stopp: ..." |
 | `kundengeschichten` | Kundengeschichten | Geschichten und (mit Einverständnis) Bilder von Paaren und ihren Ringen | Paar erzählt, wie sie sich für ihre Ringe entschieden haben |
 | `produkt` | Ring im Detail | Einzelne Ringe/Modelle im Fokus, Design- und Materialdetails | Nahaufnahme eines Rings mit Beschreibung |
-| `team` | Team & Menschen dahinter | Die Personen hinter Herr RINGOO, Persönliches, Werkstattalltag | Kurzvorstellung eines Teammitglieds |
-| `wissen` | Trauring-Wissen | Ratgeber- und FAQ-Content rund um Trauringe | "5 Dinge, die man vor dem Ringkauf wissen sollte" |
+| `team` | Team & Menschen dahinter | Die Personen hinter Herr RINGOO, Persönliches, Alltag im Familienbetrieb | Kurzvorstellung eines Teammitglieds |
+| `wissen` | Beratung | Ratgeber- und FAQ-Content rund um Trauringe | "5 Dinge, die man vor dem Ringkauf wissen sollte" |
 | `community` | Community & Interaktion | Umfragen, Q&A, Reaktionen auf Kommentare, Behind-the-Scenes-Fragen | Story-Umfrage zu Ringformen |
 | `termine` | Termine & Aktionen | Konkrete Termine, Aktionen, Anlässe (z. B. Valentinstag) | Ankündigung eines Pop-up-Termins |
 | `zitatkachel` | Zitatkachel | Typografische Zitat-Grafiken rund um Liebe, Hochzeit, Ringe, Road-Trips – Feed-Auflockerung ohne Produktbezug | Zitat von Hermann Hesse über die Liebe, als Kachel gestaltet |

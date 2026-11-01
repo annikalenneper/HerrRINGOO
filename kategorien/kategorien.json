@@ -1,10 +1,10 @@
 [
-  { "key": "werkstatt", "label": "Werkstatt & Prozess", "beschreibung": "Einblicke in die Entstehung der Ringe, Handwerk, Materialien", "beispiel": "Making-of-Video eines Rings" },
+  { "key": "werkstatt", "label": "Werkstatt & Prozess", "beschreibung": "Einblicke in die Entstehung der Ringe bei unseren Trauringmanufakturen, Materialien", "beispiel": "Making-of-Video eines Rings" },
   { "key": "unterwegs", "label": "Unterwegs / Standorte", "beschreibung": "Das \"rollende\" Studio selbst – Touren, Standorte, Ankunft/Abfahrt", "beispiel": "\"Nächster Stopp: ...\"" },
   { "key": "kundengeschichten", "label": "Kundengeschichten", "beschreibung": "Geschichten und (mit Einverständnis) Bilder von Paaren und ihren Ringen", "beispiel": "Paar erzählt, wie sie sich für ihre Ringe entschieden haben" },
   { "key": "produkt", "label": "Ring im Detail", "beschreibung": "Einzelne Ringe/Modelle im Fokus, Design- und Materialdetails", "beispiel": "Nahaufnahme eines Rings mit Beschreibung" },
-  { "key": "team", "label": "Team & Menschen dahinter", "beschreibung": "Die Personen hinter Herr RINGOO, Persönliches, Werkstattalltag", "beispiel": "Kurzvorstellung eines Teammitglieds" },
-  { "key": "wissen", "label": "Trauring-Wissen", "beschreibung": "Ratgeber- und FAQ-Content rund um Trauringe", "beispiel": "\"5 Dinge, die man vor dem Ringkauf wissen sollte\"" },
+  { "key": "team", "label": "Team & Menschen dahinter", "beschreibung": "Die Personen hinter Herr RINGOO, Persönliches, Alltag im Familienbetrieb", "beispiel": "Kurzvorstellung eines Teammitglieds" },
+  { "key": "wissen", "label": "Beratung", "beschreibung": "Ratgeber- und FAQ-Content rund um Trauringe", "beispiel": "\"5 Dinge, die man vor dem Ringkauf wissen sollte\"" },
   { "key": "community", "label": "Community & Interaktion", "beschreibung": "Umfragen, Q&A, Reaktionen auf Kommentare, Behind-the-Scenes-Fragen", "beispiel": "Story-Umfrage zu Ringformen" },
   { "key": "termine", "label": "Termine & Aktionen", "beschreibung": "Konkrete Termine, Aktionen, Anlässe (z. B. Valentinstag)", "beispiel": "Ankündigung eines Pop-up-Termins" },
   { "key": "zitatkachel", "label": "Zitatkachel", "beschreibung": "Typografische Zitat-Grafiken rund um Liebe, Hochzeit, Ringe, Road-Trips – Feed-Auflockerung ohne Produktbezug", "beispiel": "Zitat von Hermann Hesse über die Liebe, als Kachel gestaltet" },

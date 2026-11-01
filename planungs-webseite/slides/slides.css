@@ -14,7 +14,8 @@
 
   --slide-w: 1080px;   /* Instagram-Hochformat 4:5 */
   --slide-h: 1350px;
-  --safe-bottom: 860px;
+  --safe-top: 152px;     /* Oberkante Textbereich (helle Serie: unter der Kategorie) */
+  --safe-bottom: 860px;  /* Unterkante Textbereich */
   --scale: 0.5;
 
   /* Abstands-Raster: Vielfache von 8 px. Abstände sind immer SICHTBARE Abstände
@@ -71,8 +72,9 @@ body { margin: 0; background: #2a2b2f; color: #e5e6e9; font-family: var(--font-b
 .bg8 { background-image: url('../medien/bg/bg-white-font-black/8.png'); --safe-bottom: 833px; }
 
 .content {
-  position: absolute; left: 0; right: 0; top: 0; height: var(--safe-bottom);
-  padding: var(--space-19) var(--space-10) 0;
+  position: absolute; left: 0; right: 0;
+  top: var(--safe-top); height: calc(var(--safe-bottom) - var(--safe-top));
+  padding: 0 var(--space-10);
   display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
 }
 .show-safe .content { outline: 3px dashed rgba(255, 0, 80, .6); outline-offset: -3px; }
@@ -117,3 +119,28 @@ body { margin: 0; background: #2a2b2f; color: #e5e6e9; font-family: var(--font-b
 /* Zeilenumbrüche: Titel ausgewogen, Fließtext ohne einzelne Wörter in der letzten Zeile */
 .p-xl, .p-big, .p-title, .p-oder { text-wrap: balance; }
 .p-text, .p-sub { text-wrap: pretty; }
+
+/* ---------- Invertierte Serie (bg-black-font-white): Himmel weiß oben, Inhalt im Schwarz ----------
+   Textbereich: 96 px unter dem tiefsten Punkt des weißen Himmels bis 1039 px (176 px über dem Logo). */
+.ibg1 { background-image: url('../medien/bg/bg-black-font-white/1.png'); --safe-top: 405px; }
+.ibg2 { background-image: url('../medien/bg/bg-black-font-white/2.png'); --safe-top: 386px; }
+.ibg3 { background-image: url('../medien/bg/bg-black-font-white/3.png'); --safe-top: 406px; }
+.ibg4 { background-image: url('../medien/bg/bg-black-font-white/4.png'); --safe-top: 399px; }
+.ibg5 { background-image: url('../medien/bg/bg-black-font-white/5.png'); --safe-top: 375px; }
+.ibg6 { background-image: url('../medien/bg/bg-black-font-white/6.png'); --safe-top: 379px; }
+.ibg7 { background-image: url('../medien/bg/bg-black-font-white/7.png'); --safe-top: 412px; }
+.ibg8 { background-image: url('../medien/bg/bg-black-font-white/8.png'); --safe-top: 398px; }
+.ibg1, .ibg2, .ibg3, .ibg4, .ibg5, .ibg6, .ibg7, .ibg8 {
+  --safe-bottom: 1039px;
+  --gray-950: #ffffff;    /* Titel weiß */
+  --gray-900: #e5e6e9;    /* Fließtext gebrochenes Weiß */
+  background-color: #000;
+}
+/* Gold auf Schwarz: das hellere Gold (gold-dark hätte zu wenig Kontrast) */
+.ibg1 .content .g, .ibg2 .content .g, .ibg3 .content .g, .ibg4 .content .g,
+.ibg5 .content .g, .ibg6 .content .g, .ibg7 .content .g, .ibg8 .content .g,
+.ibg1 .p-oder, .ibg2 .p-oder, .ibg3 .p-oder, .ibg4 .p-oder,
+.ibg5 .p-oder, .ibg6 .p-oder, .ibg7 .p-oder, .ibg8 .p-oder { color: var(--gold); }
+/* Kategorie steht in der invertierten Serie im Inhalt (erstes Element in .content), in Gold,
+   48 px über dem Titel - nicht im weißen Himmel. */
+.content > .kicker { position: static; margin-bottom: var(--space-6); color: var(--gold); }

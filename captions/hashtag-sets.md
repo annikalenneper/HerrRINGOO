@@ -12,7 +12,7 @@ Sets können bei Bedarf gemischt werden (allgemeine Marken-Hashtags + kategories
 ## Werkstatt & Prozess
 
 ```
-#Handwerk #Goldschmiede #MadeByHand #Ringschmieden
+#Trauringmanufaktur #Handarbeit #MadeInGermany #Ringpaar
 ```
 
 ## Unterwegs / Standorte
@@ -36,7 +36,7 @@ Sets können bei Bedarf gemischt werden (allgemeine Marken-Hashtags + kategories
 ## Team & Menschen dahinter
 
 ```
-#TeamHerrRINGOO #Familienbetrieb #GenerationenHandwerk
+#TeamHerrRINGOO #Familienbetrieb #Traditionsgeschäft
 ```
 
 ## Community & Interaktion
@@ -51,7 +51,7 @@ Sets können bei Bedarf gemischt werden (allgemeine Marken-Hashtags + kategories
 #DatGibbet #TrauringTermin #PopUpTermin
 ```
 
-## Trauring-Wissen
+## Beratung
 
 ```
 #TrauringTipps #RatgeberHochzeit #FaqTrauringe

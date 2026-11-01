@@ -52,6 +52,33 @@ Vorschau **rot umrandet**, und `render-slides.ps1` bricht ab, ohne JPGs zu erzeu
 nicht kürzen, sondern eine passende Textgröße wählen (z. B. `.p-text.small`) oder einen
 Kürzungs-Vorschlag zur Freigabe machen.
 
+### Invertierte Serie (`bg-black-font-white/`)
+
+Hintergründe mit weißem Himmel oben und großer schwarzer Fläche, Logo unten. Klassen `.ibg1` bis
+`.ibg8` statt `.bg1` bis `.bg8`. Die Farben stellen sich damit automatisch um.
+
+- **Inhalt im schwarzen Bereich:** ab 96 px unter dem tiefsten Punkt des weißen Himmels bis
+  1039 px (176 px über dem Logo, das bei 1215 px beginnt). Der Inhalt wird darin vertikal zentriert
+  und sitzt damit bewusst etwas über der Mitte der schwarzen Fläche.
+- **Farben:** Titel Weiß, Fließtext gebrochenes Weiß `#e5e6e9`, Hervorhebungen und Raute im helleren
+  Gold `#c8aa6d`. `#a9884c` hätte auf Schwarz zu wenig Kontrast.
+- **Kategorie** steht **nicht** im weißen Himmel, sondern als erstes Element im Inhalt: in Gold,
+  48 px über dem Titel bzw. Text. Im HTML steht `<p class="kicker">` dafür **innerhalb** von
+  `<div class="content">`.
+
+| Hintergrund | Weiß reicht bis | Höchste Spitze | Textbereich beginnt bei (`--safe-top`) |
+|---|---|---|---|
+| 1 | 309 px | 112 px | 405 px |
+| 2 | 290 px | 162 px | 386 px |
+| 3 | 310 px | 180 px | 406 px |
+| 4 | 303 px | 162 px | 399 px |
+| 5 | 279 px | 146 px | 375 px |
+| 6 | 283 px | 146 px | 379 px |
+| 7 | 316 px | 182 px | 412 px |
+| 8 | 302 px | 169 px | 398 px |
+
+Ein Post nutzt durchgängig **eine** Serie, hell oder invertiert, nicht gemischt.
+
 ## 3. Typografie
 
 Kein `letter-spacing`. Versalien über `text-transform: uppercase`. Alles **zentriert**.
@@ -150,4 +177,6 @@ Gold ist Akzent, nie Fläche.
 | 26-08-gebrauchsspuren | 8, 1, 2, 3, 4 |
 | 26-08-ring-entsteht | 5, 6, 7, 8, 1 |
 | 26-08-die-4c | 2, 3, 4, 5, 6 |
-| nächster Post | 7, 8, 1, 2, 3 |
+| 26-08-empfindliche-haut (invertiert) | i1, i2, i3, i4, i5 |
+| nächster Post (hell) | 7, 8, 1, 2, 3 |
+| nächster Post (invertiert) | i6, i7, i8, i1, i2 |

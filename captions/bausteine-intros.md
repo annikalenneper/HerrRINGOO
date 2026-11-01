@@ -6,7 +6,7 @@ Klammern]` beim Verwenden ersetzen.
 ## Werkstatt & Prozess
 
 - "So entsteht ein Ehering, der ein Leben lang hält. 💍"
-- "Vom Rohmaterial zum fertigen Ring – schaut selbst:"
+- "Vom Rohmaterial zum fertigen Ring – ein Blick in die Manufaktur:"
 
 ## Unterwegs / Standorte
 
@@ -38,7 +38,7 @@ Klammern]` beim Verwenden ersetzen.
 - "Dat gibbet! Unser Paket [Paketname] im Überblick."
 - "Von gemütlich bis ereignisreich – ihr entscheidet, wie eure Trauringberatung aussieht."
 
-## Trauring-Wissen
+## Beratung
 
 - "Frage, die uns oft gestellt wird: [Frage]"
 - "[Zahl] Dinge, die ihr vor dem Ringkauf wissen solltet:"
