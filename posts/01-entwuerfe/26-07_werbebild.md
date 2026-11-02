@@ -32,8 +32,8 @@ Ausfüllhinweise:
 NICHT VERZAGEN – PETRA FRAGEN! 💍
 
 Petra kennt jeden Ring in dieser Box wie ihre eigene Westentasche – und findet garantiert das
-Modell, das zu euch beiden passt. Mit Herz, mit der Erfahrung aus vierter Generation
-Goldschmiede-Tradition und einem offenen Ohr für alles, was euch bei der Ringwahl wichtig ist.
+Modell, das zu euch beiden passt. Mit Herz, mit der Erfahrung aus vierter Generation im
+Schmuckgeschäft und einem offenen Ohr für alles, was euch bei der Ringwahl wichtig ist.
 
 Kerzenschein, Blumen und eure Ringe fürs Leben – mehr braucht so ein besonderer Moment nicht.
 
@@ -41,4 +41,4 @@ Habt ihr noch Fragen zu Herr RINGOO? Fragt uns gerne in den Kommentaren – oder
 selbst!
 
 #HerrRINGOO #RollendesTrauringstudio #Trauringe #Eheringe #TeamHerrRINGOO #Familienbetrieb
-#GenerationenHandwerk #Verlobung
+#Traditionsgeschäft #Verlobung

@@ -17,6 +17,6 @@ notizen: ""
 
 ## Caption
 
-Vom flüssigen Metall zum fertigen Trauringpaar: So viele Arbeitsschritte stecken wirklich in einem einzigen Ring.
+Vom flüssigen Metall zum fertigen Trauringpaar: So viele Arbeitsschritte stecken wirklich in einem einzigen Ring – gefertigt von unseren Trauringmanufakturen wie Gerstner und Rauschmayer, ganz nach euren Wünschen.
 
 #TrauringTipps #RatgeberHochzeit #FaqTrauringe #HerrRINGOO #RollendesTrauringstudio #Trauringe #Eheringe

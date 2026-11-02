@@ -8,10 +8,10 @@ alle Kanäle hinweg konsistent bleibt. Für fertige, wiederverwendbare Textbaust
 
 ## 1. Markenkern in einem Satz
 
-> **Herr RINGOO ist das rollende Trauringstudio – jahrzehntelange Goldschmiede-Tradition trifft
-> auf das freie, romantische Lebensgefühl eines Campingbulli.**
+> **Herr RINGOO ist das rollende Trauringstudio – jahrzehntelange Familientradition im Uhren- und
+> Schmuckgeschäft trifft auf das freie, romantische Lebensgefühl eines Campingbulli.**
 
-Die gesamte Kommunikation lebt von diesem Spannungsbogen: **Tradition & Handwerk** (100 Jahre
+Die gesamte Kommunikation lebt von diesem Spannungsbogen: **Tradition & Qualität** (100 Jahre
 Familienbetrieb, Handarbeit, "Made in Germany") auf der einen Seite, **Freiheit & Aufbruch**
 (Bulli, "auf Jück", On-the-Road-Gefühl) auf der anderen. Keiner der beiden Pole darf verloren
 gehen – erst das Zusammenspiel macht die Marke aus.
@@ -20,8 +20,8 @@ gehen – erst das Zusammenspiel macht die Marke aus.
 
 Herr RINGOO bringt die Trauringberatung dorthin, wo sich Paare am wohlsten fühlen – ins eigene
 Zuhause oder an einen frei wählbaren Wunschort in der Region Sauerland/Siegerland. Statt
-klassischem Ladengeschäft: ein liebevoll ausgebauter VW-Bulli, jahrzehntelange
-Goldschmiede-Expertise (3./4. Generation) und namhafte deutsche Trauringhersteller
+klassischem Ladengeschäft: ein liebevoll ausgebauter VW-Bulli, jahrzehntelange Erfahrung als
+Familienbetrieb für Uhren & Schmuck (3./4. Generation) und namhafte deutsche Trauringhersteller
 (Gerstner, Rauschmayer). Das Ringe-Aussuchen wird so vom Termin zum **Erlebnis**.
 
 ## 3. Zielgruppe
@@ -146,7 +146,7 @@ Eheringe made in Germany
 Trauringe nachhaltig
 Verlobungsringe
 Ringpaar
-Goldschmiede
+Trauringhändler
 ```
 
 **Marken-/Hersteller-Keywords**

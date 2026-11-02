@@ -25,4 +25,4 @@ kommentare:
 
 Warum ausgerechnet ein Bulli? Weil Trauringe aussuchen sich wie ein besonderer Moment anfühlen soll - nicht wie ein schneller Einkauf. Wir bringen die Beratung dorthin, wo ihr euch wohlfühlt.
 
-#TeamHerrRINGOO #Familienbetrieb #GenerationenHandwerk #HerrRINGOO #RollendesTrauringstudio #Trauringe #Eheringe
+#TeamHerrRINGOO #Familienbetrieb #Traditionsgeschäft #HerrRINGOO #RollendesTrauringstudio #Trauringe #Eheringe
